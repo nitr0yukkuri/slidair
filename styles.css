@@ -161,13 +161,15 @@ h1 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 70%;
+  max-width: 76%;
 }
 
-.slide-kicker { margin-bottom: 18px; color: var(--muted-ink); }
-.slide h2 { max-width: 10em; margin-bottom: 18px; font-size: clamp(1.7rem, 4.6vw, 5.5rem); letter-spacing: -0.07em; line-height: 0.96; }
-.slide-copy { max-width: 37em; margin-bottom: 0; color: var(--muted-ink); font-size: clamp(0.85rem, 1.25vw, 1.15rem); line-height: 1.7; }
-.slide-meta { position: absolute; right: 5%; bottom: 5%; color: var(--muted-ink); }
+.slide-kicker { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px; color: var(--muted-ink); }
+.slide-kicker::before { content: ""; display: inline-block; width: 30px; height: 1px; background: currentColor; opacity: 0.65; }
+.slide h2 { max-width: 12em; margin-bottom: 24px; font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", Georgia, serif; font-size: clamp(2rem, 5vw, 5.6rem); font-weight: 500; letter-spacing: -0.065em; line-height: 1.04; text-wrap: balance; }
+.slide-copy { max-width: 31em; margin-bottom: 0; color: var(--muted-ink); font-size: clamp(0.85rem, 1.15vw, 1.1rem); letter-spacing: 0.02em; line-height: 1.8; }
+.slide-meta { position: absolute; right: 5%; bottom: 5%; display: inline-flex; align-items: center; gap: 10px; color: var(--muted-ink); }
+.slide-meta::before { content: ""; display: inline-block; width: 22px; height: 1px; background: currentColor; opacity: 0.5; }
 
 .controls { padding: 20px; border: 1px solid var(--ui-border); border-radius: 14px; background: rgba(255, 255, 255, 0.035); }
 .control-group + .control-group { margin-top: 18px; }
@@ -192,3 +194,4 @@ button:hover, button:focus-visible { border-color: #92a9b9; background: #202a34;
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
