@@ -67,7 +67,6 @@ h1 {
   --base-b: oklch(80% 0.025 220);
   --light: oklch(95% 0.024 80);
   --weather: oklch(78% 0.02 220);
-  --snowflake: oklch(98% 0.015 235);
   --season-accent: oklch(64% 0.06 65);
   --season-accent-soft: oklch(86% 0.035 42);
   --season-glow: oklch(91% 0.04 70);
@@ -181,18 +180,6 @@ h1 {
 .atmosphere-base { z-index: -5; background: linear-gradient(125deg, var(--base-a), var(--base-b)); transition: background 900ms ease; }
 .atmosphere-light { z-index: -4; background: radial-gradient(ellipse at 82% 20%, var(--light) 0%, transparent 48%); opacity: var(--light-opacity); transition: opacity 900ms ease, background 900ms ease; }
 .atmosphere-weather { z-index: -3; background: radial-gradient(ellipse at 14% 76%, var(--weather) 0%, transparent 58%); opacity: var(--weather-opacity); transition: opacity 900ms ease, background 900ms ease; }
-.slide[data-weather="snow"] .atmosphere-weather {
-  background:
-    radial-gradient(circle at 12% 16%, color-mix(in oklch, var(--snowflake) 78%, transparent) 0 1.5px, transparent 2px),
-    radial-gradient(circle at 36% 58%, color-mix(in oklch, var(--snowflake) 62%, transparent) 0 1px, transparent 1.8px),
-    radial-gradient(circle at 68% 24%, color-mix(in oklch, var(--snowflake) 74%, transparent) 0 1.4px, transparent 2px),
-    radial-gradient(circle at 84% 70%, color-mix(in oklch, var(--snowflake) 58%, transparent) 0 0.9px, transparent 1.6px),
-    radial-gradient(circle at 54% 84%, color-mix(in oklch, var(--snowflake) 68%, transparent) 0 1.2px, transparent 1.9px),
-    radial-gradient(circle at 22% 42%, color-mix(in oklch, var(--snowflake) 42%, transparent) 0 0.8px, transparent 1.4px),
-    radial-gradient(circle at 52% 18%, color-mix(in oklch, var(--snowflake) 45%, transparent) 0 0.8px, transparent 1.4px),
-    radial-gradient(circle at 76% 48%, color-mix(in oklch, var(--snowflake) 38%, transparent) 0 0.7px, transparent 1.3px),
-    radial-gradient(ellipse at 14% 76%, var(--weather) 0%, transparent 58%);
-}
 .atmosphere-vignette { z-index: -2; background: radial-gradient(ellipse at center, transparent 30%, rgba(8, 13, 20, var(--vignette-opacity)) 120%); }
 .atmosphere-noise { z-index: -1; opacity: 0.035; mix-blend-mode: soft-light; }
 
