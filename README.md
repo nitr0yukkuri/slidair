@@ -2,11 +2,12 @@
 
 プレゼンテーションのための、静かな環境背景ジェネレーター。
 
-時間帯・天気・スライドの役割を組み合わせ、本文を邪魔しない低彩度のグラデーション背景を生成します。背景を「装飾」ではなく、発表全体の空気を揃えるデザインシステムとして扱うためのプロトタイプです。
+季節・時間帯・天気・スライドの役割を組み合わせ、本文を邪魔しない低彩度のグラデーション背景を生成します。季節は色と小さなワンポイントだけで示し、背景を「装飾」ではなく、発表全体の空気を揃えるデザインシステムとして扱うためのプロトタイプです。
 
 ## MVP
 
 - 16:9のプレゼンテーションプレビュー
+- `spring / summer / autumn / winter` の季節
 - `morning / day / evening / night` の時間帯
 - `clear / cloudy / rain / snow` の天気
 - `cover / section / content / quote / closing` のスライド役割
@@ -29,22 +30,23 @@ node server.mjs
 URLで状態を固定できます。
 
 ```text
-http://localhost:4173/?period=evening&weather=rain&role=cover
+http://localhost:4173/?season=autumn&period=evening&weather=rain&role=cover
 ```
 
 ## 設計方針
 
-### 3つの状態軸
+### 4つの状態軸
 
 ```text
-WorldState = period + weather + role
+WorldState = season + period + weather + role
 ```
 
+- `season`: 低彩度のアクセントカラーと小さなワンポイント
 - `period`: 明るさと色温度
 - `weather`: 彩度、コントラスト、質感
 - `role`: 発表中の情報階層
 
-天気や昼夜だけではプレゼン資料の構造を表現できないため、スライド役割を独立した軸として扱います。
+季節は世界観の入口として使い、色とワンポイントに限定します。天気や昼夜だけではプレゼン資料の構造を表現できないため、スライド役割も独立した軸として扱います。
 
 ### レイヤー
 
