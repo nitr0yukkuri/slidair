@@ -127,27 +127,27 @@ h1 {
 }
 
 .slide[data-season="spring"] {
-  --season-accent: oklch(69% 0.055 20);
-  --season-accent-soft: oklch(88% 0.03 95);
-  --season-glow: oklch(93% 0.035 35);
+  --season-accent: oklch(72% 0.07 20);
+  --season-accent-soft: oklch(90% 0.03 25);
+  --season-glow: oklch(93% 0.035 25);
 }
 
 .slide[data-season="summer"] {
-  --season-accent: oklch(64% 0.05 210);
-  --season-accent-soft: oklch(87% 0.025 175);
-  --season-glow: oklch(92% 0.025 210);
+  --season-accent: oklch(68% 0.065 220);
+  --season-accent-soft: oklch(88% 0.03 215);
+  --season-glow: oklch(92% 0.03 220);
 }
 
 .slide[data-season="autumn"] {
-  --season-accent: oklch(64% 0.06 65);
-  --season-accent-soft: oklch(85% 0.035 42);
-  --season-glow: oklch(90% 0.04 70);
+  --season-accent: oklch(62% 0.095 45);
+  --season-accent-soft: oklch(84% 0.06 48);
+  --season-glow: oklch(89% 0.055 48);
 }
 
 .slide[data-season="winter"] {
-  --season-accent: oklch(68% 0.04 260);
-  --season-accent-soft: oklch(88% 0.02 275);
-  --season-glow: oklch(94% 0.02 240);
+  --season-accent: oklch(88% 0.025 245);
+  --season-accent-soft: oklch(94% 0.015 245);
+  --season-glow: oklch(96% 0.018 245);
 }
 
 .slide[data-weather="cloudy"] {
@@ -200,58 +200,34 @@ h1 {
 
 .season-mark {
   position: absolute;
-  z-index: 1;
-  top: 9%;
-  right: 9%;
-  width: 38px;
-  height: 38px;
-  border: 1px solid color-mix(in oklch, var(--season-accent) 68%, transparent);
-  border-radius: 50%;
-  opacity: 0.72;
-  transition: border-radius 700ms ease, box-shadow 700ms ease, transform 700ms ease;
+  z-index: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  height: 24%;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(180deg, transparent 0%, color-mix(in oklch, var(--season-accent-soft) 7%, transparent) 34%, color-mix(in oklch, var(--season-accent) 22%, transparent) 100%);
+  box-shadow: 0 -20px 42px color-mix(in oklch, var(--season-accent) 12%, transparent);
+  opacity: 0.86;
+  pointer-events: none;
+  transition: background 700ms ease, box-shadow 700ms ease;
 }
 
 .season-mark::before {
   content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--season-accent);
-  transform: translate(-50%, -50%);
+  right: 10%;
+  bottom: 0;
+  left: 10%;
+  width: auto;
+  height: 1px;
+  background: color-mix(in oklch, var(--season-accent) 58%, transparent);
 }
 
 .season-mark::after {
-  content: "";
-  position: absolute;
-  display: none;
-  top: 50%;
-  left: 50%;
-  width: 48px;
-  height: 1px;
-  background: var(--season-accent);
-  opacity: 0.7;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.slide[data-season="spring"] .season-mark {
-  border-radius: 72% 28% 72% 28%;
-  transform: rotate(45deg);
-}
-
-.slide[data-season="summer"] .season-mark {
-  box-shadow: 0 0 0 7px color-mix(in oklch, var(--season-accent-soft) 38%, transparent);
-}
-
-.slide[data-season="autumn"] .season-mark {
-  border-radius: 100% 0 100% 0;
-  transform: rotate(-25deg);
-}
-
-.slide[data-season="winter"] .season-mark::after {
-  display: block;
+  content: none;
 }
 
 .controls { padding: 20px; border: 1px solid var(--ui-border); border-radius: 14px; background: rgba(255, 255, 255, 0.035); }
