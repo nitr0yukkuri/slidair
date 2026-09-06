@@ -30,7 +30,7 @@ node server.mjs
 URLで状態を固定できます。
 
 ```text
-http://localhost:4173/?season=autumn&period=evening&weather=rain&role=cover
+http://localhost:4173/?season=autumn&period=night&weather=rain&role=cover
 ```
 
 ## 設計方針
