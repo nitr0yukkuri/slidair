@@ -1,4 +1,5 @@
 const slide = document.querySelector("#slide");
+const seasonSelect = document.querySelector("#season");
 const periodSelect = document.querySelector("#period");
 const weatherSelect = document.querySelector("#weather");
 const roleSelect = document.querySelector("#role");
@@ -25,6 +26,10 @@ const roleCopy = {
 };
 
 const labels = {
+  spring: "spring",
+  summer: "summer",
+  autumn: "autumn",
+  winter: "winter",
   morning: "morning",
   day: "day",
   evening: "evening",
@@ -38,6 +43,7 @@ const labels = {
 function readStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return {
+    season: params.get("season") || seasonSelect.value,
     period: params.get("period") || periodSelect.value,
     weather: params.get("weather") || weatherSelect.value,
     role: params.get("role") || roleSelect.value,
@@ -49,24 +55,27 @@ function validValue(select, value) {
 }
 
 function applyState(state, source = "manual preset") {
+  const season = validValue(seasonSelect, state.season);
   const period = validValue(periodSelect, state.period);
   const weather = validValue(weatherSelect, state.weather);
   const role = validValue(roleSelect, state.role);
+  seasonSelect.value = season;
   periodSelect.value = period;
   weatherSelect.value = weather;
   roleSelect.value = role;
+  slide.dataset.season = season;
   slide.dataset.period = period;
   slide.dataset.weather = weather;
   slide.dataset.role = role;
   roleLabel.textContent = roleNames[role];
   slideTitle.innerHTML = roleCopy[role][0];
   slideCopy.textContent = roleCopy[role][1];
-  slideMeta.textContent = `${labels[period]} · ${labels[weather]}`;
+  slideMeta.textContent = `${labels[season]} · ${labels[period]} · ${labels[weather]}`;
   status.textContent = source;
 }
 
 function currentState() {
-  return { period: periodSelect.value, weather: weatherSelect.value, role: roleSelect.value };
+  return { season: seasonSelect.value, period: periodSelect.value, weather: weatherSelect.value, role: roleSelect.value };
 }
 
 function updateUrl() {
@@ -89,6 +98,7 @@ function selectChanged() {
   updateUrl();
 }
 
+seasonSelect.addEventListener("change", selectChanged);
 periodSelect.addEventListener("change", selectChanged);
 weatherSelect.addEventListener("change", selectChanged);
 roleSelect.addEventListener("change", selectChanged);
