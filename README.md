@@ -28,6 +28,12 @@ node server.mjs
 
 ブラウザで <http://localhost:4173> を開きます。
 
+状態変換と静的サーバーの純粋な検証は、Node.js標準のテストランナーで実行できます。
+
+```powershell
+node --test tests/*.test.mjs
+```
+
 URLで状態を固定できます。
 
 ```text

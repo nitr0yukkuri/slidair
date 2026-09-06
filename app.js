@@ -1,3 +1,5 @@
+import { normalizeState, stateFromSearch, stateToSearchParams } from "./state.mjs";
+
 const slide = document.querySelector("#slide");
 const seasonSelect = document.querySelector("#season");
 const periodSelect = document.querySelector("#period");
@@ -45,27 +47,9 @@ const labels = {
   city: "city",
 };
 
-function readStateFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return {
-    season: params.get("season") || seasonSelect.value,
-    period: params.get("period") || periodSelect.value,
-    weather: params.get("weather") || weatherSelect.value,
-    scene: params.get("scene") || sceneSelect.value,
-    role: params.get("role") || roleSelect.value,
-  };
-}
-
-function validValue(select, value) {
-  return [...select.options].some((option) => option.value === value) ? value : select.value;
-}
-
 function applyState(state, source = "manual preset") {
-  const season = validValue(seasonSelect, state.season);
-  const period = validValue(periodSelect, state.period);
-  const weather = validValue(weatherSelect, state.weather);
-  const scene = validValue(sceneSelect, state.scene);
-  const role = validValue(roleSelect, state.role);
+  const normalized = normalizeState(state);
+  const { season, period, weather, scene, role } = normalized;
   seasonSelect.value = season;
   periodSelect.value = period;
   weatherSelect.value = weather;
@@ -82,17 +66,25 @@ function applyState(state, source = "manual preset") {
   const sceneLabel = scene === "none" ? "" : ` · ${labels[scene]}`;
   slideMeta.textContent = `${labels[season]} · ${labels[period]} · ${labels[weather]}${sceneLabel}`;
   status.textContent = source;
+  return normalized;
 }
 
 function currentState() {
-  return { season: seasonSelect.value, period: periodSelect.value, weather: weatherSelect.value, scene: sceneSelect.value, role: roleSelect.value };
+  return normalizeState({
+    season: seasonSelect.value,
+    period: periodSelect.value,
+    weather: weatherSelect.value,
+    scene: sceneSelect.value,
+    role: roleSelect.value,
+  });
 }
 
-function updateUrl() {
+function updateUrl(state = currentState(), mode = "replace") {
   const url = new URL(window.location.href);
-  const state = currentState();
-  Object.entries(state).forEach(([key, value]) => url.searchParams.set(key, value));
-  window.history.replaceState({}, "", url);
+  url.search = stateToSearchParams(state).toString();
+  const updateHistory = mode === "push" ? window.history.pushState : window.history.replaceState;
+  updateHistory.call(window.history, {}, "", url);
+  return url.href;
 }
 
 function timeToPeriod(hour) {
@@ -104,8 +96,8 @@ function timeToPeriod(hour) {
 }
 
 function selectChanged() {
-  applyState(currentState());
-  updateUrl();
+  const state = applyState(currentState());
+  updateUrl(state, "push");
 }
 
 seasonSelect.addEventListener("change", selectChanged);
@@ -115,15 +107,15 @@ sceneSelect.addEventListener("change", selectChanged);
 roleSelect.addEventListener("change", selectChanged);
 
 document.querySelector("#now").addEventListener("click", () => {
-  applyState({ ...currentState(), period: timeToPeriod(new Date().getHours()) }, "local time preset");
-  updateUrl();
+  const state = applyState({ ...currentState(), period: timeToPeriod(new Date().getHours()) }, "local time preset");
+  updateUrl(state, "push");
 });
 
 document.querySelector("#copy-url").addEventListener("click", async (event) => {
   const copyButton = event.currentTarget;
-  updateUrl();
+  const currentUrl = updateUrl();
   try {
-    await navigator.clipboard.writeText(window.location.href);
+    await navigator.clipboard.writeText(currentUrl);
     copyButton.textContent = "URLをコピーしました";
     window.setTimeout(() => { copyButton.textContent = "この状態のURLをコピー"; }, 1600);
   } catch {
@@ -132,5 +124,10 @@ document.querySelector("#copy-url").addEventListener("click", async (event) => {
   }
 });
 
-applyState(readStateFromUrl(), "url preset");
+const initialState = stateFromSearch(window.location.search);
+applyState(initialState, "url preset");
+updateUrl(initialState);
 
+window.addEventListener("popstate", () => {
+  applyState(stateFromSearch(window.location.search), "history preset");
+});
