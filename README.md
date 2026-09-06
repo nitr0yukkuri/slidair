@@ -21,7 +21,7 @@
 
 ```powershell
 cd C:\src\slide-atmosphere
-python -m http.server 4173
+node server.mjs
 ```
 
 ブラウザで <http://localhost:4173> を開きます。
@@ -66,3 +66,4 @@ WorldState = period + weather + role
 - 発表者用のライブプレビューと、聴衆用の静止画出力の分離
 
 詳細な企画・リスク・実装判断は [`docs/design-analysis.md`](docs/design-analysis.md) を参照してください。
+
