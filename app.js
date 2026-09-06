@@ -17,11 +17,11 @@ const roleNames = {
 };
 
 const roleCopy = {
-  cover: ["背景は、発表の空気をつくる。", "文字より前に立たず、でも何もないわけではない。静かな環境としてのプレゼンテーション背景。"],
-  section: ["次の景色へ。", "セクションの境目に、少しだけ呼吸できる余白を置く。"],
-  content: ["内容を、内容として見せる。", "背景の仕事は、文字や図表が読みやすい状態をつくること。"],
-  quote: ["静かな背景は、言葉を強くする。", "視線を奪うのではなく、伝えたい一文の周りに空気を残す。"],
-  closing: ["ここから先の景色へ。", "発表が終わったあとも、考えが少しだけ残るように。"],
+  cover: ["背景は、発表の<br>空気をつくる。", "文字より前に立たず、空気だけを残す。"],
+  section: ["次の景色へ。", "次の話へ移るための、静かな区切り。"],
+  content: ["内容を、<br>内容として見せる。", "内容を、内容として見せるために。"],
+  quote: ["静かな背景は、<br>言葉を強くする。", "言葉のまわりに、余白を残す。"],
+  closing: ["ここから先の<br>景色へ。", "発表のあとに、少しだけ残るもの。"],
 };
 
 const labels = {
@@ -59,7 +59,7 @@ function applyState(state, source = "manual preset") {
   slide.dataset.weather = weather;
   slide.dataset.role = role;
   roleLabel.textContent = roleNames[role];
-  slideTitle.textContent = roleCopy[role][0];
+  slideTitle.innerHTML = roleCopy[role][0];
   slideCopy.textContent = roleCopy[role][1];
   slideMeta.textContent = `${labels[period]} · ${labels[weather]}`;
   status.textContent = source;
@@ -99,15 +99,17 @@ document.querySelector("#now").addEventListener("click", () => {
 });
 
 document.querySelector("#copy-url").addEventListener("click", async (event) => {
+  const copyButton = event.currentTarget;
   updateUrl();
   try {
     await navigator.clipboard.writeText(window.location.href);
-    event.currentTarget.textContent = "URLをコピーしました";
-    window.setTimeout(() => { event.currentTarget.textContent = "この状態のURLをコピー"; }, 1600);
+    copyButton.textContent = "URLをコピーしました";
+    window.setTimeout(() => { copyButton.textContent = "この状態のURLをコピー"; }, 1600);
   } catch {
-    event.currentTarget.textContent = "URLをアドレスバーからコピー";
-    window.setTimeout(() => { event.currentTarget.textContent = "この状態のURLをコピー"; }, 2200);
+    copyButton.textContent = "URLをアドレスバーからコピー";
+    window.setTimeout(() => { copyButton.textContent = "この状態のURLをコピー"; }, 2200);
   }
 });
 
 applyState(readStateFromUrl(), "url preset");
+
