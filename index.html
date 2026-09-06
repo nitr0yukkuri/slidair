@@ -13,14 +13,14 @@
         <div>
           <p class="eyebrow">AMBIENT PRESENTATION SYSTEM</p>
           <h1>slide-atmosphere</h1>
-          <p class="intro">季節と時間帯、天気、スライドの役割から、発表の空気をつくる。</p>
+          <p class="intro">季節と時間帯、天気、景色、スライドの役割から、発表の空気をつくる。</p>
         </div>
         <p class="status" id="status" role="status">manual preset</p>
       </header>
 
       <section class="workspace" aria-label="プレゼン背景プレビュー">
         <div class="preview-wrap">
-          <article class="slide" id="slide" data-season="autumn" data-period="night" data-weather="clear" data-role="cover">
+          <article class="slide" id="slide" data-season="autumn" data-period="night" data-weather="clear" data-scene="none" data-role="cover">
             <div class="atmosphere atmosphere-base"></div>
             <div class="atmosphere atmosphere-light"></div>
             <div class="atmosphere atmosphere-weather"></div>
@@ -32,6 +32,7 @@
               </filter>
               <rect width="100%" height="100%" filter="url(#grain)" />
             </svg>
+            <span class="scene-mark" aria-hidden="true"></span>
             <span class="season-mark" aria-hidden="true"></span>
             <div class="slide-content">
               <p class="slide-kicker" id="role-label">COVER / 01</p>
@@ -74,6 +75,16 @@
           </div>
 
           <div class="control-group">
+            <label for="scene">景色</label>
+            <select id="scene">
+              <option value="none" selected>なし</option>
+              <option value="fireworks">花火</option>
+              <option value="lake">湖</option>
+              <option value="city">都会</option>
+            </select>
+          </div>
+
+          <div class="control-group">
             <label for="role">スライドの役割</label>
             <select id="role">
               <option value="cover" selected>表紙</option>
@@ -89,7 +100,7 @@
             <button type="button" class="button-secondary" id="copy-url">この状態のURLをコピー</button>
           </div>
 
-          <p class="note">季節はスライド下部の低彩度の色だけで表現します。本番では状態を固定したURLまたは書き出し画像を使う想定です。</p>
+          <p class="note">季節は下部の色、景色はぼかした画像だけで表現します。本番では状態を固定したURLまたは書き出し画像を使う想定です。</p>
         </aside>
       </section>
     </main>

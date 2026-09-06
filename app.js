@@ -2,6 +2,7 @@ const slide = document.querySelector("#slide");
 const seasonSelect = document.querySelector("#season");
 const periodSelect = document.querySelector("#period");
 const weatherSelect = document.querySelector("#weather");
+const sceneSelect = document.querySelector("#scene");
 const roleSelect = document.querySelector("#role");
 const status = document.querySelector("#status");
 const roleLabel = document.querySelector("#role-label");
@@ -38,6 +39,10 @@ const labels = {
   cloudy: "cloudy",
   rain: "rain",
   snow: "snow",
+  none: "none",
+  fireworks: "fireworks",
+  lake: "lake",
+  city: "city",
 };
 
 function readStateFromUrl() {
@@ -46,6 +51,7 @@ function readStateFromUrl() {
     season: params.get("season") || seasonSelect.value,
     period: params.get("period") || periodSelect.value,
     weather: params.get("weather") || weatherSelect.value,
+    scene: params.get("scene") || sceneSelect.value,
     role: params.get("role") || roleSelect.value,
   };
 }
@@ -58,24 +64,28 @@ function applyState(state, source = "manual preset") {
   const season = validValue(seasonSelect, state.season);
   const period = validValue(periodSelect, state.period);
   const weather = validValue(weatherSelect, state.weather);
+  const scene = validValue(sceneSelect, state.scene);
   const role = validValue(roleSelect, state.role);
   seasonSelect.value = season;
   periodSelect.value = period;
   weatherSelect.value = weather;
+  sceneSelect.value = scene;
   roleSelect.value = role;
   slide.dataset.season = season;
   slide.dataset.period = period;
   slide.dataset.weather = weather;
+  slide.dataset.scene = scene;
   slide.dataset.role = role;
   roleLabel.textContent = roleNames[role];
   slideTitle.innerHTML = roleCopy[role][0];
   slideCopy.textContent = roleCopy[role][1];
-  slideMeta.textContent = `${labels[season]} · ${labels[period]} · ${labels[weather]}`;
+  const sceneLabel = scene === "none" ? "" : ` · ${labels[scene]}`;
+  slideMeta.textContent = `${labels[season]} · ${labels[period]} · ${labels[weather]}${sceneLabel}`;
   status.textContent = source;
 }
 
 function currentState() {
-  return { season: seasonSelect.value, period: periodSelect.value, weather: weatherSelect.value, role: roleSelect.value };
+  return { season: seasonSelect.value, period: periodSelect.value, weather: weatherSelect.value, scene: sceneSelect.value, role: roleSelect.value };
 }
 
 function updateUrl() {
@@ -101,6 +111,7 @@ function selectChanged() {
 seasonSelect.addEventListener("change", selectChanged);
 periodSelect.addEventListener("change", selectChanged);
 weatherSelect.addEventListener("change", selectChanged);
+sceneSelect.addEventListener("change", selectChanged);
 roleSelect.addEventListener("change", selectChanged);
 
 document.querySelector("#now").addEventListener("click", () => {
