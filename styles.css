@@ -177,7 +177,7 @@ h1 {
 
 .atmosphere { position: absolute; inset: 0; pointer-events: none; }
 .atmosphere-base { z-index: -5; background: linear-gradient(125deg, var(--base-a), var(--base-b)); transition: background 900ms ease; }
-.atmosphere-light { z-index: -4; background: radial-gradient(ellipse at 82% 20%, var(--light) 0%, transparent 48%), radial-gradient(ellipse at 90% 88%, var(--season-glow) 0%, transparent 36%); opacity: var(--light-opacity); transition: opacity 900ms ease, background 900ms ease; }
+.atmosphere-light { z-index: -4; background: radial-gradient(ellipse at 82% 20%, var(--light) 0%, transparent 48%); opacity: var(--light-opacity); transition: opacity 900ms ease, background 900ms ease; }
 .atmosphere-weather { z-index: -3; background: radial-gradient(ellipse at 14% 76%, var(--weather) 0%, transparent 58%); opacity: var(--weather-opacity); transition: opacity 900ms ease, background 900ms ease; }
 .atmosphere-vignette { z-index: -2; background: radial-gradient(ellipse at center, transparent 30%, rgba(8, 13, 20, var(--vignette-opacity)) 120%); }
 .atmosphere-noise { z-index: -1; opacity: 0.035; mix-blend-mode: soft-light; }
@@ -201,32 +201,21 @@ h1 {
 .season-mark {
   position: absolute;
   z-index: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  right: -10%;
+  bottom: -16%;
+  left: -10%;
   width: auto;
-  height: 24%;
+  height: 46%;
   border: 0;
   border-radius: 0;
-  background: linear-gradient(180deg, transparent 0%, color-mix(in oklch, var(--season-accent-soft) 7%, transparent) 34%, color-mix(in oklch, var(--season-accent) 22%, transparent) 100%);
-  box-shadow: 0 -20px 42px color-mix(in oklch, var(--season-accent) 12%, transparent);
-  opacity: 0.86;
+  background: radial-gradient(ellipse at 50% 112%, color-mix(in oklch, var(--season-accent) 38%, transparent) 0%, color-mix(in oklch, var(--season-accent-soft) 16%, transparent) 42%, transparent 76%);
+  filter: blur(18px);
+  opacity: 0.78;
   pointer-events: none;
-  transition: background 700ms ease, box-shadow 700ms ease;
+  transition: background 700ms ease, opacity 700ms ease;
 }
 
 .season-mark::before {
-  content: "";
-  position: absolute;
-  right: 10%;
-  bottom: 0;
-  left: 10%;
-  width: auto;
-  height: 1px;
-  background: color-mix(in oklch, var(--season-accent) 58%, transparent);
-}
-
-.season-mark::after {
   content: none;
 }
 
