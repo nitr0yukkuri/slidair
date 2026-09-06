@@ -67,6 +67,9 @@ h1 {
   --base-b: oklch(80% 0.025 220);
   --light: oklch(95% 0.024 80);
   --weather: oklch(78% 0.02 220);
+  --season-accent: oklch(64% 0.06 65);
+  --season-accent-soft: oklch(86% 0.035 42);
+  --season-glow: oklch(91% 0.04 70);
   --ink: oklch(24% 0.025 250);
   --muted-ink: oklch(35% 0.025 250);
   --light-opacity: 0.5;
@@ -123,6 +126,30 @@ h1 {
   --vignette-opacity: 0.44;
 }
 
+.slide[data-season="spring"] {
+  --season-accent: oklch(69% 0.055 20);
+  --season-accent-soft: oklch(88% 0.03 95);
+  --season-glow: oklch(93% 0.035 35);
+}
+
+.slide[data-season="summer"] {
+  --season-accent: oklch(64% 0.05 210);
+  --season-accent-soft: oklch(87% 0.025 175);
+  --season-glow: oklch(92% 0.025 210);
+}
+
+.slide[data-season="autumn"] {
+  --season-accent: oklch(64% 0.06 65);
+  --season-accent-soft: oklch(85% 0.035 42);
+  --season-glow: oklch(90% 0.04 70);
+}
+
+.slide[data-season="winter"] {
+  --season-accent: oklch(68% 0.04 260);
+  --season-accent-soft: oklch(88% 0.02 275);
+  --season-glow: oklch(94% 0.02 240);
+}
+
 .slide[data-weather="cloudy"] {
   --light-opacity: 0.25;
   --weather-opacity: 0.26;
@@ -150,7 +177,7 @@ h1 {
 
 .atmosphere { position: absolute; inset: 0; pointer-events: none; }
 .atmosphere-base { z-index: -5; background: linear-gradient(125deg, var(--base-a), var(--base-b)); transition: background 900ms ease; }
-.atmosphere-light { z-index: -4; background: radial-gradient(ellipse at 82% 20%, var(--light) 0%, transparent 48%); opacity: var(--light-opacity); transition: opacity 900ms ease, background 900ms ease; }
+.atmosphere-light { z-index: -4; background: radial-gradient(ellipse at 82% 20%, var(--light) 0%, transparent 48%), radial-gradient(ellipse at 90% 88%, var(--season-glow) 0%, transparent 36%); opacity: var(--light-opacity); transition: opacity 900ms ease, background 900ms ease; }
 .atmosphere-weather { z-index: -3; background: radial-gradient(ellipse at 14% 76%, var(--weather) 0%, transparent 58%); opacity: var(--weather-opacity); transition: opacity 900ms ease, background 900ms ease; }
 .atmosphere-vignette { z-index: -2; background: radial-gradient(ellipse at center, transparent 30%, rgba(8, 13, 20, var(--vignette-opacity)) 120%); }
 .atmosphere-noise { z-index: -1; opacity: 0.035; mix-blend-mode: soft-light; }
@@ -165,11 +192,67 @@ h1 {
 }
 
 .slide-kicker { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px; color: var(--muted-ink); }
-.slide-kicker::before { content: ""; display: inline-block; width: 30px; height: 1px; background: currentColor; opacity: 0.65; }
+.slide-kicker::before { content: ""; display: inline-block; width: 30px; height: 1px; background: var(--season-accent); opacity: 0.78; }
 .slide h2 { max-width: 12em; margin-bottom: 24px; font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", Georgia, serif; font-size: clamp(2rem, 5vw, 5.6rem); font-weight: 500; letter-spacing: -0.065em; line-height: 1.04; text-wrap: balance; }
 .slide-copy { max-width: 31em; margin-bottom: 0; color: var(--muted-ink); font-size: clamp(0.85rem, 1.15vw, 1.1rem); letter-spacing: 0.02em; line-height: 1.8; }
 .slide-meta { position: absolute; right: 5%; bottom: 5%; display: inline-flex; align-items: center; gap: 10px; color: var(--muted-ink); }
-.slide-meta::before { content: ""; display: inline-block; width: 22px; height: 1px; background: currentColor; opacity: 0.5; }
+.slide-meta::before { content: ""; display: inline-block; width: 22px; height: 1px; background: var(--season-accent); opacity: 0.62; }
+
+.season-mark {
+  position: absolute;
+  z-index: 1;
+  top: 9%;
+  right: 9%;
+  width: 38px;
+  height: 38px;
+  border: 1px solid color-mix(in oklch, var(--season-accent) 68%, transparent);
+  border-radius: 50%;
+  opacity: 0.72;
+  transition: border-radius 700ms ease, box-shadow 700ms ease, transform 700ms ease;
+}
+
+.season-mark::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--season-accent);
+  transform: translate(-50%, -50%);
+}
+
+.season-mark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 50%;
+  left: 50%;
+  width: 48px;
+  height: 1px;
+  background: var(--season-accent);
+  opacity: 0.7;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.slide[data-season="spring"] .season-mark {
+  border-radius: 72% 28% 72% 28%;
+  transform: rotate(45deg);
+}
+
+.slide[data-season="summer"] .season-mark {
+  box-shadow: 0 0 0 7px color-mix(in oklch, var(--season-accent-soft) 38%, transparent);
+}
+
+.slide[data-season="autumn"] .season-mark {
+  border-radius: 100% 0 100% 0;
+  transform: rotate(-25deg);
+}
+
+.slide[data-season="winter"] .season-mark::after {
+  display: block;
+}
 
 .controls { padding: 20px; border: 1px solid var(--ui-border); border-radius: 14px; background: rgba(255, 255, 255, 0.035); }
 .control-group + .control-group { margin-top: 18px; }
@@ -185,10 +268,15 @@ button:hover, button:focus-visible { border-color: #92a9b9; background: #202a34;
   .app-shell { width: min(100% - 28px, 680px); padding-top: 26px; }
   .app-header { align-items: start; flex-direction: column; gap: 12px; }
   .workspace { grid-template-columns: 1fr; }
-  .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
   .control-group + .control-group { margin-top: 0; }
   .control-actions { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; margin-top: 0; }
   .note { grid-column: 1 / -1; margin-top: 0; }
+}
+
+@media (max-width: 560px) {
+  .controls { grid-template-columns: repeat(2, 1fr); }
+  .control-actions { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
