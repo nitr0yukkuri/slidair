@@ -21,19 +21,21 @@
       <section class="workspace" aria-label="プレゼン背景プレビュー">
         <div class="preview-wrap">
           <article class="slide" id="slide" data-season="autumn" data-period="night" data-weather="clear" data-scene="none" data-role="cover">
-            <div class="atmosphere atmosphere-base"></div>
-            <div class="atmosphere atmosphere-light"></div>
-            <div class="atmosphere atmosphere-weather"></div>
-            <div class="atmosphere atmosphere-vignette"></div>
-            <svg class="atmosphere atmosphere-noise" aria-hidden="true" preserveAspectRatio="none">
-              <filter id="grain">
-                <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="3" stitchTiles="stitch" />
-                <feColorMatrix type="saturate" values="0" />
-              </filter>
-              <rect width="100%" height="100%" filter="url(#grain)" />
-            </svg>
-            <span class="scene-mark" aria-hidden="true"></span>
-            <span class="season-mark" aria-hidden="true"></span>
+            <div class="atmosphere-stage" aria-hidden="true">
+              <div class="atmosphere atmosphere-base"></div>
+              <div class="atmosphere atmosphere-light"></div>
+              <div class="atmosphere atmosphere-weather"></div>
+              <div class="atmosphere atmosphere-vignette"></div>
+              <svg class="atmosphere atmosphere-noise" preserveAspectRatio="none">
+                <filter id="grain">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="3" stitchTiles="stitch" />
+                  <feColorMatrix type="saturate" values="0" />
+                </filter>
+                <rect width="100%" height="100%" filter="url(#grain)" />
+              </svg>
+              <span class="scene-mark"></span>
+              <span class="season-mark"></span>
+            </div>
             <div class="slide-content">
               <p class="slide-kicker" id="role-label">COVER / 01</p>
               <h2 id="slide-title">背景は、発表の空気をつくる。</h2>

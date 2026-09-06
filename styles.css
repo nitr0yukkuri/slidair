@@ -75,6 +75,8 @@ h1 {
   --light-opacity: 0.5;
   --weather-opacity: 0.18;
   --vignette-opacity: 0.2;
+  --background-saturation: 1;
+  --background-contrast: 1;
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -153,14 +155,15 @@ h1 {
 .slide[data-weather="cloudy"] {
   --light-opacity: 0.25;
   --weather-opacity: 0.26;
-  filter: saturate(0.78);
+  --background-saturation: 0.78;
 }
 
 .slide[data-weather="rain"] {
   --weather: oklch(61% 0.04 235);
   --light-opacity: 0.2;
   --weather-opacity: 0.34;
-  filter: saturate(0.76) contrast(0.97);
+  --background-saturation: 0.76;
+  --background-contrast: 0.97;
 }
 
 .slide[data-weather="snow"] {
@@ -168,13 +171,23 @@ h1 {
   --weather: oklch(78% 0.025 225);
   --light-opacity: 0.52;
   --weather-opacity: 0.3;
-  filter: saturate(0.82) contrast(1.01);
+  --background-saturation: 0.82;
+  --background-contrast: 1.01;
 }
 
 .slide[data-role="section"] { --light-opacity: 0.62; }
 .slide[data-role="content"] { --light-opacity: 0.34; --weather-opacity: 0.13; }
 .slide[data-role="quote"] { --light-opacity: 0.55; }
 .slide[data-role="closing"] { --light-opacity: 0.42; --vignette-opacity: 0.3; }
+
+.atmosphere-stage {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  filter: saturate(var(--background-saturation)) contrast(var(--background-contrast));
+  transition: filter 900ms ease;
+}
 
 .atmosphere { position: absolute; inset: 0; pointer-events: none; }
 .atmosphere-base { z-index: -5; background: linear-gradient(125deg, var(--base-a), var(--base-b)); transition: background 900ms ease; }
