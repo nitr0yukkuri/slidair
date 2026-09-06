@@ -1,0 +1,194 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #10141a;
+  color: #e8ecee;
+  --ui-border: rgba(232, 236, 238, 0.14);
+  --ui-muted: #8f9aa1;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #10141a;
+}
+
+button, select { font: inherit; }
+
+.app-shell {
+  width: min(1440px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 44px 0 64px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 32px;
+  margin-bottom: 28px;
+}
+
+.eyebrow, .slide-kicker, .status, .slide-meta {
+  margin: 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+
+.eyebrow { color: #9caab3; }
+
+h1, h2, p { margin-top: 0; }
+
+h1 {
+  margin-bottom: 10px;
+  font-size: clamp(2rem, 4vw, 4rem);
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+
+.intro { max-width: 38rem; margin-bottom: 0; color: var(--ui-muted); }
+.status { color: #a8c4b2; white-space: nowrap; }
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  align-items: start;
+  gap: 22px;
+}
+
+.preview-wrap { min-width: 0; }
+
+.slide {
+  --base-a: oklch(91% 0.018 250);
+  --base-b: oklch(80% 0.025 220);
+  --light: oklch(95% 0.024 80);
+  --weather: oklch(78% 0.02 220);
+  --ink: oklch(24% 0.025 250);
+  --muted-ink: oklch(35% 0.025 250);
+  --light-opacity: 0.5;
+  --weather-opacity: 0.18;
+  --vignette-opacity: 0.2;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: var(--base-a);
+  color: var(--ink);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  transition: color 900ms ease, background 900ms ease;
+}
+
+.slide[data-period="morning"] {
+  --base-a: oklch(92% 0.018 78);
+  --base-b: oklch(85% 0.028 220);
+  --light: oklch(97% 0.035 82);
+  --weather: oklch(80% 0.024 215);
+  --ink: oklch(27% 0.025 70);
+  --muted-ink: oklch(41% 0.025 70);
+}
+
+.slide[data-period="day"] {
+  --base-a: oklch(92% 0.014 230);
+  --base-b: oklch(81% 0.028 220);
+  --light: oklch(96% 0.022 86);
+  --weather: oklch(77% 0.022 220);
+  --ink: oklch(24% 0.025 240);
+  --muted-ink: oklch(37% 0.025 240);
+}
+
+.slide[data-period="evening"] {
+  --base-a: oklch(84% 0.045 60);
+  --base-b: oklch(69% 0.045 285);
+  --light: oklch(91% 0.07 72);
+  --weather: oklch(62% 0.035 285);
+  --ink: oklch(24% 0.03 285);
+  --muted-ink: oklch(36% 0.03 285);
+}
+
+.slide[data-period="night"] {
+  --base-a: oklch(31% 0.035 250);
+  --base-b: oklch(20% 0.035 250);
+  --light: oklch(58% 0.045 220);
+  --weather: oklch(34% 0.035 220);
+  --ink: oklch(91% 0.015 220);
+  --muted-ink: oklch(76% 0.018 220);
+  --light-opacity: 0.26;
+  --weather-opacity: 0.26;
+  --vignette-opacity: 0.44;
+}
+
+.slide[data-weather="cloudy"] {
+  --light-opacity: 0.25;
+  --weather-opacity: 0.26;
+  filter: saturate(0.78);
+}
+
+.slide[data-weather="rain"] {
+  --weather: oklch(61% 0.04 235);
+  --light-opacity: 0.2;
+  --weather-opacity: 0.34;
+  filter: saturate(0.76) contrast(0.97);
+}
+
+.slide[data-weather="snow"] {
+  --light: oklch(98% 0.02 220);
+  --light-opacity: 0.66;
+  --weather-opacity: 0.14;
+  filter: saturate(0.7);
+}
+
+.slide[data-role="section"] { --light-opacity: 0.62; }
+.slide[data-role="content"] { --light-opacity: 0.34; --weather-opacity: 0.13; }
+.slide[data-role="quote"] { --light-opacity: 0.55; }
+.slide[data-role="closing"] { --light-opacity: 0.42; --vignette-opacity: 0.3; }
+
+.atmosphere { position: absolute; inset: 0; pointer-events: none; }
+.atmosphere-base { z-index: -5; background: linear-gradient(125deg, var(--base-a), var(--base-b)); transition: background 900ms ease; }
+.atmosphere-light { z-index: -4; background: radial-gradient(ellipse at 82% 20%, var(--light) 0%, transparent 48%); opacity: var(--light-opacity); transition: opacity 900ms ease, background 900ms ease; }
+.atmosphere-weather { z-index: -3; background: radial-gradient(ellipse at 14% 76%, var(--weather) 0%, transparent 58%); opacity: var(--weather-opacity); transition: opacity 900ms ease, background 900ms ease; }
+.atmosphere-vignette { z-index: -2; background: radial-gradient(ellipse at center, transparent 30%, rgba(8, 13, 20, var(--vignette-opacity)) 120%); }
+.atmosphere-noise { z-index: -1; opacity: 0.035; mix-blend-mode: soft-light; }
+
+.slide-content {
+  position: absolute;
+  inset: 15% 14% 15%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 70%;
+}
+
+.slide-kicker { margin-bottom: 18px; color: var(--muted-ink); }
+.slide h2 { max-width: 10em; margin-bottom: 18px; font-size: clamp(1.7rem, 4.6vw, 5.5rem); letter-spacing: -0.07em; line-height: 0.96; }
+.slide-copy { max-width: 37em; margin-bottom: 0; color: var(--muted-ink); font-size: clamp(0.85rem, 1.25vw, 1.15rem); line-height: 1.7; }
+.slide-meta { position: absolute; right: 5%; bottom: 5%; color: var(--muted-ink); }
+
+.controls { padding: 20px; border: 1px solid var(--ui-border); border-radius: 14px; background: rgba(255, 255, 255, 0.035); }
+.control-group + .control-group { margin-top: 18px; }
+.control-group label { display: block; margin-bottom: 7px; color: #b2bdc4; font-size: 0.78rem; }
+select, button { width: 100%; border: 1px solid var(--ui-border); border-radius: 8px; padding: 10px 11px; background: #171d24; color: #e8ecee; }
+button { cursor: pointer; transition: border-color 160ms ease, background 160ms ease; }
+button:hover, button:focus-visible { border-color: #92a9b9; background: #202a34; }
+.control-actions { display: grid; gap: 9px; margin-top: 24px; }
+.button-secondary { color: #afbbc2; }
+.note { margin: 18px 0 0; color: var(--ui-muted); font-size: 0.76rem; line-height: 1.6; }
+
+@media (max-width: 820px) {
+  .app-shell { width: min(100% - 28px, 680px); padding-top: 26px; }
+  .app-header { align-items: start; flex-direction: column; gap: 12px; }
+  .workspace { grid-template-columns: 1fr; }
+  .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .control-group + .control-group { margin-top: 0; }
+  .control-actions { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; margin-top: 0; }
+  .note { grid-column: 1 / -1; margin-top: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
