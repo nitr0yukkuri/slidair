@@ -98,9 +98,34 @@
           </div>
 
           <div class="control-actions">
+            <button type="button" id="edit-mode-toggle" aria-pressed="false">スライドを編集</button>
             <button type="button" id="now">現在時刻を反映</button>
             <button type="button" class="button-secondary" id="copy-url">この状態のURLをコピー</button>
           </div>
+
+          <section class="editor-panel" id="editor-panel" aria-labelledby="editor-title" hidden>
+            <div class="editor-heading">
+              <h2 id="editor-title">スライド編集</h2>
+              <span>LIVE</span>
+            </div>
+            <div class="editor-field">
+              <label for="edit-kicker">小見出し</label>
+              <input id="edit-kicker" type="text" maxlength="60" autocomplete="off" />
+            </div>
+            <div class="editor-field">
+              <label for="edit-title">タイトル</label>
+              <textarea id="edit-title" rows="3" maxlength="120" spellcheck="false"></textarea>
+            </div>
+            <div class="editor-field">
+              <label for="edit-body">本文</label>
+              <textarea id="edit-body" rows="4" maxlength="240"></textarea>
+            </div>
+            <div class="editor-actions">
+              <button type="button" class="button-secondary" id="reset-content">初期文に戻す</button>
+            </div>
+            <p class="editor-status" id="editor-status" role="status">役割の初期文を表示中</p>
+            <p class="editor-note">編集内容はこのブラウザに役割ごとに下書き保存されます。共有URLには背景設定だけが含まれます。</p>
+          </section>
 
           <p class="note">季節は下部の色、景色はぼかした画像だけで表現します。本番では状態を固定したURLまたは書き出し画像を使う想定です。</p>
         </aside>

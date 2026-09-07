@@ -1,5 +1,13 @@
 import { normalizeState, stateFromSearch, stateToSearchParams } from "./state.mjs";
+import {
+  clearContentDraft,
+  contentForRole,
+  normalizeContent,
+  readContentDraft,
+  writeContentDraft,
+} from "./content.mjs";
 
+const appShell = document.querySelector(".app-shell");
 const slide = document.querySelector("#slide");
 const seasonSelect = document.querySelector("#season");
 const periodSelect = document.querySelector("#period");
@@ -11,22 +19,13 @@ const roleLabel = document.querySelector("#role-label");
 const slideTitle = document.querySelector("#slide-title");
 const slideCopy = document.querySelector("#slide-copy");
 const slideMeta = document.querySelector("#slide-meta");
-
-const roleNames = {
-  cover: "COVER / 01",
-  section: "SECTION / 02",
-  content: "CONTENT / 03",
-  quote: "QUOTE / 04",
-  closing: "CLOSING / 05",
-};
-
-const roleCopy = {
-  cover: ["背景は、発表の<br>空気をつくる。", "文字より前に立たず、空気だけを残す。"],
-  section: ["次の景色へ。", "次の話へ移るための、静かな区切り。"],
-  content: ["内容を、<br>内容として見せる。", "内容を、内容として見せるために。"],
-  quote: ["静かな背景は、<br>言葉を強くする。", "言葉のまわりに、余白を残す。"],
-  closing: ["ここから先の<br>景色へ。", "発表のあとに、少しだけ残るもの。"],
-};
+const editModeToggle = document.querySelector("#edit-mode-toggle");
+const editorPanel = document.querySelector("#editor-panel");
+const editorKicker = document.querySelector("#edit-kicker");
+const editorTitle = document.querySelector("#edit-title");
+const editorBody = document.querySelector("#edit-body");
+const editorStatus = document.querySelector("#editor-status");
+const resetContentButton = document.querySelector("#reset-content");
 
 const labels = {
   spring: "spring",
@@ -47,6 +46,33 @@ const labels = {
   city: "city",
 };
 
+let editMode = false;
+let currentContent = contentForRole("cover");
+
+function renderContent(content) {
+  roleLabel.textContent = content.kicker;
+  slideTitle.textContent = content.title;
+  slideCopy.textContent = content.body;
+}
+
+function fillEditor(content) {
+  editorKicker.value = content.kicker;
+  editorTitle.value = content.title;
+  editorBody.value = content.body;
+}
+
+function applyContent(content, source = "content preset") {
+  currentContent = normalizeContent(content, contentForRole(roleSelect.value));
+  renderContent(currentContent);
+  fillEditor(currentContent);
+  editorStatus.textContent = source;
+}
+
+function loadContentForRole(role) {
+  const draft = readContentDraft(role);
+  applyContent(draft ?? contentForRole(role), draft ? "このブラウザの下書きを読み込みました" : "役割の初期文を表示中");
+}
+
 function applyState(state, source = "manual preset") {
   const normalized = normalizeState(state);
   const { season, period, weather, scene, role } = normalized;
@@ -60,13 +86,38 @@ function applyState(state, source = "manual preset") {
   slide.dataset.weather = weather;
   slide.dataset.scene = scene;
   slide.dataset.role = role;
-  roleLabel.textContent = roleNames[role];
-  slideTitle.innerHTML = roleCopy[role][0];
-  slideCopy.textContent = roleCopy[role][1];
+  loadContentForRole(role);
   const sceneLabel = scene === "none" ? "" : ` · ${labels[scene]}`;
   slideMeta.textContent = `${labels[season]} · ${labels[period]} · ${labels[weather]}${sceneLabel}`;
   status.textContent = source;
   return normalized;
+}
+
+function editorContent() {
+  return normalizeContent({
+    kicker: editorKicker.value,
+    title: editorTitle.value,
+    body: editorBody.value,
+  }, contentForRole(roleSelect.value));
+}
+
+function saveEditedContent() {
+  currentContent = editorContent();
+  renderContent(currentContent);
+  const saved = writeContentDraft(roleSelect.value, currentContent);
+  editorStatus.textContent = saved ? "自動保存済み（このブラウザ）" : "表示中（保存できませんでした）";
+  status.textContent = "editing draft";
+}
+
+function setEditMode(enabled) {
+  editMode = enabled;
+  appShell.dataset.mode = enabled ? "edit" : "preview";
+  editorPanel.hidden = !enabled;
+  editorPanel.setAttribute("aria-hidden", String(!enabled));
+  editModeToggle.setAttribute("aria-pressed", String(enabled));
+  editModeToggle.textContent = enabled ? "編集を閉じる" : "スライドを編集";
+  status.textContent = enabled ? "edit mode" : "preview mode";
+  if (enabled) editorKicker.focus();
 }
 
 function currentState() {
@@ -105,6 +156,16 @@ periodSelect.addEventListener("change", selectChanged);
 weatherSelect.addEventListener("change", selectChanged);
 sceneSelect.addEventListener("change", selectChanged);
 roleSelect.addEventListener("change", selectChanged);
+
+editModeToggle.addEventListener("click", () => setEditMode(!editMode));
+editorKicker.addEventListener("input", saveEditedContent);
+editorTitle.addEventListener("input", saveEditedContent);
+editorBody.addEventListener("input", saveEditedContent);
+resetContentButton.addEventListener("click", () => {
+  clearContentDraft(roleSelect.value);
+  applyContent(contentForRole(roleSelect.value), "初期文に戻しました");
+  status.textContent = "content reset";
+});
 
 document.querySelector("#now").addEventListener("click", () => {
   const state = applyState({ ...currentState(), period: timeToPeriod(new Date().getHours()) }, "local time preset");
