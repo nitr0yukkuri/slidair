@@ -17,7 +17,7 @@
 - 編集モードでタイトル・本文・小見出しをライブ編集
 - スライドごとの背景・役割・文章をブラウザへデッキとして下書き保存
 - スライドだけを大きく表示する発表モード（Esc・矢印キー・PageUp/PageDown・Space対応）
-- 天気と時間帯を一つの印にまとめたヘッダーロゴ
+- 発表の空気を示す静かなワードマークと、状態操作のヘッダー
 - 宇宙専用の星雲素材と、役割・時間帯に応じた光量調整（[詳細分析](docs/space-art-direction.md)）
 - 海中・田舎・快晴・深海・初日の出と10種類の柔らかな自然背景（[素材と制作メモ](docs/landscape-presets.md)、[追加素材のプロンプト](docs/scene-expansion-prompts.md)）
 - CSSグラデーション、SVGノイズ、低速トランジション
@@ -89,4 +89,3 @@ URLで共有するのは現在選択中の背景の環境状態です。タイ�
 - 発表者用のライブプレビューと、聴衆用の静止画出力の分離
 
 詳細な企画・リスク・実装判断は [`docs/design-analysis.md`](docs/design-analysis.md) を参照してください。実装の背景と検証を技術記事としてまとめた [`docs/technical-article.md`](docs/technical-article.md) も参照してください。
-
