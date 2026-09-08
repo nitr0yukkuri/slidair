@@ -23,6 +23,8 @@ const weatherSelect = document.querySelector("#weather");
 const sceneSelect = document.querySelector("#scene");
 const roleSelect = document.querySelector("#role");
 const status = document.querySelector("#status");
+const randomizeButton = document.querySelector("#randomize");
+const sampleDeckButton = document.querySelector("#sample-deck");
 const roleLabel = document.querySelector("#role-label");
 const slideTitle = document.querySelector("#slide-title");
 const slideCopy = document.querySelector("#slide-copy");
@@ -58,6 +60,18 @@ const roleNames = Object.freeze({
   quote: "引用",
   closing: "締め",
 });
+
+const RANDOM_SEASONS = Object.freeze(["spring", "summer", "autumn", "winter"]);
+const RANDOM_PERIODS = Object.freeze(["morning", "day", "evening", "night"]);
+const RANDOM_WEATHER = Object.freeze(["clear", "cloudy", "rain", "snow"]);
+const RANDOM_SCENES = Object.freeze(SCENE_PRESETS.filter((preset) => preset.key !== "none").map((preset) => preset.key));
+const SAMPLE_DECK_STATES = Object.freeze([
+  Object.freeze({ season: "summer", period: "evening", weather: "clear", scene: "aurora-veil", role: "cover" }),
+  Object.freeze({ season: "spring", period: "morning", weather: "clear", scene: "forest-light", role: "section" }),
+  Object.freeze({ season: "summer", period: "day", weather: "clear", scene: "clear-sky", role: "content" }),
+  Object.freeze({ season: "autumn", period: "night", weather: "clear", scene: "moonlit-shore", role: "quote" }),
+  Object.freeze({ season: "winter", period: "morning", weather: "snow", scene: "first-sunrise", role: "closing" }),
+]);
 
 const editableNodes = [
   { field: "kicker", element: roleLabel, label: "小見出し", hitX: 24, hitY: 18 },
@@ -468,6 +482,47 @@ function addNewSlide() {
   updateUrl(state, "push");
 }
 
+function randomItem(items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function randomizeAtmosphere() {
+  finishActiveEdit();
+  const nextState = {
+    ...currentState(),
+    season: randomItem(RANDOM_SEASONS),
+    period: randomItem(RANDOM_PERIODS),
+    weather: randomItem(RANDOM_WEATHER),
+    scene: randomItem(RANDOM_SCENES),
+  };
+  const state = applyState(nextState, "random atmosphere");
+  updateUrl(state, "push");
+  status.textContent = "ランダムな空気感を生成しました";
+}
+
+function loadSampleDeck() {
+  finishActiveEdit();
+  const selected = currentSlide();
+  const shouldConfirm = deck.slides.length > 1
+    || (selected && !contentMatchesRole(selected.content, selected.state.role));
+  if (shouldConfirm && !window.confirm("現在のデッキを5枚のサンプルデッキに置き換えますか？")) return;
+
+  let nextDeck = createDeck(
+    SAMPLE_DECK_STATES[0],
+    contentForRole(SAMPLE_DECK_STATES[0].role),
+    "sample-1",
+  );
+  SAMPLE_DECK_STATES.slice(1).forEach((state) => {
+    nextDeck = addDeckSlide(nextDeck, state, contentForRole(state.role));
+  });
+  deck = selectDeckSlide(nextDeck, nextDeck.slides[0].id);
+  persistDeck();
+  renderDeckStrip();
+  const state = renderActiveSlide("sample deck");
+  updateUrl(state, "push");
+  status.textContent = "サンプルデッキを作成しました";
+}
+
 function currentState() {
   return normalizeState({
     season: seasonSelect.value,
@@ -478,11 +533,34 @@ function currentState() {
   });
 }
 
+function setMetaContent(selector, content) {
+  const element = document.querySelector(selector);
+  if (element) element.setAttribute("content", content);
+}
+
+function updateShareMetadata(state, href = window.location.href) {
+  const preset = scenePreset(state.scene);
+  const period = periodSelect.selectedOptions[0]?.textContent ?? "";
+  const sceneTitle = preset.key === "none" ? "静かな背景" : `${preset.label}の空気`;
+  const shareTitle = `${sceneTitle} · ${period} | slide-atmosphere`;
+  const shareDescription = preset.key === "none"
+    ? "季節・時間帯・天気から、言葉を邪魔しないプレゼン背景をつくる。"
+    : `${preset.label}の空気をまとったプレゼンテーション背景。`;
+  document.title = shareTitle;
+  setMetaContent('meta[property="og:title"]', shareTitle);
+  setMetaContent('meta[property="og:description"]', shareDescription);
+  setMetaContent('meta[property="og:url"]', href);
+  setMetaContent('meta[name="twitter:title"]', shareTitle);
+  setMetaContent('meta[name="twitter:description"]', shareDescription);
+}
+
 function updateUrl(state = currentState(), mode = "replace") {
+  const normalized = normalizeState(state);
   const url = new URL(window.location.href);
-  url.search = stateToSearchParams(state).toString();
+  url.search = stateToSearchParams(normalized).toString();
   const updateHistory = mode === "push" ? window.history.pushState : window.history.replaceState;
   updateHistory.call(window.history, {}, "", url);
+  updateShareMetadata(normalized, url.href);
   return url.href;
 }
 
@@ -509,6 +587,8 @@ editModeToggle.addEventListener("click", () => setEditMode(!editMode));
 slideOnlyToggle.addEventListener("click", () => setPresentationMode(!presentationMode));
 presentationExit.addEventListener("click", () => setPresentationMode(false));
 addSlideButton.addEventListener("click", addNewSlide);
+randomizeButton.addEventListener("click", randomizeAtmosphere);
+sampleDeckButton.addEventListener("click", loadSampleDeck);
 resetContentButton.addEventListener("click", () => {
   const selected = currentSlide();
   deck = updateSlide(deck, selected.id, { content: contentForRole(selected.state.role) });
