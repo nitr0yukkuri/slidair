@@ -119,3 +119,37 @@ export function addSlide(deck, state, content) {
     slides: [...deck.slides, slide],
   };
 }
+
+export function duplicateSlide(deck, slideId = deck.activeSlideId) {
+  if (deck.slides.length >= MAX_SLIDES) return deck;
+  const index = deck.slides.findIndex((slide) => slide.id === slideId);
+  if (index < 0) return deck;
+  const source = deck.slides[index];
+  const clone = createSlide(source.state, source.content);
+  const slides = [...deck.slides];
+  slides.splice(index + 1, 0, clone);
+  return { ...deck, activeSlideId: clone.id, slides };
+}
+
+export function deleteSlide(deck, slideId = deck.activeSlideId) {
+  if (deck.slides.length <= 1) return deck;
+  const index = deck.slides.findIndex((slide) => slide.id === slideId);
+  if (index < 0) return deck;
+  const slides = deck.slides.filter((slide) => slide.id !== slideId);
+  const activeSlideId = deck.activeSlideId === slideId
+    ? (slides[Math.min(index, slides.length - 1)]?.id ?? slides[0].id)
+    : deck.activeSlideId;
+  return { ...deck, activeSlideId, slides };
+}
+
+export function moveSlide(deck, slideId = deck.activeSlideId, offset = 0) {
+  const index = deck.slides.findIndex((slide) => slide.id === slideId);
+  const amount = Number.isFinite(offset) ? Math.trunc(offset) : 0;
+  if (index < 0 || amount === 0) return deck;
+  const nextIndex = Math.max(0, Math.min(deck.slides.length - 1, index + amount));
+  if (nextIndex === index) return deck;
+  const slides = [...deck.slides];
+  const [slide] = slides.splice(index, 1);
+  slides.splice(nextIndex, 0, slide);
+  return { ...deck, slides };
+}
