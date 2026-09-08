@@ -65,6 +65,7 @@ let editMode = false;
 let presentationMode = false;
 let currentContent = contentForRole("cover");
 let deck = null;
+let sharedDeckMode = false;
 let scenePreferences = readScenePreferences();
 let activeSceneFilter = 'all';
 
@@ -76,28 +77,6 @@ const roleNames = Object.freeze({
   closing: "締め",
 });
 
-const SCENE_OG_ASSETS = Object.freeze({
-  none: "og-cover.png",
-  fireworks: "scene-fireworks-v2.png",
-  lake: "scene-lake.png",
-  city: "scene-city.png",
-  space: "scene-space-nebula-v1.webp",
-  underwater: "scene-underwater-v1.webp",
-  countryside: "scene-countryside-v1.webp",
-  "clear-sky": "scene-clear-sky-v1.webp",
-  "deep-sea": "scene-deep-sea-v1.webp",
-  "first-sunrise": "scene-first-sunrise-v1.webp",
-  "forest-light": "scene-forest-light-v1.webp",
-  "bamboo-grove": "scene-bamboo-grove-v1.webp",
-  "sakura-mist": "scene-sakura-mist-v1.webp",
-  "hydrangea-rain": "scene-hydrangea-rain-v1.webp",
-  "lavender-haze": "scene-lavender-haze-v1.webp",
-  "autumn-haze": "scene-autumn-haze-v1.webp",
-  snowfield: "scene-snowfield-v1.webp",
-  "sand-dunes": "scene-sand-dunes-v1.webp",
-  "moonlit-shore": "scene-moonlit-shore-v1.webp",
-  "aurora-veil": "scene-aurora-veil-v1.webp",
-});
 const RANDOM_SEASONS = Object.freeze(["spring", "summer", "autumn", "winter"]);
 const RANDOM_PERIODS = Object.freeze(["morning", "day", "evening", "night"]);
 const RANDOM_WEATHER = Object.freeze(["clear", "cloudy", "rain", "snow"]);
@@ -174,11 +153,17 @@ function currentSlide() {
   return deck ? getActiveSlide(deck) : null;
 }
 
+function savedDeckLabel() {
+  return sharedDeckMode ? "共有デッキをこのタブに保存済み" : "このブラウザに保存済み";
+}
+
 function persistDeck() {
-  const saved = writeDeck(deck);
-  deckNote.textContent = saved
-    ? "このブラウザに保存済み"
-    : "表示中（保存できませんでした）";
+  let storage;
+  if (sharedDeckMode) {
+    try { storage = window.sessionStorage; } catch { storage = null; }
+  }
+  const saved = sharedDeckMode && !storage ? false : writeDeck(deck, storage);
+  deckNote.textContent = saved ? savedDeckLabel() : "表示中（保存できませんでした）";
   deckNote.dataset.saved = String(saved);
   return saved;
 }
@@ -267,7 +252,7 @@ function renderDeckStrip() {
   if (atSlideLimit && deckNote.dataset.saved !== "false") {
     deckNote.textContent = `スライドは最大${MAX_SLIDES}枚までです。`;
   } else if (!atSlideLimit && deckNote.dataset.saved === "true") {
-    deckNote.textContent = "このブラウザに保存済み";
+    deckNote.textContent = savedDeckLabel();
   }
   deckStrip.scrollLeft = previousScroll;
   scrollActiveThumbnailIntoView();
@@ -307,7 +292,7 @@ function renderActiveSlide(source = "slide selected") {
   activeRoleName.textContent = roleNames[state.role];
   document.querySelector("#inspector-index").textContent = number;
   status.textContent = editMode ? "編集中" : "プレビュー";
-  editorStatus.textContent = deckNote.dataset.saved === "false" ? "保存できませんでした" : "このブラウザに保存済み";
+  editorStatus.textContent = deckNote.dataset.saved === "false" ? "保存できませんでした" : savedDeckLabel();
   return state;
 }
 
@@ -358,7 +343,7 @@ function persistContent(content = editableContent()) {
   fillEditor(currentContent);
   renderDeckStrip();
   const saved = persistDeck();
-  editorStatus.textContent = saved ? "自動保存済み（このブラウザ）" : "表示中（保存できませんでした）";
+  editorStatus.textContent = saved ? "自動保存済み" : "表示中（保存できませんでした）";
   status.textContent = "編集中";
 }
 
@@ -663,7 +648,7 @@ function updateShareMetadata(state, href = window.location.href) {
   const shareDescription = preset.key === "none"
     ? "季節・時間帯・天気から、言葉を邪魔しないプレゼン背景をつくる。"
     : preset.label + "の空気をまとったプレゼンテーション背景。";
-  const imageAsset = SCENE_OG_ASSETS[preset.key] ?? SCENE_OG_ASSETS.none;
+  const imageAsset = preset.og ?? "og-cover.png";
   const imageUrl = new URL("./assets/" + imageAsset, window.location.href).href;
   document.title = shareTitle;
   setMetaContent('meta[property="og:title"]', shareTitle);
@@ -918,6 +903,7 @@ applySceneFilter();
 const initialState = stateFromSearch(window.location.search);
 const sharedDeck = deserializeDeck(new URLSearchParams(window.location.search).get(DECK_SHARE_PARAM));
 const savedDeck = sharedDeck ?? readDeck();
+sharedDeckMode = Boolean(sharedDeck);
 deck = savedDeck ?? createDeck(
   initialState,
   readContentDraft(initialState.role) ?? contentForRole(initialState.role),
@@ -947,4 +933,3 @@ document.addEventListener("keydown", (event) => {
   handlePresentationKeydown(event);
   handleDeckKeydown(event);
 });
-

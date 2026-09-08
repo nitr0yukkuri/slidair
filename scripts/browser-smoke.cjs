@@ -5,6 +5,7 @@ const { once } = require("node:events");
 
 const baseUrl = process.env.BASE_URL || "http://127.0.0.1:4173";
 const shouldStartServer = !process.env.BASE_URL;
+const smokeRoot = process.argv[2] ? require("node:path").resolve(process.argv[2]) : null;
 let server;
 
 async function waitForServer(url) {
@@ -20,7 +21,7 @@ async function waitForServer(url) {
 
 (async () => {
   if (shouldStartServer) {
-    server = spawn(process.execPath, ["server.mjs"], { stdio: "ignore" });
+    server = spawn(process.execPath, ["server.mjs"], { stdio: "ignore", env: { ...process.env, ...(smokeRoot ? { STATIC_ROOT: smokeRoot } : {}) } });
     await waitForServer(baseUrl);
   }
   const browser = await chromium.launch({ headless: true });
@@ -54,11 +55,13 @@ async function waitForServer(url) {
     await page.getByRole("button", { name: "デッキを共有", exact: true }).click();
     assert.match(page.url(), /[?&]deck=/);
     const sharedUrl = page.url();
+    const localDeckBefore = await page.evaluate(() => localStorage.getItem("slide-atmosphere:deck:v1"));
     const restored = await context.newPage();
     await restored.goto(sharedUrl, { waitUntil: "networkidle" });
     assert.equal(await restored.locator("#slide-count").innerText(), "1枚");
     assert.equal(await restored.locator("#slide").getAttribute("data-scene"), "space");
     assert.match(await restored.locator('meta[property="og:image"]').getAttribute("content"), /scene-space-nebula-v1\.webp$/);
+    assert.equal(await restored.evaluate(() => localStorage.getItem("slide-atmosphere:deck:v1")), localDeckBefore);
 
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
@@ -78,4 +81,3 @@ async function waitForServer(url) {
   if (server) server.kill();
   process.exitCode = 1;
 });
-

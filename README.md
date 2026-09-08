@@ -48,6 +48,13 @@ npm run test:browser
 npm run audit:a11y
 ```
 
+公開対象のbuild/はソースから再生成できます。コミット前とCIでは同期チェックを実行します。
+
+```powershell
+npm run build
+npm run check:build
+```
+
 URLで状態を固定できます。
 
 ```text
@@ -72,7 +79,7 @@ WorldState = season + period + weather + scene + role
 
 ### 環境とコンテンツの分離
 
-通常のURLは現在選択中の背景だけを短く共有します。共有ボタンを使うと、タイトル・本文・小見出しを含む複数スライドのデッキ全体をbase64urlでURLへ持たせられます。受け取ったデッキはlocalStorageにも保存され、編集モードで続きから変更できます。
+通常のURLは現在選択中の背景だけを短く共有します。共有ボタンを使うと、タイトル・本文・小見出しを含む複数スライドのデッキ全体をbase64urlでURLへ持たせられます。受け取ったデッキはそのタブのsessionStorageに一時保存され、手元の下書きを上書きせず編集モードで続きから変更できます。
 
 ### レイヤー
 

@@ -3,7 +3,8 @@ import { readFile } from "node:fs/promises";
 import { extname, isAbsolute, join, normalize, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = fileURLToPath(new URL(".", import.meta.url));
+const projectRoot = fileURLToPath(new URL(".", import.meta.url));
+const root = process.env.STATIC_ROOT ? resolve(process.env.STATIC_ROOT) : projectRoot;
 const types = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",

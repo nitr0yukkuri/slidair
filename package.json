@@ -3,9 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/build.mjs",
+    "check:build": "node scripts/build.mjs --check",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "node scripts/browser-smoke.cjs",
-    "audit:a11y": "node scripts/accessibility-audit.cjs"
+    "audit:a11y": "node scripts/accessibility-audit.cjs",
+    "test:browser:build": "node scripts/browser-smoke.cjs build",
+    "audit:a11y:build": "node scripts/accessibility-audit.cjs build"
   },
   "devDependencies": {
     "playwright": "^1.48.2"

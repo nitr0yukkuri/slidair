@@ -34,7 +34,7 @@ flowchart LR
   B --> C[app.js<br/>render and interaction]
   C --> D[styles.css<br/>layers and typography]
   A --> E[assets/<br/>local WebP]
-  C --> F[deck.mjs<br/>localStorage deck v1]
+  C --> F[deck.mjs<br/>browser storage deck v1]
 ~~~
 
 カタログの最小単位はkeyとlabelだが、自然系の景色には次の表示メタデータも持たせる。
@@ -120,7 +120,7 @@ base gradient
 
 キーボードは発表モードの矢印操作と衝突しないように分けた。編集画面ではCtrl/Cmd+Dが複製、Deleteが削除、Alt+ArrowUp/Downが前後移動になる。入力欄とcontenteditableではブラウザ本来の編集を優先する。
 
-共有ボタンは現在のWorldStateに、正規化済みデッキをbase64urlで追加する。deck-share.mjsでエンコードと復元を行い、壊れたpayloadや48,000文字を超えるURLは受け付けない。受け取ったデッキはlocalStorageにも保存するので、その後の編集を同じブラウザで続けられる。景色のOG画像はカタログに対応する静的アセットへ切り替え、タイトル・説明・URLと同じタイミングで更新する。
+共有ボタンは現在のWorldStateに、正規化済みデッキをbase64urlで追加する。deck-share.mjsでエンコードと復元を行い、壊れたpayloadや48,000文字を超えるURLは受け付けない。受け取ったデッキはそのタブのsessionStorageに一時保存するので、手元の下書きを上書きせず、その後の編集を続けられる。景色のOG画像はカタログに対応する静的アセットへ切り替え、タイトル・説明・URLと同じタイミングで更新する。
 ## 8. 何を検証したか
 
 今回の景色追加では、次の3種類を分けて確認した。
@@ -151,3 +151,9 @@ base gradient
 - [design-analysis.md](./design-analysis.md)：企画・リスク・実装判断
 
 景色を増やした結果として大切だったのは、20個を並べたことではない。どの景色を選んでも、時間帯・役割・文字量に合わせて背景の強さが変わり、同じURLでその状態を再現できることだった。
+
+
+
+## 10. 公開buildを再現可能にする
+
+build/はソースの手動コピーにせず、scripts/build.mjsで生成する。CIではnpm run check:buildを実行し、ローカル検証と公開ファイルのずれを検出する。
