@@ -9,12 +9,17 @@ import {
   activeSlide as getActiveSlide,
   MAX_SLIDES,
   addSlide as addDeckSlide,
+  deleteSlide as deleteDeckSlide,
+  duplicateSlide as duplicateDeckSlide,
+  moveSlide as moveDeckSlide,
   createDeck,
   readDeck,
   selectSlide as selectDeckSlide,
   updateSlide,
   writeDeck,
 } from "./deck.mjs";
+import { readScenePreferences, rememberScene, toggleFavorite, writeScenePreferences } from "./scene-preferences.mjs";
+import { DECK_SHARE_PARAM, MAX_DECK_SHARE_LENGTH, deserializeDeck, serializeDeck } from "./deck-share.mjs";
 
 const appShell = document.querySelector(".app-shell");
 const slide = document.querySelector("#slide");
@@ -33,6 +38,13 @@ const slideEditChrome = document.querySelector("#slide-edit-chrome");
 const deckStrip = document.querySelector("#deck-strip");
 const slideCount = document.querySelector("#slide-count");
 const addSlideButton = document.querySelector("#add-slide");
+const moveSlideUpButton = document.querySelector("#move-slide-up");
+const moveSlideDownButton = document.querySelector("#move-slide-down");
+const duplicateSlideButton = document.querySelector("#duplicate-slide");
+const deleteSlideButton = document.querySelector("#delete-slide");
+const favoriteSceneButton = document.querySelector("#favorite-scene");
+const scenePreferenceNote = document.querySelector("#scene-preference-note");
+const sceneFilterButtons = [...document.querySelectorAll(".scene-filter")];
 const deckNote = document.querySelector("#deck-note");
 const editModeToggle = document.querySelector("#edit-mode-toggle");
 const slideOnlyToggle = document.querySelector("#slide-only-toggle");
@@ -53,6 +65,8 @@ let editMode = false;
 let presentationMode = false;
 let currentContent = contentForRole("cover");
 let deck = null;
+let scenePreferences = readScenePreferences();
+let activeSceneFilter = 'all';
 
 const roleNames = Object.freeze({
   cover: "表紙",
@@ -62,6 +76,28 @@ const roleNames = Object.freeze({
   closing: "締め",
 });
 
+const SCENE_OG_ASSETS = Object.freeze({
+  none: "og-cover.png",
+  fireworks: "scene-fireworks-v2.png",
+  lake: "scene-lake.png",
+  city: "scene-city.png",
+  space: "scene-space-nebula-v1.webp",
+  underwater: "scene-underwater-v1.webp",
+  countryside: "scene-countryside-v1.webp",
+  "clear-sky": "scene-clear-sky-v1.webp",
+  "deep-sea": "scene-deep-sea-v1.webp",
+  "first-sunrise": "scene-first-sunrise-v1.webp",
+  "forest-light": "scene-forest-light-v1.webp",
+  "bamboo-grove": "scene-bamboo-grove-v1.webp",
+  "sakura-mist": "scene-sakura-mist-v1.webp",
+  "hydrangea-rain": "scene-hydrangea-rain-v1.webp",
+  "lavender-haze": "scene-lavender-haze-v1.webp",
+  "autumn-haze": "scene-autumn-haze-v1.webp",
+  snowfield: "scene-snowfield-v1.webp",
+  "sand-dunes": "scene-sand-dunes-v1.webp",
+  "moonlit-shore": "scene-moonlit-shore-v1.webp",
+  "aurora-veil": "scene-aurora-veil-v1.webp",
+});
 const RANDOM_SEASONS = Object.freeze(["spring", "summer", "autumn", "winter"]);
 const RANDOM_PERIODS = Object.freeze(["morning", "day", "evening", "night"]);
 const RANDOM_WEATHER = Object.freeze(["clear", "cloudy", "rain", "snow"]);
@@ -163,6 +199,19 @@ function applyScenePresentation(element, key) {
   }
 }
 
+function updateDeckActions() {
+  const selectedIndex = deck.slides.findIndex((slideItem) => slideItem.id === deck.activeSlideId);
+  const atStart = selectedIndex <= 0;
+  const atEnd = selectedIndex < 0 || selectedIndex >= deck.slides.length - 1;
+  moveSlideUpButton.disabled = atStart;
+  moveSlideDownButton.disabled = atEnd;
+  duplicateSlideButton.disabled = deck.slides.length >= MAX_SLIDES;
+  deleteSlideButton.disabled = deck.slides.length <= 1;
+  moveSlideUpButton.title = atStart ? "これ以上前へ移動できません。" : "選択中のスライドを前へ移動します。";
+  moveSlideDownButton.title = atEnd ? "これ以上次へ移動できません。" : "選択中のスライドを次へ移動します。";
+  duplicateSlideButton.title = deck.slides.length >= MAX_SLIDES ? "スライドは最大" + MAX_SLIDES + "枚までです。" : "選択中のスライドを複製します。";
+  deleteSlideButton.title = deck.slides.length <= 1 ? "スライドが1枚のため削除できません。" : "選択中のスライドを削除します。";
+}
 function renderDeckStrip() {
   const previousScroll = deckStrip.scrollLeft;
   const restoreFocus = deckStrip.contains(document.activeElement);
@@ -214,6 +263,7 @@ function renderDeckStrip() {
   addSlideButton.title = atSlideLimit
     ? `スライドは最大${MAX_SLIDES}枚までです。`
     : "新しいスライドを追加します。";
+  updateDeckActions();
   if (atSlideLimit && deckNote.dataset.saved !== "false") {
     deckNote.textContent = `スライドは最大${MAX_SLIDES}枚までです。`;
   } else if (!atSlideLimit && deckNote.dataset.saved === "true") {
@@ -462,6 +512,25 @@ function selectSlideByOffset(offset) {
   if (target) selectSlide(target.id, "replace");
 }
 
+function handleDeckKeydown(event) {
+  if (presentationMode || editMode) return;
+  const target = event.target;
+  if (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) return;
+  if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "d") {
+    event.preventDefault();
+    duplicateCurrentSlide();
+    return;
+  }
+  if ((event.key === "Delete" || event.key === "Backspace") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    event.preventDefault();
+    deleteCurrentSlide();
+    return;
+  }
+  if (event.altKey && !event.metaKey && !event.ctrlKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+    event.preventDefault();
+    moveCurrentSlide(event.key === "ArrowUp" ? -1 : 1);
+  }
+}
 function handlePresentationKeydown(event) {
   if (!presentationMode) return;
   if (event.key === "Escape") {
@@ -479,6 +548,39 @@ function handlePresentationKeydown(event) {
   }
 }
 
+function operateOnCurrentSlide(operation, source) {
+  finishActiveEdit();
+  const selectedId = deck.activeSlideId;
+  const nextDeck = operation(deck, selectedId);
+  if (nextDeck === deck) return false;
+  deck = nextDeck;
+  persistDeck();
+  renderDeckStrip();
+  const state = renderActiveSlide(source);
+  updateUrl(state, "push");
+  status.textContent = source;
+  return true;
+}
+
+function duplicateCurrentSlide() {
+  if (deck.slides.length >= MAX_SLIDES) {
+    status.textContent = "スライドは最大" + MAX_SLIDES + "枚までです";
+    return;
+  }
+  operateOnCurrentSlide(duplicateDeckSlide, "スライドを複製しました");
+}
+
+function deleteCurrentSlide() {
+  if (deck.slides.length <= 1) {
+    status.textContent = "スライドは1枚以上必要です";
+    return;
+  }
+  operateOnCurrentSlide(deleteDeckSlide, "スライドを削除しました");
+}
+
+function moveCurrentSlide(offset) {
+  operateOnCurrentSlide((currentDeck, selectedId) => moveDeckSlide(currentDeck, selectedId, offset), offset < 0 ? "スライドを前へ移動しました" : "スライドを次へ移動しました");
+}
 function addNewSlide() {
   finishActiveEdit();
   if (deck.slides.length >= MAX_SLIDES) {
@@ -556,29 +658,48 @@ function setMetaContent(selector, content) {
 function updateShareMetadata(state, href = window.location.href) {
   const preset = scenePreset(state.scene);
   const period = periodSelect.selectedOptions[0]?.textContent ?? "";
-  const sceneTitle = preset.key === "none" ? "静かな背景" : `${preset.label}の空気`;
-  const shareTitle = `${sceneTitle} · ${period} | slide-atmosphere`;
+  const sceneTitle = preset.key === "none" ? "静かな背景" : preset.label + "の空気";
+  const shareTitle = sceneTitle + " · " + period + " | slide-atmosphere";
   const shareDescription = preset.key === "none"
     ? "季節・時間帯・天気から、言葉を邪魔しないプレゼン背景をつくる。"
-    : `${preset.label}の空気をまとったプレゼンテーション背景。`;
+    : preset.label + "の空気をまとったプレゼンテーション背景。";
+  const imageAsset = SCENE_OG_ASSETS[preset.key] ?? SCENE_OG_ASSETS.none;
+  const imageUrl = new URL("./assets/" + imageAsset, window.location.href).href;
   document.title = shareTitle;
   setMetaContent('meta[property="og:title"]', shareTitle);
   setMetaContent('meta[property="og:description"]', shareDescription);
   setMetaContent('meta[property="og:url"]', href);
+  setMetaContent('meta[property="og:image"]', imageUrl);
   setMetaContent('meta[name="twitter:title"]', shareTitle);
   setMetaContent('meta[name="twitter:description"]', shareDescription);
+  setMetaContent('meta[name="twitter:image"]', imageUrl);
 }
-
 function updateUrl(state = currentState(), mode = "replace") {
   const normalized = normalizeState(state);
   const url = new URL(window.location.href);
+  const preserveDeck = url.searchParams.has(DECK_SHARE_PARAM);
   url.search = stateToSearchParams(normalized).toString();
+  if (preserveDeck) {
+    const payload = serializeDeck(deck);
+    if (payload.length <= MAX_DECK_SHARE_LENGTH) url.searchParams.set(DECK_SHARE_PARAM, payload);
+  }
   const updateHistory = mode === "push" ? window.history.pushState : window.history.replaceState;
   updateHistory.call(window.history, {}, "", url);
   updateShareMetadata(normalized, url.href);
   return url.href;
 }
 
+function buildDeckShareUrl() {
+  const normalized = currentState();
+  const url = new URL(window.location.href);
+  url.search = stateToSearchParams(normalized).toString();
+  const payload = serializeDeck(deck);
+  if (payload.length > MAX_DECK_SHARE_LENGTH) return null;
+  url.searchParams.set(DECK_SHARE_PARAM, payload);
+  window.history.replaceState({}, "", url);
+  updateShareMetadata(normalized, url.href);
+  return url.href;
+}
 function timeToPeriod(hour) {
   if (hour < 6) return "night";
   if (hour < 10) return "morning";
@@ -588,6 +709,7 @@ function timeToPeriod(hour) {
 }
 
 function selectChanged() {
+  if (sceneSelect.value) rememberSelectedScene();
   const state = applyState(currentState());
   updateUrl(state, "push");
 }
@@ -604,6 +726,20 @@ presentationExit.addEventListener("click", () => setPresentationMode(false));
 addSlideButton.addEventListener("click", addNewSlide);
 randomizeButton.addEventListener("click", randomizeAtmosphere);
 sampleDeckButton.addEventListener("click", loadSampleDeck);
+moveSlideUpButton.addEventListener("click", () => moveCurrentSlide(-1));
+moveSlideDownButton.addEventListener("click", () => moveCurrentSlide(1));
+duplicateSlideButton.addEventListener("click", duplicateCurrentSlide);
+deleteSlideButton.addEventListener("click", deleteCurrentSlide);
+sceneFilterButtons.forEach((button) => button.addEventListener("click", () => applySceneFilter(button.dataset.filter)));
+favoriteSceneButton.addEventListener("click", () => {
+  scenePreferences = toggleFavorite(scenePreferences, sceneSelect.value);
+  writeScenePreferences(scenePreferences);
+  updateFavoriteSceneControl();
+  if (activeSceneFilter === "favorites") applySceneFilter();
+  status.textContent = scenePreferences.favorites.includes(sceneSelect.value)
+    ? "お気に入りに追加しました"
+    : "お気に入りから解除しました";
+});
 resetContentButton.addEventListener("click", () => {
   const selected = currentSlide();
   deck = updateSlide(deck, selected.id, { content: contentForRole(selected.state.role) });
@@ -622,23 +758,69 @@ document.querySelector("#copy-url").addEventListener("click", async (event) => {
   const copyButton = event.currentTarget;
   const label = copyButton.querySelector(".button-label");
   window.clearTimeout(copyFeedbackTimer);
-  const currentUrl = updateUrl();
+  const deckUrl = buildDeckShareUrl();
+  const currentUrl = deckUrl ?? updateUrl();
+  if (!deckUrl) status.textContent = "デッキが長すぎるため背景URLをコピーします";
   try {
     await navigator.clipboard.writeText(currentUrl);
     label.textContent = "コピーしました";
     copyButton.querySelector("use").setAttribute("href", "#icon-check");
-    status.textContent = "背景URLをコピーしました";
+    status.textContent = deckUrl ? "デッキ全体のURLをコピーしました" : "背景URLをコピーしました";
   } catch {
     label.textContent = "コピー失敗";
     status.textContent = "アドレスバーからURLをコピーできます";
   }
   copyFeedbackTimer = window.setTimeout(() => {
-    label.textContent = "背景を共有";
+    label.textContent = "デッキを共有";
     copyButton.querySelector("use").setAttribute("href", "#icon-link");
     status.textContent = editMode ? "編集中" : "プレビュー";
   }, 2200);
 });
 
+function applySceneFilter(filter = activeSceneFilter) {
+  activeSceneFilter = filter;
+  const sceneGroup = document.querySelector(".scene-choices");
+  if (!sceneGroup) return;
+  const visibleKeys = filter === "favorites"
+    ? new Set(scenePreferences.favorites)
+    : filter === "recent"
+      ? new Set(scenePreferences.recent)
+      : null;
+  sceneGroup.querySelectorAll(".choice-button").forEach((button) => {
+    const categories = (button.dataset.categories ?? "").split(" ").filter(Boolean);
+    const matches = filter === "all"
+      ? true
+      : visibleKeys
+        ? visibleKeys.has(button.dataset.value)
+        : categories.includes(categoryName);
+    button.hidden = !matches;
+  });
+  sceneFilterButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.filter === filter)));
+  const empty = filter !== "all" && !sceneGroup.querySelector(".choice-button:not([hidden])");
+  scenePreferenceNote.hidden = !empty;
+  scenePreferenceNote.textContent = filter === "favorites"
+    ? "お気に入りの景色はまだありません。ハートで追加できます。"
+    : filter === "recent"
+      ? "最近使った景色はまだありません。景色を選ぶとここに表示されます。"
+      : "このカテゴリの景色はありません。";
+}
+
+function updateFavoriteSceneControl() {
+  const key = sceneSelect.value;
+  const favorite = scenePreferences.favorites.includes(key);
+  const label = favorite ? "お気に入りから解除" : "お気に入りに追加";
+  favoriteSceneButton.setAttribute("aria-pressed", String(favorite));
+  favoriteSceneButton.setAttribute("aria-label", label);
+  favoriteSceneButton.title = label + "します。";
+  favoriteSceneButton.classList.toggle("is-favorite", favorite);
+}
+
+function rememberSelectedScene() {
+  scenePreferences = rememberScene(scenePreferences, sceneSelect.value);
+  writeScenePreferences(scenePreferences);
+  updateFavoriteSceneControl();
+  if (activeSceneFilter === "recent" || activeSceneFilter === "favorites") applySceneFilter();
+}
 function setupChoiceControls() {
   const optionIcons = {
     morning: "sunrise", day: "sun", evening: "sunset", night: "moon",
@@ -657,7 +839,12 @@ function setupChoiceControls() {
       button.type = "button";
       button.className = "choice-button";
       button.dataset.value = option.value;
-      if (select.id === "scene") applyScenePresentation(button, option.value);
+      if (select.id === "scene") {
+        applyScenePresentation(button, option.value);
+        const preset = scenePreset(option.value);
+        button.dataset.categories = (preset.categories ?? []).join(" ");
+        button.dataset.sceneLabel = option.textContent;
+      }
       button.setAttribute("aria-pressed", String(option.selected));
       if (optionIcons[option.value]) {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -685,7 +872,7 @@ function setupChoiceControls() {
     }
     group.addEventListener("keydown", (event) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
-      const buttons = [...group.querySelectorAll("button:not(:disabled)")];
+      const buttons = [...group.querySelectorAll("button:not([hidden]):not(:disabled)")];
       const current = buttons.indexOf(document.activeElement);
       if (current < 0) return;
       event.preventDefault();
@@ -721,18 +908,21 @@ function syncInspector(state) {
     ? "季節の色は、スライドの下部に。"
     : "景色の選択中は、天気は反映されません。";
   atmosphereSummary.textContent = [labelFor(seasonSelect), labelFor(periodSelect), labelFor(state.scene === "none" ? weatherSelect : sceneSelect)].join(" · ");
+  updateFavoriteSceneControl();
 }
 
 sceneSelect.replaceChildren(...SCENE_PRESETS.map(preset => new Option(preset.label, preset.key)));
 setupChoiceControls();
+applySceneFilter();
 const initialState = stateFromSearch(window.location.search);
-const savedDeck = readDeck();
+const sharedDeck = deserializeDeck(new URLSearchParams(window.location.search).get(DECK_SHARE_PARAM));
+const savedDeck = sharedDeck ?? readDeck();
 deck = savedDeck ?? createDeck(
   initialState,
   readContentDraft(initialState.role) ?? contentForRole(initialState.role),
   "slide-1",
 );
-let initialSource = savedDeck ? "deck restored" : "url preset";
+let initialSource = sharedDeck ? "共有デッキを復元" : savedDeck ? "deck restored" : "url preset";
 if (savedDeck) {
   const selected = currentSlide();
   const requestedState = stateFromSearch(window.location.search, selected.state);
@@ -743,6 +933,7 @@ if (savedDeck) {
 } else {
   persistDeck();
 }
+if (sharedDeck) persistDeck();
 renderDeckStrip();
 const activeState = renderActiveSlide(initialSource);
 updateUrl(activeState);
@@ -751,4 +942,7 @@ window.addEventListener("popstate", () => {
   applyState(stateFromSearch(window.location.search), "history preset");
 });
 
-document.addEventListener("keydown", handlePresentationKeydown);
+document.addEventListener("keydown", (event) => {
+  handlePresentationKeydown(event);
+  handleDeckKeydown(event);
+});
