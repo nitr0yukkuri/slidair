@@ -32,7 +32,7 @@ async function waitForServer(url) {
     page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
-    assert.equal(await page.locator(".scene-choices .choice-button").count(), 26);
+    assert.equal(await page.locator(".scene-choices .choice-button").count(), 30);
     for (const [label, key, asset] of [
       ["山霞", "misty-mountains", "scene-misty-mountains-v1.png"],
       ["潮だまり", "tidepool-coast", "scene-tidepool-coast-v1.png"],
@@ -40,6 +40,10 @@ async function waitForServer(url) {
       ["藤棚", "wisteria-bower", "scene-wisteria-bower-v1.png"],
       ["石庭", "stone-garden", "scene-stone-garden-v1.png"],
       ["夕渓谷", "red-canyon", "scene-red-canyon-v1.png"],
+      ["霧の港", "misty-harbor", "scene-misty-harbor-v1.png"],
+      ["雨の窓", "rain-window", "scene-rain-window-v1.png"],
+      ["白樺林", "birch-grove", "scene-birch-grove-v1.png"],
+      ["夜の灯台", "lighthouse-night", "scene-lighthouse-night-v1.png"],
     ]) {
       await page.getByRole("button", { name: label, exact: true }).click();
       assert.equal(await page.locator("#slide").getAttribute("data-scene"), key);

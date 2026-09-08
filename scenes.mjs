@@ -26,6 +26,10 @@ export const SCENE_PRESETS = Object.freeze([
   Object.freeze({ key: "wisteria-bower", label: "藤棚", family: "soft", art: "./assets/scene-wisteria-bower-v1.png", og: "scene-wisteria-bower-v1.png", dayOpacity: 0.55, eveningExposure: 0.43, nightExposure: 0.36, categories: ["自然", "明るめ"] }),
   Object.freeze({ key: "stone-garden", label: "石庭", family: "soft", art: "./assets/scene-stone-garden-v1.png", og: "scene-stone-garden-v1.png", dayOpacity: 0.48, eveningExposure: 0.42, nightExposure: 0.35, categories: ["自然", "暗め"] }),
   Object.freeze({ key: "red-canyon", label: "夕渓谷", family: "soft", art: "./assets/scene-red-canyon-v1.png", og: "scene-red-canyon-v1.png", dayOpacity: 0.58, eveningExposure: 0.42, nightExposure: 0.34, categories: ["自然", "幻想", "暗め"] }),
+  Object.freeze({ key: "misty-harbor", label: "霧の港", family: "soft", tone: "dark", art: "./assets/scene-misty-harbor-v1.png", og: "scene-misty-harbor-v1.png", categories: ["自然", "都会", "暗め"] }),
+  Object.freeze({ key: "rain-window", label: "雨の窓", family: "soft", tone: "dark", art: "./assets/scene-rain-window-v1.png", og: "scene-rain-window-v1.png", categories: ["幻想", "都会", "暗め"] }),
+  Object.freeze({ key: "birch-grove", label: "白樺林", family: "soft", art: "./assets/scene-birch-grove-v1.png", og: "scene-birch-grove-v1.png", dayOpacity: 0.55, eveningExposure: 0.43, nightExposure: 0.35, categories: ["自然", "明るめ"] }),
+  Object.freeze({ key: "lighthouse-night", label: "夜の灯台", family: "soft", tone: "dark", art: "./assets/scene-lighthouse-night-v1.png", og: "scene-lighthouse-night-v1.png", categories: ["自然", "幻想", "暗め"] }),
 ]);
 
 export function scenePreset(key) {

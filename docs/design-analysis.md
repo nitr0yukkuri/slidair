@@ -51,7 +51,7 @@ WorldState
   ├─ season: spring / summer / autumn / winter
   ├─ period: morning / day / evening / night
   ├─ weather: clear / cloudy / rain / snow / unavailable
-  ├─ scene: 26種類の景色プリセット（scenes.mjsで管理）
+  ├─ scene: 30種類の景色プリセット（scenes.mjsで管理）
   └─ role: cover / section / content / quote / closing
 ```
 
@@ -124,7 +124,7 @@ JavaScriptは見た目を直接描画せず、「現在の状態を決める」�
 - 4つの季節
 - 4つの時間帯
 - 4つの天気
-- 26種類の景色プリセット（なし・花火・湖・都会・宇宙・海中・田舎・快晴・深海・初日の出・木漏れ日・竹林・桜霞・紫陽花・花畑・紅葉・雪原・砂丘・月夜の海・オーロラ・山霞・潮だまり・雲海・藤棚・石庭・夕渓谷）
+- 30種類の景色プリセット（なし・花火・湖・都会・宇宙・海中・田舎・快晴・深海・初日の出・木漏れ日・竹林・桜霞・紫陽花・花畑・紅葉・雪原・砂丘・月夜の海・オーロラ・山霞・潮だまり・雲海・藤棚・石庭・夕渓谷・霧の港・雨の窓・白樺林・夜の灯台）
 - 5つのスライド役割
 - 手動選択
 - 編集モードでタイトル・本文・小見出しを変更
