@@ -9,3 +9,13 @@ for (const file of ["index.html", "build/index.html"]) {
     assert.match(html, /<button[^>]*id="sample-deck"[^>]*aria-label="サンプルデッキ"/s);
   });
 }
+
+test("deck and scene preference controls keep explicit accessible names", () => {
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  for (const id of ["move-slide-up", "move-slide-down", "duplicate-slide", "delete-slide", "favorite-scene"]) {
+    assert.match(html, new RegExp(`id="${id}"[^>]*aria-label="[^"]+"`));
+  }
+  for (const filter of ["all", "favorites", "recent", "natural", "city", "dark"]) {
+    assert.match(html, new RegExp(`class="scene-filter"[^>]*data-filter="${filter}"`));
+  }
+});

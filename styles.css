@@ -108,6 +108,13 @@ select { cursor: pointer; padding-right: 9px; }
 .choice-button .icon { color: #8d95a6; }
 .choice-button[aria-pressed="true"] .icon { color: #c8d7ef; }
 .choice-group[aria-disabled="true"] .choice-button { opacity: .44; }
+.scene-toolbar { display: flex; flex-direction: column; gap: 9px; margin-bottom: 13px; }
+.scene-filters { display: flex; flex-wrap: wrap; gap: 4px; }
+.scene-filter { min-height: 28px; padding: 4px 8px; border-radius: 99px; color: var(--ui-muted); background: #ffffff05; font-size: .6875rem; font-weight: 500; }
+.scene-filter[aria-pressed="true"] { color: #e8edf7; border-color: #b7cef460; background: #b7cef41a; }
+.favorite-scene { align-self: flex-start; min-height: 28px; padding: 4px 8px; font-size: .6875rem; }
+.favorite-scene .icon { width: 13px; height: 13px; flex-basis: 13px; }
+.favorite-scene.is-favorite { color: #f0cfb1; border-color: #e4b07b55; background: #e4b07b12; }
 .scene-choices { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px 8px; padding: 0; border: 0; background: none; }
 .scene-choices .choice-button { display: flex; flex-direction: column; min-height: 0; gap: 9px; padding: 0; background: none; border: 0; box-shadow: none; border-radius: 4px; font-size: .75rem; }
 .scene-choices .choice-button > span:last-child { white-space: nowrap; letter-spacing: -.01em; }
@@ -129,6 +136,10 @@ select { cursor: pointer; padding-right: 9px; }
 .deck-heading h2 { color: #bdc0cb; font-size: .8125rem; font-weight: 500; }
 .deck-heading-label > span { color: var(--ui-faint); font-size: .75rem; font-variant-numeric: tabular-nums; }
 .deck-heading-actions { display: flex; align-items: center; gap: 6px; }
+.deck-action { min-height: 30px; padding: 4px 7px; font-size: .75rem; }
+.deck-action .icon { width: 14px; height: 14px; flex-basis: 14px; }
+.deck-action:disabled { opacity: .35; }
+.deck-delete:not(:disabled) { color: #d5a9a9; }
 .deck-sample { min-height: 30px; padding: 4px 8px; font-size: .75rem; }
 .deck-sample .icon { width: 14px; height: 14px; flex-basis: 14px; }
 .deck-add { padding: 4px 8px; min-height: 30px; font-size: .8125rem; }
@@ -615,9 +626,11 @@ textarea { resize: vertical; }
   .status { display: block; margin-right: auto; font-size: .75rem; }
   .header-actions button { padding: 7px 10px; font-size: .8125rem; }
   .utility-button { width: 32px; padding-inline: 6px; }
-  .utility-button span, .deck-sample span { display: none; }
+  .utility-button span, .deck-sample span, .deck-action span { display: none; }
   .deck-heading-actions { gap: 4px; }
-  .deck-sample { width: 32px; padding-inline: 6px; }
+  .deck-sample, .deck-action { width: 32px; padding-inline: 6px; }
+  .scene-toolbar { gap: 8px; }
+  .scene-filter { padding-inline: 7px; }
   .canvas-toolbar { padding: 10px 13px; min-height: 54px; }
   .canvas-location { gap: 9px; font-size: .8125rem; }
   .edit-toggle { font-size: .75rem; padding: 6px 7px; gap: 5px; }

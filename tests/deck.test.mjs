@@ -5,6 +5,9 @@ import {
   DECK_STORAGE_KEY,
   MAX_SLIDES,
   addSlide,
+  deleteSlide,
+  duplicateSlide,
+  moveSlide,
   activeSlide,
   createDeck,
   normalizeDeck,
@@ -103,3 +106,47 @@ test("legacy placeholder content is migrated to the meaningful default", () => {
   assert.equal(normalized.slides[0].content.body, "季節や時間帯に合わせて、スライドの空気を整える。");
 });
 
+
+test("duplicating inserts an independent active copy after the source", () => {
+  const first = createDeck({ role: "cover" }, { title: "表紙", body: "本文" }, "slide-1");
+  const deck = addSlide(first, { role: "content" }, { title: "本文" });
+  const duplicated = duplicateSlide(selectSlide(deck, "slide-1"), "slide-1");
+  assert.equal(duplicated.slides.length, 3);
+  assert.equal(duplicated.slides[1].content.title, "表紙");
+  assert.notEqual(duplicated.slides[1].id, "slide-1");
+  assert.equal(duplicated.activeSlideId, duplicated.slides[1].id);
+  assert.notEqual(duplicated.slides[1], duplicated.slides[0]);
+});
+
+test("duplicate respects the slide limit and unknown IDs", () => {
+  let deck = createDeck({ role: "cover" }, undefined, "slide-1");
+  for (let index = 1; index < MAX_SLIDES; index += 1) deck = addSlide(deck, { role: "content" });
+  assert.equal(duplicateSlide(deck), deck);
+  const single = createDeck();
+  assert.equal(duplicateSlide(single, "missing"), single);
+});
+
+test("deleting an active slide selects the next slide, then previous at the end", () => {
+  const first = createDeck({ role: "cover" }, { title: "一" }, "one");
+  const second = addSlide(first, { role: "content" }, { title: "二" });
+  const third = addSlide(second, { role: "quote" }, { title: "三" });
+  const middleId = third.slides[1].id;
+  const middle = deleteSlide(selectSlide(third, middleId), middleId);
+  assert.equal(middle.slides.length, 2);
+  assert.equal(activeSlide(middle).content.title, "三");
+  const end = deleteSlide(third, third.activeSlideId);
+  assert.equal(activeSlide(end).content.title, "二");
+  assert.equal(deleteSlide(first), first);
+});
+
+test("moving a slide clamps to the deck edges and preserves active selection", () => {
+  const first = createDeck({ role: "cover" }, { title: "一" }, "one");
+  let deck = addSlide(first, { role: "content" }, { title: "二" });
+  deck = addSlide(deck, { role: "quote" }, { title: "三" });
+  deck = selectSlide(deck, "one");
+  const moved = moveSlide(deck, "one", 2);
+  assert.deepEqual(moved.slides.map((slide) => slide.content.title), ["二", "三", "一"]);
+  assert.equal(moved.activeSlideId, "one");
+  assert.equal(moveSlide(moved, "one", 1), moved);
+  assert.equal(moveSlide(moved, "missing", -1), moved);
+});
