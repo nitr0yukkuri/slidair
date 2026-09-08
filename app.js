@@ -786,6 +786,7 @@ function applySceneFilter(filter = activeSceneFilter) {
     : filter === "recent"
       ? new Set(scenePreferences.recent)
       : null;
+  const categoryName = { natural: "自然", city: "都会", dark: "暗め" }[filter] ?? filter;
   sceneGroup.querySelectorAll(".choice-button").forEach((button) => {
     const categories = (button.dataset.categories ?? "").split(" ").filter(Boolean);
     const matches = filter === "all"
@@ -946,3 +947,4 @@ document.addEventListener("keydown", (event) => {
   handlePresentationKeydown(event);
   handleDeckKeydown(event);
 });
+

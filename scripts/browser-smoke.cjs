@@ -45,6 +45,10 @@ async function waitForServer(url) {
     await page.getByRole("button", { name: "お気に入りの景色", exact: true }).click();
     assert.equal(await page.locator('.scene-choices [data-value="space"]').isVisible(), true);
     assert.equal(await page.locator('.scene-choices [data-value="city"]').isVisible(), false);
+    for (const [label, minimum] of [["自然カテゴリ", 1], ["都会カテゴリ", 1], ["暗めカテゴリ", 1]]) {
+      await page.getByRole("button", { name: label, exact: true }).click();
+      assert.ok(await page.locator(".scene-choices .choice-button:visible").count() >= minimum);
+    }
     await page.getByRole("button", { name: "すべての景色", exact: true }).click();
 
     await page.getByRole("button", { name: "デッキを共有", exact: true }).click();
@@ -74,3 +78,4 @@ async function waitForServer(url) {
   if (server) server.kill();
   process.exitCode = 1;
 });
+
