@@ -114,17 +114,18 @@ base gradient
 
 選択したsceneがnone以外ならweatherは景色側に吸収されるため、天気ボタンは無効化する。これは機能を隠すのではなく、「今どちらを編集しているか」を画面上で明確にするための制約である。
 
-## 7. 共有と保存は別の責務にする
+## 7. デッキ操作と共有URLを別の責務にする
 
-URLは現在のWorldStateを共有するために使い、本文と複数スライドの編集内容はdeck.mjsのDECK_STORAGE_KEYでlocalStorageへ保存する。保存形式はversion 1として固定し、各スライドに正規化済みのstateとcontentを持たせる。
+スライド操作はdeck.mjsの純粋関数に閉じ込めた。duplicateSlideは元のstateとcontentを新しいIDで複製し、deleteSlideは最後の1枚を守りながら隣のスライドを選択する。moveSlideは配列の端でクランプする。UIはこの結果を保存し、サムネイルを再描画するだけなので、クリックとキーボードで同じ挙動になる。
 
-この分離により、景色の共有リンクは短く保てる。逆に、編集したデッキはブラウザに残り、別のURLを開いたときもスライドの追加・削除・選択状態を壊さず復元できる。将来保存形式を拡張するときも、normalizeDeckを境界にして移行ロジックを追加できる。
+キーボードは発表モードの矢印操作と衝突しないように分けた。編集画面ではCtrl/Cmd+Dが複製、Deleteが削除、Alt+ArrowUp/Downが前後移動になる。入力欄とcontenteditableではブラウザ本来の編集を優先する。
 
+共有ボタンは現在のWorldStateに、正規化済みデッキをbase64urlで追加する。deck-share.mjsでエンコードと復元を行い、壊れたpayloadや48,000文字を超えるURLは受け付けない。受け取ったデッキはlocalStorageにも保存するので、その後の編集を同じブラウザで続けられる。景色のOG画像はカタログに対応する静的アセットへ切り替え、タイトル・説明・URLと同じタイミングで更新する。
 ## 8. 何を検証したか
 
 今回の景色追加では、次の3種類を分けて確認した。
 
-1. Nodeの単体テスト22件。stateの正規化、scene catalog、deckの保存・復元、content、コンパクトな操作ボタンのアクセシブルネームを確認した。
+1. Nodeの単体テスト31件。stateの正規化、scene catalog、deckの保存・復元、content、コンパクトな操作ボタンのアクセシブルネームを確認した。
 2. ChromiumのUI検証。20個の候補、4行のキーボード移動、シーン切り替え時のメタデータ初期化、天気の無効化、共有・再読込、編集、2枚以上のスライド、発表表示、6つの画面幅を確認した。
 3. 既存シーンの回帰比較。カタログ連携の前後で、同じ位置・同じサイズ・トランジション無効の条件にそろえ、20シーンの描画がピクセル単位で変わっていないことを確認した。
 
@@ -142,10 +143,11 @@ URLは現在のWorldStateを共有するために使い、本文と複数スラ�
 - [state.mjs](../state.mjs)：URLと選択状態の正規化
 - [app.js](../app.js)：状態反映、UI、キーボード操作
 - [styles.css](../styles.css)：背景レイヤー、文字色、レスポンシブ
-- [deck.mjs](../deck.mjs)：スライドの保存・復元
+- [deck.mjs](../deck.mjs)：スライドの保存・復元・複製・削除・移動
+- [deck-share.mjs](../deck-share.mjs)：デッキ共有URLのエンコード・復元
+- [scene-preferences.mjs](../scene-preferences.mjs)：景色のお気に入り・最近使った景色の保存
 - [scene-expansion-prompts.md](./scene-expansion-prompts.md)：生成プロンプトとアセット対応
 - [landscape-presets.md](./landscape-presets.md)：採用基準と検証結果
 - [design-analysis.md](./design-analysis.md)：企画・リスク・実装判断
 
 景色を増やした結果として大切だったのは、20個を並べたことではない。どの景色を選んでも、時間帯・役割・文字量に合わせて背景の強さが変わり、同じURLでその状態を再現できることだった。
-

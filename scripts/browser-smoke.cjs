@@ -1,0 +1,76 @@
+const { chromium } = require("playwright");
+const assert = require("node:assert/strict");
+const { spawn } = require("node:child_process");
+const { once } = require("node:events");
+
+const baseUrl = process.env.BASE_URL || "http://127.0.0.1:4173";
+const shouldStartServer = !process.env.BASE_URL;
+let server;
+
+async function waitForServer(url) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) return;
+    } catch {}
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  throw new Error(`サーバーが起動しません: ${url}`);
+}
+
+(async () => {
+  if (shouldStartServer) {
+    server = spawn(process.execPath, ["server.mjs"], { stdio: "ignore" });
+    await waitForServer(baseUrl);
+  }
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 960 } });
+    const page = await context.newPage();
+    const errors = [];
+    page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
+    assert.equal(await page.locator(".scene-choices .choice-button").count(), 20);
+    assert.equal(await page.locator("#slide-count").innerText(), "1枚");
+
+    await page.getByRole("button", { name: "複製", exact: true }).click();
+    assert.equal(await page.locator("#slide-count").innerText(), "2枚");
+    await page.keyboard.press("Alt+ArrowUp");
+    await page.keyboard.press("Delete");
+    assert.equal(await page.locator("#slide-count").innerText(), "1枚");
+
+    await page.getByRole("button", { name: "宇宙", exact: true }).click();
+    await page.getByRole("button", { name: "お気に入りに追加", exact: true }).click();
+    await page.getByRole("button", { name: "お気に入りの景色", exact: true }).click();
+    assert.equal(await page.locator('.scene-choices [data-value="space"]').isVisible(), true);
+    assert.equal(await page.locator('.scene-choices [data-value="city"]').isVisible(), false);
+    await page.getByRole("button", { name: "すべての景色", exact: true }).click();
+
+    await page.getByRole("button", { name: "デッキを共有", exact: true }).click();
+    assert.match(page.url(), /[?&]deck=/);
+    const sharedUrl = page.url();
+    const restored = await context.newPage();
+    await restored.goto(sharedUrl, { waitUntil: "networkidle" });
+    assert.equal(await restored.locator("#slide-count").innerText(), "1枚");
+    assert.equal(await restored.locator("#slide").getAttribute("data-scene"), "space");
+    assert.match(await restored.locator('meta[property="og:image"]').getAttribute("content"), /scene-space-nebula-v1\.webp$/);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+    const unnamed = await page.locator("button:visible").evaluateAll((buttons) => buttons.filter((button) => !(button.getAttribute("aria-label") || button.textContent || "").trim()).length);
+    assert.equal(unnamed, 0);
+    assert.deepEqual(errors, []);
+    console.log("browser smoke: pass");
+  } finally {
+    await browser.close();
+    if (server) {
+      server.kill();
+      await once(server, "exit").catch(() => {});
+    }
+  }
+})().catch((error) => {
+  console.error(error);
+  if (server) server.kill();
+  process.exitCode = 1;
+});
