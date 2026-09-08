@@ -44,13 +44,11 @@ button:disabled { cursor: default; }
 .button-primary .icon { width: 15px; fill: currentColor; stroke-width: 0; }
 .button-secondary { color: #bcc0cb; background: transparent; }
 .app-shell { width: min(1600px, calc(100% - 64px)); margin: 0 auto; padding-bottom: 32px; }
-.app-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 92px; }
-.brand-lockup { display: flex; align-items: center; gap: 11px; min-width: 0; }
-.brand-logo { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
-.brand-name { display: flex; align-items: baseline; gap: .1em; font-size: 1.4rem; line-height: 1.1; font-weight: 600; letter-spacing: -.055em; white-space: nowrap; }
-.brand-divider { color: #ce9b86; padding-inline: .05em; }
-.brand-atmosphere { font-weight: 400; color: #b4b8c3; }
-.brand-context { margin-left: 13px; padding-left: 23px; border-left: 1px solid #ffffff15; color: var(--ui-faint); font-size: .75rem; letter-spacing: .025em; white-space: nowrap; }
+.app-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; min-height: 122px; padding: 24px 0 20px; }
+.brand-lockup { min-width: 0; }
+.eyebrow { margin: 0; color: #9caab3; font-size: .64rem; letter-spacing: .17em; line-height: 1; }
+.brand-name { margin: 10px 0 0; color: #edf0f2; font-size: clamp(1.9rem, 3vw, 2.8rem); font-weight: 500; letter-spacing: -.065em; line-height: .95; white-space: nowrap; }
+.intro { max-width: 34rem; margin: 12px 0 0; color: var(--ui-muted); font-size: .78rem; line-height: 1.6; }
 .header-actions > button { flex-shrink: 0; white-space: nowrap; }
 .header-actions { display: flex; align-items: center; gap: 10px; }
 .utility-button { min-height: 32px; padding: 5px 9px; font-size: .75rem; }
@@ -584,7 +582,7 @@ textarea { resize: vertical; }
 @media (min-width: 1800px) { .app-shell { padding-top: 14px; } }
 @media (max-width: 1180px) {
   .app-shell { width: calc(100% - 40px); }
-  .brand-context { display: none; }
+  .intro { max-width: 28rem; }
   .workspace { grid-template-columns: minmax(0, 1fr) 286px; }
   .canvas-stage { padding: 28px 24px 14px; }
   .canvas-footer { padding-inline: 24px; }
@@ -610,9 +608,8 @@ textarea { resize: vertical; }
 @media (max-width: 600px) {
   .app-shell { width: calc(100% - 24px); padding-bottom: 16px; }
   .app-header { flex-wrap: wrap; padding: 17px 3px 14px; row-gap: 17px; }
-  .brand-logo { width: 30px; height: 30px; }
-  .brand-lockup { gap: 9px; }
-  .brand-name { font-size: 1.35rem; }
+  .app-header { min-height: 0; }
+  .brand-name { font-size: 2rem; }
   .header-actions { width: 100%; justify-content: flex-end; gap: 8px; }
   .status { display: block; margin-right: auto; font-size: .75rem; }
   .header-actions button { padding: 7px 10px; font-size: .8125rem; }
