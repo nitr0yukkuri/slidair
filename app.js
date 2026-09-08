@@ -359,6 +359,7 @@ function renderDeckStrip() {
     preview.className = "deck-thumb-preview";
     preview.dataset.season = slideItem.state.season;
     preview.dataset.period = slideItem.state.period;
+    preview.dataset.weather = slideItem.state.weather;
     preview.dataset.scene = slideItem.state.scene;
     preview.dataset.role = slideItem.state.role;
     applyScenePresentation(preview, slideItem.state.scene);
@@ -737,17 +738,26 @@ function randomItem(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-function randomizeAtmosphere() {
+function applyAtmosphereToDeck(atmosphere, source) {
   finishActiveEdit();
-  const nextState = {
-    ...currentState(),
+  finishEditSession();
+  const nextDeck = {
+    ...deck,
+    slides: deck.slides.map((slideItem) => ({
+      ...slideItem,
+      state: normalizeState({ ...slideItem.state, ...atmosphere }),
+    })),
+  };
+  commitDeckMutation(nextDeck, source);
+}
+
+function randomizeAtmosphere() {
+  applyAtmosphereToDeck({
     season: randomItem(RANDOM_SEASONS),
     period: randomItem(RANDOM_PERIODS),
     weather: randomItem(RANDOM_WEATHER),
     scene: randomItem(RANDOM_SCENES),
-  };
-  applyState(nextState, "random atmosphere");
-
+  }, "デッキ全体をランダムに変更しました");
 }
 
 function loadSampleDeck() {
@@ -880,7 +890,7 @@ resetContentButton.addEventListener("click", () => {
 });
 
 document.querySelector("#now").addEventListener("click", () => {
-  applyState({ ...currentState(), period: timeToPeriod(new Date().getHours()) }, "local time preset");
+  applyAtmosphereToDeck({ period: timeToPeriod(new Date().getHours()) }, "デッキ全体を現在時刻に合わせました");
 });
 
 document.querySelector("#copy-url").addEventListener("click", async (event) => {

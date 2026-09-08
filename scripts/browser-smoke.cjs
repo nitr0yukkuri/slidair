@@ -71,6 +71,26 @@ async function waitForServer(url) {
     assert.match(await dragPage.locator(".deck-thumb").nth(0).getAttribute("aria-label"), /1枚目、表紙$/);
     await dragContext.close();
 
+    const bulkContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });
+    const bulkPage = await bulkContext.newPage();
+    await bulkPage.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
+    await bulkPage.getByRole("button", { name: "サンプルデッキ", exact: true }).click();
+    const rolesBeforeRandom = await bulkPage.locator(".deck-thumb").evaluateAll((buttons) => buttons.map((button) => button.getAttribute("aria-label")));
+    const scenesBeforeRandom = await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.scene));
+    await bulkPage.getByRole("button", { name: "ランダム", exact: true }).click();
+    assert.equal(await bulkPage.locator(".deck-item").count(), 5);
+    assert.deepEqual(await bulkPage.locator(".deck-thumb").evaluateAll((buttons) => buttons.map((button) => button.getAttribute("aria-label"))), rolesBeforeRandom);
+    const randomAtmospheres = await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => [preview.dataset.season, preview.dataset.period, preview.dataset.weather, preview.dataset.scene]));
+    assert.ok(randomAtmospheres.every((atmosphere) => JSON.stringify(atmosphere) === JSON.stringify(randomAtmospheres[0])));
+    await bulkPage.getByRole("button", { name: "元に戻す", exact: true }).click();
+    assert.deepEqual(await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.scene)), scenesBeforeRandom);
+    await bulkPage.getByRole("button", { name: "やり直す", exact: true }).click();
+    assert.ok((await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.period))).every((period) => period === randomAtmospheres[0][1]));
+    await bulkPage.getByRole("button", { name: "現在時刻", exact: true }).click();
+    const currentPeriods = await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.period));
+    assert.ok(currentPeriods.every((period) => period === currentPeriods[0]));
+    await bulkContext.close();
+
     const editContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });
     const editPage = await editContext.newPage();
     await editPage.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
