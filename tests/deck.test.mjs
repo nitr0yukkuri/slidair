@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   DECK_STORAGE_KEY,
+  MAX_SLIDES,
   addSlide,
   activeSlide,
   createDeck,
@@ -37,6 +38,15 @@ test("adding a slide selects it without changing the first slide", () => {
   assert.equal(activeSlide(next).content.title, "本文");
 });
 
+test("adding a slide at the maximum leaves the deck unchanged", () => {
+  let deck = createDeck({ role: "cover" }, { title: "表紙" }, "slide-1");
+  for (let index = deck.slides.length; index < MAX_SLIDES; index += 1) {
+    deck = addSlide(deck, { role: "content" }, { title: `本文${index}` });
+  }
+  const next = addSlide(deck, { role: "content" }, { title: "上限後" });
+  assert.equal(next, deck);
+  assert.equal(next.slides.length, MAX_SLIDES);
+});
 test("slide selection and updates are isolated to the selected slide", () => {
   const first = createDeck({ role: "cover" }, { title: "表紙" }, "slide-1");
   const withSecond = addSlide(first, { role: "content" }, { title: "本文" });

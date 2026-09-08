@@ -7,6 +7,7 @@ import {
 } from "./content.mjs";
 import {
   activeSlide as getActiveSlide,
+  MAX_SLIDES,
   addSlide as addDeckSlide,
   createDeck,
   readDeck,
@@ -208,6 +209,16 @@ function renderDeckStrip() {
     deckStrip.append(item);
   });
   slideCount.textContent = `${deck.slides.length}枚`;
+  const atSlideLimit = deck.slides.length >= MAX_SLIDES;
+  addSlideButton.disabled = atSlideLimit;
+  addSlideButton.title = atSlideLimit
+    ? `スライドは最大${MAX_SLIDES}枚までです。`
+    : "新しいスライドを追加します。";
+  if (atSlideLimit && deckNote.dataset.saved !== "false") {
+    deckNote.textContent = `スライドは最大${MAX_SLIDES}枚までです。`;
+  } else if (!atSlideLimit && deckNote.dataset.saved === "true") {
+    deckNote.textContent = "このブラウザに保存済み";
+  }
   deckStrip.scrollLeft = previousScroll;
   scrollActiveThumbnailIntoView();
   if (restoreFocus) deckStrip.querySelector('[aria-current="true"]')?.focus({ preventScroll: true });
@@ -470,6 +481,10 @@ function handlePresentationKeydown(event) {
 
 function addNewSlide() {
   finishActiveEdit();
+  if (deck.slides.length >= MAX_SLIDES) {
+    status.textContent = `スライドは最大${MAX_SLIDES}枚までです`;
+    return;
+  }
   const selected = currentSlide();
   const nextState = {
     ...selected.state,

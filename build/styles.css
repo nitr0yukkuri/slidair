@@ -157,6 +157,7 @@ select { cursor: pointer; padding-right: 9px; }
 .deck-thumb-caption { display: flex; align-items: center; gap: 8px; margin-top: 9px; color: #8e93a0; font-size: .75rem; line-height: 1.5; }
 .deck-thumb-caption strong { color: #8e93a0; font-weight: 500; font-variant-numeric: tabular-nums; }
 .deck-thumb[aria-current="true"] .deck-thumb-caption, .deck-thumb[aria-current="true"] .deck-thumb-caption strong { color: #d4e0f3; }
+.deck-add:disabled { opacity: .45; }
 .deck-note { margin-top: 12px; color: var(--ui-faint); font-size: .75rem; line-height: 1.5; }
 .deck-note::before { content: ""; display: inline-block; width: 9px; height: 5px; margin-right: 8px; border: solid #8c9c94; border-width: 0 0 1px 1px; transform: translateY(-2px) rotate(-45deg); }
 .deck-note[data-saved="false"]::before { width: 5px; height: 5px; border: 0; border-radius: 50%; background: #e1aa93; transform: none; }
