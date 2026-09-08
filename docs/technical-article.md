@@ -116,16 +116,16 @@ base gradient
 
 ## 7. デッキ操作と共有URLを別の責務にする
 
-スライド操作はdeck.mjsの純粋関数に閉じ込めた。duplicateSlideは元のstateとcontentを新しいIDで複製し、deleteSlideは最後の1枚を守りながら隣のスライドを選択する。moveSlideは配列の端でクランプする。UIはこの結果を保存し、サムネイルを再描画するだけなので、クリックとキーボードで同じ挙動になる。
+スライド操作はdeck.mjsの純粋関数に閉じ込めた。duplicateSlideは元のstateとcontentを新しいIDで複製し、deleteSlideは最後の1枚を守りながら隣のスライドを選択する。moveSlideは配列の端でクランプする。UIはこの結果を保存し、サムネイルを再描画するだけなので、クリック・キーボード・ドラッグで同じ挙動になる。履歴も不変スナップショットとして別モジュールに切り出し、編集入力は入力中に増やさず、フォーカスを外した時点で1操作として記録する。Undo / Redoは直近50操作を保持し、新しい操作を記録した時点でRedo側を捨てる。
 
-キーボードは発表モードの矢印操作と衝突しないように分けた。編集画面ではCtrl/Cmd+Dが複製、Deleteが削除、Alt+ArrowUp/Downが前後移動になる。入力欄とcontenteditableではブラウザ本来の編集を優先する。
+キーボードは発表モードの矢印操作と衝突しないように分けた。編集画面ではCtrl/Cmd+Dが複製、Deleteが削除、Alt+ArrowUp/Downが前後移動になる。Ctrl/Cmd+ZとCtrl/Cmd+Shift+Zはプレビュー中にデッキ履歴を戻し、編集中はcontenteditable本来の文字編集を優先する。入力欄とcontenteditableではブラウザ本来の編集を優先する。
 
 共有ボタンは現在のWorldStateに、正規化済みデッキをbase64urlで追加する。deck-share.mjsでエンコードと復元を行い、壊れたpayloadや48,000文字を超えるURLは受け付けない。受け取ったデッキはそのタブのsessionStorageに一時保存するので、手元の下書きを上書きせず、その後の編集を続けられる。景色のOG画像はカタログに対応する静的アセットへ切り替え、タイトル・説明・URLと同じタイミングで更新する。
 ## 8. 何を検証したか
 
 今回の景色追加では、次の3種類を分けて確認した。
 
-1. Nodeの単体テスト32件。stateの正規化、scene catalog、deckの保存・復元、content、コンパクトな操作ボタンのアクセシブルネームを確認した。
+1. Nodeの単体テスト35件。stateの正規化、scene catalog、deckの保存・復元、content、コンパクトな操作ボタンのアクセシブルネームを確認した。
 2. ChromiumのUI検証。20個の候補、4行のキーボード移動、シーン切り替え時のメタデータ初期化、天気の無効化、共有・再読込、編集、2枚以上のスライド、発表表示、6つの画面幅を確認した。
 3. 既存シーンの回帰比較。カタログ連携の前後で、同じ位置・同じサイズ・トランジション無効の条件にそろえ、20シーンの描画がピクセル単位で変わっていないことを確認した。
 
@@ -144,6 +144,7 @@ base gradient
 - [app.js](../app.js)：状態反映、UI、キーボード操作
 - [styles.css](../styles.css)：背景レイヤー、文字色、レスポンシブ
 - [deck.mjs](../deck.mjs)：スライドの保存・復元・複製・削除・移動
+- [history.mjs](../history.mjs)：Undo / Redoの不変スナップショット履歴
 - [deck-share.mjs](../deck-share.mjs)：デッキ共有URLのエンコード・復元
 - [scene-preferences.mjs](../scene-preferences.mjs)：景色のお気に入り・最近使った景色の保存
 - [scene-expansion-prompts.md](./scene-expansion-prompts.md)：生成プロンプトとアセット対応

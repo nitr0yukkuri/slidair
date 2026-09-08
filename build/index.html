@@ -77,6 +77,8 @@
             <div class="deck-heading">
               <div class="deck-heading-label"><h2 id="deck-title">スライド</h2><span id="slide-count">1枚</span></div>
               <div class="deck-heading-actions">
+                <button type="button" class="button-quiet deck-action deck-history" id="undo-deck" aria-label="元に戻す" aria-keyshortcuts="Control+Z Meta+Z" title="これ以上戻せません。" disabled><span class="history-glyph" aria-hidden="true">↶</span><span>戻す</span></button>
+                <button type="button" class="button-quiet deck-action deck-history" id="redo-deck" aria-label="やり直す" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="これ以上進めません。" disabled><span class="history-glyph" aria-hidden="true">↷</span><span>進む</span></button>
                 <button type="button" class="button-quiet deck-action" id="move-slide-up" aria-label="前へ移動" title="選択中のスライドを前へ移動します。"><svg class="icon" aria-hidden="true"><use href="#icon-chevron-up"/></svg><span>前へ</span></button>
                 <button type="button" class="button-quiet deck-action" id="move-slide-down" aria-label="次へ移動" title="選択中のスライドを次へ移動します。"><svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"/></svg><span>次へ</span></button>
                 <button type="button" class="button-quiet deck-action" id="duplicate-slide" aria-label="複製" title="選択中のスライドを複製します。"><svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg><span>複製</span></button>

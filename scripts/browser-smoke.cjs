@@ -37,9 +37,41 @@ async function waitForServer(url) {
 
     await page.getByRole("button", { name: "複製", exact: true }).click();
     assert.equal(await page.locator("#slide-count").innerText(), "2枚");
+    await page.getByRole("button", { name: "元に戻す", exact: true }).click();
+    assert.equal(await page.locator("#slide-count").innerText(), "1枚");
+    await page.getByRole("button", { name: "やり直す", exact: true }).click();
+    assert.equal(await page.locator("#slide-count").innerText(), "2枚");
+    await page.keyboard.press("Control+z");
+    assert.equal(await page.locator("#slide-count").innerText(), "1枚");
+    await page.keyboard.press("Control+Shift+z");
+    assert.equal(await page.locator("#slide-count").innerText(), "2枚");
     await page.keyboard.press("Alt+ArrowUp");
     await page.keyboard.press("Delete");
     assert.equal(await page.locator("#slide-count").innerText(), "1枚");
+
+    const dragContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });
+    const dragPage = await dragContext.newPage();
+    await dragPage.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
+    await dragPage.getByRole("button", { name: "サンプルデッキ", exact: true }).click();
+    await dragPage.locator(".deck-item").nth(0).dragTo(dragPage.locator(".deck-item").nth(4));
+    assert.match(await dragPage.locator(".deck-thumb").nth(4).getAttribute("aria-label"), /5枚目、表紙$/);
+    await dragPage.getByRole("button", { name: "元に戻す", exact: true }).click();
+    assert.match(await dragPage.locator(".deck-thumb").nth(0).getAttribute("aria-label"), /1枚目、表紙$/);
+    await dragContext.close();
+
+    const editContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });
+    const editPage = await editContext.newPage();
+    await editPage.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
+    const originalTitle = await editPage.locator("#slide-title").innerText();
+    await editPage.getByRole("button", { name: "テキストを編集", exact: true }).click();
+    const editedTitle = `${originalTitle} 更新`;
+    await editPage.locator("#slide-title").fill(editedTitle);
+    await editPage.getByRole("button", { name: "編集を完了", exact: true }).click();
+    await editPage.getByRole("button", { name: "元に戻す", exact: true }).click();
+    assert.equal(await editPage.locator("#slide-title").innerText(), originalTitle);
+    await editPage.getByRole("button", { name: "やり直す", exact: true }).click();
+    assert.equal(await editPage.locator("#slide-title").innerText(), editedTitle);
+    await editContext.close();
 
     await page.getByRole("button", { name: "宇宙", exact: true }).click();
     await page.getByRole("button", { name: "お気に入りに追加", exact: true }).click();

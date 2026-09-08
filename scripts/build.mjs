@@ -12,6 +12,7 @@ const entries = [
   "content.mjs",
   "deck-share.mjs",
   "deck.mjs",
+  "history.mjs",
   "scene-preferences.mjs",
   "scenes.mjs",
   "state.mjs",

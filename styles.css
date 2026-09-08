@@ -145,7 +145,11 @@ select { cursor: pointer; padding-right: 9px; }
 .deck-add { padding: 4px 8px; min-height: 30px; font-size: .8125rem; }
 .deck-add .icon { width: 14px; height: 14px; flex-basis: 14px; }
 .deck-strip { display: flex; gap: 16px; overflow-x: auto; padding: 4px 3px 9px; margin-inline: -3px; scrollbar-width: thin; scrollbar-color: #343944 transparent; overscroll-behavior-inline: contain; }
-.deck-item { flex: 0 0 142px; min-width: 0; }
+.deck-item { flex: 0 0 142px; min-width: 0; cursor: grab; }
+.deck-item:active { cursor: grabbing; }
+.deck-item.is-dragging { opacity: .38; }
+.deck-item.is-drag-target .deck-thumb-preview { box-shadow: 0 0 0 2px #b7cef4, inset 0 0 0 1px #ffffff80; }
+.history-glyph { display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; line-height: 1; }
 .deck-thumb { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; border-radius: 4px; }
 .deck-thumb:hover, .deck-thumb:active { background: none; border-color: transparent; }
 .deck-thumb-preview { display: block; position: relative; width: 100%; overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid #ffffff22; border-radius: 3px; background: linear-gradient(125deg, #d9e0e1, #9faeb5); transition: border-color 150ms ease, box-shadow 150ms ease; }
@@ -627,6 +631,7 @@ textarea { resize: vertical; }
   .header-actions button { padding: 7px 10px; font-size: .8125rem; }
   .utility-button { width: 32px; padding-inline: 6px; }
   .utility-button span, .deck-sample span, .deck-action span { display: none; }
+  .deck-history .history-glyph { display: inline-flex; }
   .deck-heading-actions { gap: 4px; }
   .deck-sample, .deck-action { width: 32px; padding-inline: 6px; }
   .scene-toolbar { gap: 8px; }
