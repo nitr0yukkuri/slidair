@@ -32,7 +32,19 @@ async function waitForServer(url) {
     page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
-    assert.equal(await page.locator(".scene-choices .choice-button").count(), 20);
+    assert.equal(await page.locator(".scene-choices .choice-button").count(), 26);
+    for (const [label, key, asset] of [
+      ["山霞", "misty-mountains", "scene-misty-mountains-v1.png"],
+      ["潮だまり", "tidepool-coast", "scene-tidepool-coast-v1.png"],
+      ["雲海", "cloud-sea", "scene-cloud-sea-v1.png"],
+      ["藤棚", "wisteria-bower", "scene-wisteria-bower-v1.png"],
+      ["石庭", "stone-garden", "scene-stone-garden-v1.png"],
+      ["夕渓谷", "red-canyon", "scene-red-canyon-v1.png"],
+    ]) {
+      await page.getByRole("button", { name: label, exact: true }).click();
+      assert.equal(await page.locator("#slide").getAttribute("data-scene"), key);
+      assert.match(await page.locator('meta[property="og:image"]').getAttribute("content"), new RegExp(`${asset}$`));
+    }
     assert.equal(await page.locator("#slide-count").innerText(), "1枚");
 
     await page.getByRole("button", { name: "複製", exact: true }).click();

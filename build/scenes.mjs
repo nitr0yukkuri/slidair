@@ -20,6 +20,12 @@ export const SCENE_PRESETS = Object.freeze([
   Object.freeze({ key: "sand-dunes", label: "砂丘", family: "soft", art: "./assets/scene-sand-dunes-v1.webp", og: "scene-sand-dunes-v1.webp", dayOpacity: 0.54, eveningExposure: 0.4, nightExposure: 0.34, categories: ["自然", "明るめ"] }),
   Object.freeze({ key: "moonlit-shore", label: "月夜の海", family: "soft", tone: "dark", art: "./assets/scene-moonlit-shore-v1.webp", og: "scene-moonlit-shore-v1.webp", categories: ["自然", "幻想", "暗め"] }),
   Object.freeze({ key: "aurora-veil", label: "オーロラ", family: "soft", tone: "dark", art: "./assets/scene-aurora-veil-v1.webp", og: "scene-aurora-veil-v1.webp", categories: ["自然", "幻想", "暗め"] }),
+  Object.freeze({ key: "misty-mountains", label: "山霞", family: "soft", art: "./assets/scene-misty-mountains-v1.png", og: "scene-misty-mountains-v1.png", dayOpacity: 0.56, eveningExposure: 0.46, nightExposure: 0.38, categories: ["自然", "幻想", "明るめ"] }),
+  Object.freeze({ key: "tidepool-coast", label: "潮だまり", family: "soft", tone: "dark", art: "./assets/scene-tidepool-coast-v1.png", og: "scene-tidepool-coast-v1.png", dayOpacity: 0.52, eveningExposure: 0.4, nightExposure: 0.33, categories: ["自然", "暗め"] }),
+  Object.freeze({ key: "cloud-sea", label: "雲海", family: "soft", art: "./assets/scene-cloud-sea-v1.png", og: "scene-cloud-sea-v1.png", dayOpacity: 0.65, eveningExposure: 0.44, nightExposure: 0.36, categories: ["自然", "幻想", "明るめ"] }),
+  Object.freeze({ key: "wisteria-bower", label: "藤棚", family: "soft", art: "./assets/scene-wisteria-bower-v1.png", og: "scene-wisteria-bower-v1.png", dayOpacity: 0.55, eveningExposure: 0.43, nightExposure: 0.36, categories: ["自然", "明るめ"] }),
+  Object.freeze({ key: "stone-garden", label: "石庭", family: "soft", art: "./assets/scene-stone-garden-v1.png", og: "scene-stone-garden-v1.png", dayOpacity: 0.48, eveningExposure: 0.42, nightExposure: 0.35, categories: ["自然", "暗め"] }),
+  Object.freeze({ key: "red-canyon", label: "夕渓谷", family: "soft", art: "./assets/scene-red-canyon-v1.png", og: "scene-red-canyon-v1.png", dayOpacity: 0.58, eveningExposure: 0.42, nightExposure: 0.34, categories: ["自然", "幻想", "暗め"] }),
 ]);
 
 export function scenePreset(key) {
