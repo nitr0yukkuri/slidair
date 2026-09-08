@@ -497,7 +497,7 @@ function randomizeAtmosphere() {
   };
   const state = applyState(nextState, "random atmosphere");
   updateUrl(state, "push");
-  status.textContent = "ランダムな空気感を生成しました";
+
 }
 
 function loadSampleDeck() {
