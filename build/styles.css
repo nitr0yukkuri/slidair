@@ -665,3 +665,12 @@ textarea { resize: vertical; }
   .slide[data-scene="space"] .scene-mark { transition: none !important; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Bamboo is intentionally more atmospheric: soften the repeating vertical stems. */
+.slide[data-scene="bamboo-grove"][data-period][data-role] .scene-mark {
+  filter: blur(clamp(8px, 1.1cqw, 16px)) saturate(.64) brightness(var(--landscape-exposure));
+}
+.deck-thumb-preview[data-scene="bamboo-grove"]::before {
+  transform: scale(1.025);
+  filter: blur(1.5px) saturate(.64) brightness(var(--landscape-exposure, 1));
+}
