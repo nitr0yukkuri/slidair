@@ -46,9 +46,13 @@ button:disabled { cursor: default; }
 .app-shell { width: min(1600px, calc(100% - 64px)); margin: 0 auto; padding-bottom: 32px; }
 .app-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; min-height: 122px; padding: 24px 0 20px; }
 .brand-lockup { min-width: 0; }
+.brand-mark { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; border-radius: 9px; }
+.brand-mark:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 5px; }
+.brand-logo { display: block; width: 44px; height: 34px; object-fit: contain; opacity: .88; filter: saturate(.78) brightness(1.05); transition: opacity 160ms ease, transform 160ms ease; }
+.brand-mark:hover .brand-logo { opacity: 1; transform: translateY(-1px); }
 .eyebrow { margin: 0; color: #9caab3; font-size: .64rem; letter-spacing: .17em; line-height: 1; }
-.brand-name { margin: 10px 0 0; color: #edf0f2; font-size: clamp(1.9rem, 3vw, 2.8rem); font-weight: 500; letter-spacing: -.065em; line-height: .95; white-space: nowrap; }
-.intro { max-width: 34rem; margin: 12px 0 0; color: var(--ui-muted); font-size: .78rem; line-height: 1.6; }
+.brand-name { margin: 0; color: #edf0f2; font-size: 1.08rem; font-weight: 600; letter-spacing: .08em; line-height: 1; white-space: nowrap; }
+.intro { max-width: 34rem; margin: 11px 0 0; color: var(--ui-muted); font-size: .78rem; line-height: 1.6; }
 .header-actions > button { flex-shrink: 0; white-space: nowrap; }
 .header-actions { display: flex; align-items: center; gap: 10px; }
 .utility-button { min-height: 32px; padding: 5px 9px; font-size: .75rem; }
@@ -625,7 +629,8 @@ textarea { resize: vertical; }
   .app-shell { width: calc(100% - 24px); padding-bottom: 16px; }
   .app-header { flex-wrap: wrap; padding: 17px 3px 14px; row-gap: 17px; }
   .app-header { min-height: 0; }
-  .brand-name { font-size: 2rem; }
+  .brand-logo { width: 42px; height: 32px; }
+  .brand-name { font-size: .98rem; letter-spacing: .065em; }
   .header-actions { width: 100%; justify-content: flex-end; gap: 8px; }
   .status { display: block; margin-right: auto; font-size: .75rem; }
   .header-actions button { padding: 7px 10px; font-size: .8125rem; }
