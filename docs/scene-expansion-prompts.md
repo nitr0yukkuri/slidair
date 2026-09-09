@@ -91,3 +91,29 @@ Composition: The left 60% and central text region must stay smooth and almost em
 生成元フォルダー:
 
 `C:\Users\2250126\.codex\generated_images\01a07e29-7055-75c3-b277-2b81c9f41e60`
+## 技術系の試作: Rust Forge
+
+既存のsoft familyと同じ文字安全領域を守りながら、自然景観ではなく言語テーマの空気を試す素材。Rustの堅牢性・低レイヤー感を、黒い鉄の面、錆びた赤、右端の細い光へ抽象化した。ロゴやコード画面を描かず、プレゼン背景としての余白を優先している。
+
+| 景色 | ID | 最終ブリーフ | 素材 | 原本PNG |
+| --- | --- | --- | --- | --- |
+| Rust Forge | rust-forge | 黒い鉄の大きな面と、右端・下部にだけ現れる錆びた赤の反射。遠い細い光を一本だけ置き、左60%と中央は低ディテールの黒青い余白にする。堅牢で静かな低レイヤーの気配を、コード・回路・端末・ロゴなしで表現する。 | [PNG](../assets/scene-rust-forge-v1.png) | `exec-3610f378-50ab-4959-a9dd-66957f3a5923.png` |
+
+### Rust Forgeに使った最終プロンプト
+
+```text
+Use case: productivity-visual
+Asset type: 16:9 presentation background for slide-atmosphere
+Primary request: an original abstract atmospheric background for a Rust programming language themed presentation, expressing robustness and low-level engineering as visual mood rather than literal software imagery
+Scene/backdrop: immense dark forged iron surface and quiet industrial planes receding into haze, with a restrained oxidized rust-red glow along the far right edge and one or two hairline cool-white highlights like precise machining light; no recognizable machine or object
+Style/medium: refined editorial atmospheric photography, soft-focus, subtle film grain, premium minimal design, tactile but calm
+Composition/framing: wide 16:9 landscape; keep the left 62% and center smooth, low-detail, and dark for presentation text; place the visual interest only on the far right and lower-right; broad breathing room, no centered focal object
+Lighting/mood: robust, grounded, quiet, precise, resilient; charcoal black and deep blue-black ambient light with controlled ember-red oxidation and a very thin pale steel glint
+Color palette: black iron, graphite, deep slate navy, restrained rust red, muted ember, tiny cool silver highlights; low saturation, no harsh contrast
+Materials/textures: matte forged metal, oxidized iron patina, soft haze, broad planes, subtle brushed texture dissolved by shallow depth of field; no sharp micro-detail
+Text (verbatim): none
+Constraints: original artwork for a presentation editor; no people, no readable screens, no code, no logos, no trademarks, no letters, no numbers, no watermark; maintain clean text-safe negative space on the left and center; keep any bright line extremely thin and confined to the right side
+Avoid: neon cyberpunk, circuit boards, server racks, terminal windows, syntax, literal Rust logo, animal or snake imagery, gears, tools, dense grids, busy center, glossy chrome, dramatic sparks, flames, high saturation, stock-photo factory staging
+```
+
+原本は `C:\Users\2250126\.codex\generated_images\01a07e29-7055-75c3-b277-2b81c9f41e60\exec-3610f378-50ab-4959-a9dd-66957f3a5923.png` に保存している。

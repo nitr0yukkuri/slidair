@@ -31,6 +31,7 @@ export const SCENE_PRESETS = Object.freeze([
   Object.freeze({ key: "rain-window", label: "雨の窓", family: "soft", tone: "dark", art: "./assets/scene-rain-window-v1.png", og: "scene-rain-window-v1.png", categories: ["幻想", "都会", "暗め"] }),
   Object.freeze({ key: "birch-grove", label: "白樺林", family: "soft", art: "./assets/scene-birch-grove-v1.png", og: "scene-birch-grove-v1.png", dayOpacity: 0.55, eveningExposure: 0.43, nightExposure: 0.35, categories: ["自然", "明るめ"] }),
   Object.freeze({ key: "lighthouse-night", label: "夜の灯台", family: "soft", tone: "dark", art: "./assets/scene-lighthouse-night-v1.png", og: "scene-lighthouse-night-v1.png", categories: ["自然", "幻想", "暗め"] }),
+  Object.freeze({ key: "rust-forge", label: "Rust Forge", family: "soft", tone: "dark", art: "./assets/scene-rust-forge-v1.png", og: "scene-rust-forge-v1.png", dayOpacity: 0.42, eveningExposure: 0.42, nightExposure: 0.34, categories: ["都会", "暗め"] }),
 ]);
 
 export function scenePreset(key) {

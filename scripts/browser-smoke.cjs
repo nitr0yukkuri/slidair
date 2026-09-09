@@ -32,7 +32,7 @@ async function waitForServer(url) {
     page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
-    assert.equal(await page.locator(".scene-choices .choice-button").count(), 31);
+    assert.equal(await page.locator(".scene-choices .choice-button").count(), 32);
     for (const [label, key, asset] of [
       ["山霞", "misty-mountains", "scene-misty-mountains-v1.png"],
       ["潮だまり", "tidepool-coast", "scene-tidepool-coast-v1.png"],
@@ -44,6 +44,7 @@ async function waitForServer(url) {
       ["雨の窓", "rain-window", "scene-rain-window-v1.png"],
       ["白樺林", "birch-grove", "scene-birch-grove-v1.png"],
       ["夜の灯台", "lighthouse-night", "scene-lighthouse-night-v1.png"],
+      ["Rust Forge", "rust-forge", "scene-rust-forge-v1.png"],
       ["桜並木", "cherry-blossom", "scene-cherry-blossom-v1.png"],
     ]) {
       await page.getByRole("button", { name: label, exact: true }).click();

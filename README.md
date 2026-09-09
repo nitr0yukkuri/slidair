@@ -10,7 +10,7 @@
 - `spring / summer / autumn / winter` の季節
 - `morning / day / evening / night` の時間帯
 - `clear / cloudy / rain / snow` の天気
-- なし・花火・湖・都会・宇宙・海中・田舎・快晴・深海・初日の出・木漏れ日・竹林・桜霞・桜並木・紫陽花・花畑・紅葉・雪原・砂丘・月夜の海・オーロラ・山霞・潮だまり・雲海・藤棚・石庭・夕渓谷・霧の港・雨の窓・白樺林・夜の灯台の31種類の景色
+- なし・花火・湖・都会・宇宙・海中・田舎・快晴・深海・初日の出・木漏れ日・竹林・桜霞・桜並木・紫陽花・花畑・紅葉・雪原・砂丘・月夜の海・オーロラ・山霞・潮だまり・雲海・藤棚・石庭・夕渓谷・霧の港・雨の窓・白樺林・夜の灯台・Rust Forgeの32種類の景色
 - `cover / section / content / quote / closing` のスライド役割
 - スライド一覧からの追加・切り替え・複製・削除・前後移動・ドラッグ並べ替え（Alt+矢印、Ctrl/Cmd+D、Delete）
 - 直近50操作のUndo / Redo（Ctrl/Cmd+Z、Ctrl/Cmd+Shift+Z）
@@ -24,7 +24,7 @@
 - スライドだけを大きく表示する発表モード（Esc・矢印キー・PageUp/PageDown・Space対応）
 - 発表の空気を示す静かなワードマークと、状態操作のヘッダー
 - 宇宙専用の星雲素材と、役割・時間帯に応じた光量調整（[詳細分析](docs/space-art-direction.md)）
-- 海中・田舎・快晴・深海・初日の出と10種類の柔らかな自然背景（[素材と制作メモ](docs/landscape-presets.md)、[追加素材のプロンプト](docs/scene-expansion-prompts.md)）
+- 海中・田舎・快晴・深海・初日の出など10種類の柔らかな自然背景と、Rust Forgeの技術系背景（[素材と制作メモ](docs/landscape-presets.md)、[追加素材のプロンプト](docs/scene-expansion-prompts.md)）
 - CSSグラデーション、SVGノイズ、低速トランジション
 - `prefers-reduced-motion` 対応
 - 景色のカテゴリ絞り込み、お気に入り、最近使った景色の保存

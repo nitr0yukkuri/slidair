@@ -75,7 +75,7 @@ test("malformed deck data falls back to one slide", () => {
 });
 
 test("existing and new scenes keep their content and order in a version-one draft", () => {
-  const scenes = ["space", "underwater", "countryside", "clear-sky", "deep-sea", "first-sunrise", "forest-light", "bamboo-grove", "sakura-mist", "hydrangea-rain", "lavender-haze", "autumn-haze", "snowfield", "sand-dunes", "moonlit-shore", "aurora-veil"];
+  const scenes = ["space", "underwater", "countryside", "clear-sky", "deep-sea", "first-sunrise", "forest-light", "bamboo-grove", "sakura-mist", "hydrangea-rain", "lavender-haze", "autumn-haze", "snowfield", "sand-dunes", "moonlit-shore", "aurora-veil", "rust-forge"];
   let deck = createDeck({ scene: scenes[0] }, { title: scenes[0] }, "original");
   for (const scene of scenes.slice(1)) {
     deck = addSlide(deck, { scene, period: "day", role: "quote" }, { title: scene, body: "保存する本文" });
