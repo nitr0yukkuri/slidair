@@ -699,13 +699,6 @@ textarea { resize: vertical; }
 .story-beat-scene { margin-top: 5px; color: var(--ui-text); font-size: .625rem; }
 #apply-story { width: 100%; }
 .story-note { margin-top: 8px; }
-.quality-section { padding-top: 19px; padding-bottom: 20px; }
-.quality-section .section-heading { margin-bottom: 11px; }
-#safe-area-score { color: #c5d5e6; font-size: .6875rem; font-variant-numeric: tabular-nums; letter-spacing: .06em; }
-.safe-area-meter { height: 5px; overflow: hidden; border-radius: 999px; background: #ffffff0b; }
-.safe-area-meter-fill { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #b69d86, #c6d8e9); transition: width 260ms ease; }
-.safe-area-summary { margin-top: 9px; }
-.safe-area-detail { margin-top: 5px; color: #929aa9; font-size: .625rem; line-height: 1.65; font-variant-numeric: tabular-nums; }
 .editor-actions { display: grid; gap: 8px; }
 .suggestion-list { display: grid; gap: 8px; margin-top: 12px; }
 .suggestion-card { display: flex; align-items: center; gap: 10px; padding: 10px 11px; border: 1px solid #ffffff0d; border-radius: 8px; background: #ffffff03; }
@@ -715,7 +708,7 @@ textarea { resize: vertical; }
 .suggestion-meta { display: block; overflow: hidden; margin-top: 5px; color: #a7b8c8; font-size: .59375rem; text-overflow: ellipsis; white-space: nowrap; }
 .suggestion-apply { flex: 0 0 auto; padding: 6px 9px; font-size: .6875rem; }
 @media (max-width: 900px) {
-  .story-section, .quality-section { border-left: 0 !important; }
+  .story-section { border-left: 0 !important; }
 }
 @media (max-width: 600px) {
   .story-beats { grid-template-columns: repeat(5, minmax(52px, 1fr)); overflow-x: auto; }

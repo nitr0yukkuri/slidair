@@ -11,7 +11,6 @@ const entries = [
   "app.js",
   "atmosphere-story.mjs",
   "atmosphere-suggestions.mjs",
-  "safe-area.mjs",
   "content.mjs",
   "deck-share.mjs",
   "deck.mjs",

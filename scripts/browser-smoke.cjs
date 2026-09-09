@@ -104,7 +104,6 @@ async function waitForServer(url) {
     const storyScenes = await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.scene));
     assert.equal(storyScenes.length, 5);
     assert.ok(new Set(storyScenes).size >= 3);
-    await bulkPage.waitForFunction(() => /^\d+\/100$/.test(document.querySelector("#safe-area-score")?.textContent ?? ""));
     await bulkContext.close();
 
     const editContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });

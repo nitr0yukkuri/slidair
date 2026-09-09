@@ -23,7 +23,6 @@ import { DECK_SHARE_PARAM, MAX_DECK_SHARE_LENGTH, deserializeDeck, serializeDeck
 import { canRedo, canUndo, createHistory, redo as redoHistory, record as recordHistory, sync as syncHistory, undo as undoHistory } from "./history.mjs";
 import { ATMOSPHERE_STORIES, applyStoryToDeck, storyPreset } from "./atmosphere-story.mjs";
 import { suggestAtmospheres } from "./atmosphere-suggestions.mjs";
-import { measureSlideSafety } from "./safe-area.mjs";
 
 const appShell = document.querySelector(".app-shell");
 const slide = document.querySelector("#slide");
@@ -69,11 +68,6 @@ const storyOptions = document.querySelector("#story-options");
 const storyBeats = document.querySelector("#story-beats");
 const applyStoryButton = document.querySelector("#apply-story");
 const storyNote = document.querySelector("#story-note");
-const safeAreaScore = document.querySelector("#safe-area-score");
-const safeAreaMeter = document.querySelector("#safe-area-meter");
-const safeAreaMeterFill = document.querySelector("#safe-area-meter-fill");
-const safeAreaSummary = document.querySelector("#safe-area-summary");
-const safeAreaDetail = document.querySelector("#safe-area-detail");
 const suggestAtmosphereButton = document.querySelector("#suggest-atmosphere");
 const atmosphereSuggestions = document.querySelector("#atmosphere-suggestions");
 let copyFeedbackTimer;
@@ -89,8 +83,6 @@ let draggedSlideId = null;
 let scenePreferences = readScenePreferences();
 let activeSceneFilter = 'all';
 let selectedStoryKey = ATMOSPHERE_STORIES[0].key;
-let safeAreaFrame;
-let safeAreaRequest = 0;
 
 const roleNames = Object.freeze({
   cover: "表紙",
@@ -148,40 +140,6 @@ function fitSlideContent() {
   }
   // A contenteditable field can scroll its clipped ancestor while being filled.
   slide.scrollTop = 0;
-}
-
-function safeAreaMessage(score) {
-  if (score >= 86) return "文字を置きやすい背景です。"
-  if (score >= 70) return "ほぼ安定。本文だけ少し弱めると安心です。"
-  return "背景の情報量が強めです。暗幕かぼかしを足すと読みやすくなります。"
-}
-
-function updateSafeAreaView(result) {
-  const score = Math.max(0, Math.min(100, Number(result?.score) || 0))
-  safeAreaScore.textContent = `${score}/100`
-  safeAreaMeterFill.style.width = `${score}%`
-  safeAreaMeter.setAttribute("aria-valuenow", String(score))
-  safeAreaSummary.textContent = safeAreaMessage(score)
-  safeAreaDetail.textContent = (result?.fields ?? [])
-    .map((field) => `${field.label} ${field.score} · コントラスト ${field.minContrast}`)
-    .join("　")
-}
-
-async function measureCurrentSlideSafety() {
-  const request = ++safeAreaRequest
-  safeAreaScore.textContent = "計測中"
-  const result = await measureSlideSafety(slide, [
-    { label: "小見出し", element: roleLabel, targetContrast: 3.5 },
-    { label: "見出し", element: slideTitle, targetContrast: 3 },
-    { label: "本文", element: slideCopy, targetContrast: 4.5 },
-  ])
-  if (request !== safeAreaRequest) return
-  updateSafeAreaView(result)
-}
-
-function scheduleSafeAreaUpdate() {
-  cancelAnimationFrame(safeAreaFrame)
-  safeAreaFrame = requestAnimationFrame(() => { void measureCurrentSlideSafety() })
 }
 
 function atmosphereAxisLabel(value) {
@@ -286,7 +244,6 @@ function renderAtmosphereSuggestions() {
 
 new ResizeObserver(() => {
   scheduleContentFit()
-  scheduleSafeAreaUpdate()
 }).observe(slide)
 
 function renderContent(content) {
@@ -585,7 +542,6 @@ function renderActiveSlide(source = "slide selected") {
   applyScenePresentation(slide, state.scene);
   applyContent(selected.content, source);
   syncInspector(state);
-  scheduleSafeAreaUpdate();
   const position = deck.slides.findIndex((item) => item.id === selected.id) + 1;
   const number = String(position).padStart(2, "0");
   slidePosition.textContent = `${number} / ${String(deck.slides.length).padStart(2, "0")}`;
@@ -638,7 +594,6 @@ function editableContent() {
 function persistContent(content = editableContent()) {
   scheduleContentFit();
   currentContent = normalizeContent(content, contentForRole(roleSelect.value));
-  scheduleSafeAreaUpdate();
   const selected = currentSlide();
   if (!selected) return;
   if (!editHistoryStart) editHistoryStart = deck;
