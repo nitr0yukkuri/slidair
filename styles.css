@@ -150,6 +150,7 @@ select { cursor: pointer; padding-right: 9px; }
 .deck-delete:not(:disabled) { color: #d5a9a9; }
 .deck-sample { min-height: 30px; padding: 4px 8px; border-color: transparent; background: transparent; font-size: .75rem; }
 .deck-sample .icon { width: 14px; height: 14px; flex-basis: 14px; }
+.deck-import { min-height: 30px; padding: 4px 8px; border-color: transparent; background: transparent; color: #aeb5c2; font-size: .75rem; }
 .deck-add { padding: 4px 8px; min-height: 30px; border-color: transparent; background: transparent; font-size: .8125rem; }
 .deck-add .icon { width: 14px; height: 14px; flex-basis: 14px; }
 .deck-strip { display: flex; gap: 16px; overflow-x: auto; padding: 4px 3px 9px; margin-inline: -3px; scrollbar-width: thin; scrollbar-color: #343944 transparent; overscroll-behavior-inline: contain; }
@@ -672,6 +673,8 @@ textarea { resize: vertical; }
   .deck-history .history-glyph { display: inline-flex; }
   .deck-heading-actions { gap: 4px; }
   .deck-sample, .deck-action { width: 32px; padding-inline: 6px; }
+  .deck-import { width: 32px; padding-inline: 6px; font-size: 0; }
+  .deck-import::before { content: "↥"; font-size: 1rem; line-height: 1; }
   .scene-toolbar { gap: 8px; }
   .scene-filter { padding-inline: 7px; }
   .canvas-toolbar { padding: 10px 13px; min-height: 54px; }

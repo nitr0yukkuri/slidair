@@ -23,6 +23,7 @@
 - スライドだけを大きく表示する発表モード（Esc・矢印キー・PageUp/PageDown・Space対応）
 - スマホ向け固定フッターナビ（プレビュー・デッキ・背景・発表）
 - PWA対応（ホーム画面追加・オフラインのシェルキャッシュ）
+- AI連携: deck.json の読み込みと、ローカルstdio MCP（npm run mcp）に対応。仕様は docs/deck-schema.md。
 - 発表の空気を示す静かなワードマークと、状態操作のヘッダー
 - 宇宙専用の星雲素材と、役割・時間帯に応じた光量調整（[詳細分析](docs/space-art-direction.md)）
 - 海中・田舎・快晴・深海・初日の出など10種類の柔らかな自然背景と、Rust Forgeの技術系背景（[素材と制作メモ](docs/landscape-presets.md)、[追加素材のプロンプト](docs/scene-expansion-prompts.md)）

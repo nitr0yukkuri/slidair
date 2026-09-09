@@ -85,6 +85,26 @@ async function waitForServer(url) {
     await page.keyboard.press("Delete");
     assert.equal(await page.locator("#slide-count").innerText(), "1枚");
 
+    await page.locator("#deck-file-input").setInputFiles({
+      name: "slidair-demo.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify({
+        version: 1,
+        title: "インポート確認",
+        atmosphere: { season: "winter", period: "night", weather: "clear", scene: "rust-forge" },
+        slides: [
+          { role: "cover", content: { title: "MCPから来た表紙", body: "UIへ取り込める" } },
+          { role: "content", atmosphere: { scene: "deep-sea" }, content: { title: "本文", body: "空気はスライドごとに変えられる" } }
+        ]
+      }))
+    });
+    await page.waitForTimeout(100);
+    assert.equal(await page.locator("#slide-count").innerText(), "2枚");
+    assert.equal(await page.locator("#slide-title").innerText(), "MCPから来た表紙");
+    assert.equal(await page.locator("#slide").getAttribute("data-scene"), "rust-forge");
+    assert.match(await page.locator("#status").innerText(), /インポート確認.*読み込みました/);
+    await page.getByRole("button", { name: "元に戻す", exact: true }).click();
+    assert.equal(await page.locator("#slide-count").innerText(), "1枚");
     const dragContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });
     const dragPage = await dragContext.newPage();
     await dragPage.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });

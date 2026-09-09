@@ -23,6 +23,7 @@ import { DECK_SHARE_PARAM, MAX_DECK_SHARE_LENGTH, deserializeDeck, serializeDeck
 import { canRedo, canUndo, createHistory, redo as redoHistory, record as recordHistory, sync as syncHistory, undo as undoHistory } from "./history.mjs";
 import { ATMOSPHERE_STORIES, applyStoryToDeck, storyPreset } from "./atmosphere-story.mjs";
 import { suggestAtmospheres } from "./atmosphere-suggestions.mjs";
+import { parseSlidairDocument } from "./slidair-schema.mjs";
 
 const appShell = document.querySelector(".app-shell");
 const slide = document.querySelector("#slide");
@@ -34,6 +35,8 @@ const roleSelect = document.querySelector("#role");
 const status = document.querySelector("#status");
 const randomizeButton = document.querySelector("#randomize");
 const sampleDeckButton = document.querySelector("#sample-deck");
+const importDeckButton = document.querySelector("#import-deck");
+const deckFileInput = document.querySelector("#deck-file-input");
 const roleLabel = document.querySelector("#role-label");
 const slideTitle = document.querySelector("#slide-title");
 const slideCopy = document.querySelector("#slide-copy");
@@ -897,6 +900,40 @@ function loadSampleDeck() {
   status.textContent = "サンプルデッキを作成しました";
 }
 
+async function importDeckFile(event) {
+  const [file] = event.target.files ?? [];
+  event.target.value = "";
+  if (!file) return;
+  finishActiveEdit();
+  finishEditSession();
+
+  let source;
+  try {
+    source = await file.text();
+  } catch {
+    status.textContent = "JSONデッキを読み込めませんでした";
+    return;
+  }
+
+  const parsed = parseSlidairDocument(source, deck);
+  if (!parsed.ok) {
+    const firstError = parsed.errors[0];
+    status.textContent = firstError
+      ? "読み込み失敗: " + firstError.path + " " + firstError.message
+      : "JSONデッキを読み込めませんでした";
+    return;
+  }
+
+  sharedDeckMode = false;
+  const warningSuffix = parsed.warnings.length > 0 ? "（" + parsed.warnings.length + "件を補完）" : "";
+  const sourceLabel = (parsed.document.title ? "「" + parsed.document.title + "」" : "JSONデッキ") + "を読み込みました" + warningSuffix;
+  if (!replaceDeck(parsed.deck)) return;
+  persistDeck();
+  renderDeckStrip();
+  const state = renderActiveSlide(sourceLabel);
+  updateUrl(state, "push");
+  status.textContent = sourceLabel;
+}
 function currentState() {
   return normalizeState({
     season: seasonSelect.value,
@@ -985,6 +1022,8 @@ undoButton.addEventListener("click", undoDeck);
 redoButton.addEventListener("click", redoDeck);
 randomizeButton.addEventListener("click", randomizeAtmosphere);
 sampleDeckButton.addEventListener("click", loadSampleDeck);
+importDeckButton.addEventListener("click", () => deckFileInput.click());
+deckFileInput.addEventListener("change", importDeckFile);
 applyStoryButton.addEventListener("click", applySelectedStory);
 suggestAtmosphereButton.addEventListener("click", renderAtmosphereSuggestions);
 moveSlideUpButton.addEventListener("click", () => moveCurrentSlide(-1));
