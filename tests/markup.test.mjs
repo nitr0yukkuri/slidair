@@ -8,6 +8,7 @@ for (const file of ["index.html", "build/index.html"]) {
     assert.match(html, /<title>Slidair<\/title>/);
     assert.match(html, /<h1[^>]*>Slidair<\/h1>/);
     assert.doesNotMatch(html, /safe-area|文字安全度/);
+    assert.doesNotMatch(html, /id="atmosphere-summary"/);
     assert.match(html, /<button[^>]*id="randomize"[^>]*aria-label="ランダム"/s);
     assert.match(html, /<button[^>]*id="sample-deck"[^>]*aria-label="サンプルデッキ"/s);
     assert.match(html, /id="story-options"/);

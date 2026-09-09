@@ -63,7 +63,6 @@ const presentationChrome = document.querySelector("#presentation-chrome");
 const presentationExit = document.querySelector("#presentation-exit");
 const slidePosition = document.querySelector("#slide-position");
 const activeRoleName = document.querySelector("#active-role-name");
-const atmosphereSummary = document.querySelector("#atmosphere-summary");
 const storyOptions = document.querySelector("#story-options");
 const storyBeats = document.querySelector("#story-beats");
 const applyStoryButton = document.querySelector("#apply-story");
@@ -1161,7 +1160,6 @@ function syncInspector(state) {
   document.querySelector("#weather-note").textContent = state.scene === "none"
     ? "季節の色は、スライドの下部に。"
     : "景色の選択中は、天気は反映されません。";
-  atmosphereSummary.textContent = [labelFor(seasonSelect), labelFor(periodSelect), labelFor(state.scene === "none" ? weatherSelect : sceneSelect)].join(" · ");
   updateFavoriteSceneControl();
 }
 

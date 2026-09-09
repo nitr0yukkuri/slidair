@@ -70,7 +70,7 @@ button:disabled { cursor: default; }
 .edit-toggle[aria-pressed="true"] { color: #dbe6f7; border-color: #b7cef435; background: #b7cef413; }
 .canvas-stage { display: grid; place-items: center; padding: 26px 36px 14px; min-width: 0; }
 .canvas-stage > .slide { max-width: min(100%, calc(max(310px, 100svh - 442px) * 16 / 9)); }
-.canvas-footer { display: flex; justify-content: space-between; gap: 16px; padding: 2px 36px 25px; color: var(--ui-faint); font-size: .75rem; line-height: 1.5; }
+.canvas-footer { display: flex; justify-content: flex-end; gap: 16px; padding: 2px 36px 25px; color: var(--ui-faint); font-size: .75rem; line-height: 1.5; }
 .canvas-ratio { font-variant-numeric: tabular-nums; }
 .canvas-ratio span { color: #474b57; padding-inline: 6px; }
 .controls { min-width: 0; overflow: hidden; background: linear-gradient(180deg, #191a20, #15161b); border: 1px solid var(--ui-border); border-radius: 16px; }
