@@ -18,6 +18,7 @@ Composition: The left 60% and central text region must stay smooth and almost em
 | 木漏れ日 | forest-light | オリーブと苔の森。右上から面で差す淡い光、右端と下部だけに溶ける葉の層。左と中央は緑の霞。 | [WebP](../assets/scene-forest-light-v1.webp) |
 | 竹林 | bamboo-grove | 冷たい翡翠とセージの竹林。右端だけにぼけた縦の竹、左は淡い霞。硬い茎や道は置かない。 | [WebP](../assets/scene-bamboo-grove-v1.webp) |
 | 桜霞 | sakura-mist | 青灰の春霞に淡い桃色の桜の塊。桜は右端と右下へ寄せ、中央は静かな空気にする。 | [WebP](../assets/scene-sakura-mist-v1.webp) |
+| 桜並木 | cherry-blossom | 淡い青灰とアイボリーの春朝。右上から桜色の花のアーチを一つだけ入れ、遠い小径は右下へ沈める。左60%と中央は滑らかな空気に保ち、枝の細部や人物は置かない。 | [PNG](../assets/scene-cherry-blossom-v1.png) |
 | 紫陽花 | hydrangea-rain | 雨上がりの青紫と煙った緑。右下にだけ大きくぼけた花の塊、左と中央は冷たい霧。 | [WebP](../assets/scene-hydrangea-rain-v1.webp) |
 | 花畑 | lavender-haze | 低い紫の花畑が霞む丘へ続く。下部の水平な紫の面と、上の淡い薄紫の空気。 | [WebP](../assets/scene-lavender-haze-v1.webp) |
 | 紅葉 | autumn-haze | 銅・錆・黄土の秋の森。右端と下部の葉の塊に暖かな光、左と中央は暖灰色の霧。 | [WebP](../assets/scene-autumn-haze-v1.webp) |
@@ -79,3 +80,14 @@ Composition: The left 60% and central text region must stay smooth and almost em
 - rain-window: `exec-c9650803-2cb4-46ea-86a5-a49a170c2b7c.png`
 - birch-grove: `exec-1fa8120a-8069-418b-97f2-16628cb684c8.png`
 - lighthouse-night: `exec-ef4cd02e-a97d-4835-a977-afe69794af10.png`
+## 今回追加した桜並木
+
+既存の桜霞と役割が重ならないよう、桜色の主題を右上のアーチへ寄せ、左60%と中央に朝霞の余白を残した。内蔵 `image_gen` で2026-09-09に生成し、生成されたPNGを実行時素材として採用した。
+
+| 景色 | ID | 最終プロンプト | 素材 | 原本PNG |
+| --- | --- | --- | --- | --- |
+| 桜並木 | cherry-blossom | Standalone photographic atmosphere background for a presentation editor, 16:9. A spring cherry blossom avenue in early morning haze; one broad soft pink canopy enters from the upper-right and curves toward the far right edge, with a barely visible pale path in the lower-right. Keep the left 60% and central text region smooth, quiet, and almost empty in pale blue-gray and warm ivory. Soft-focus environmental photography, broad coherent shapes, natural optical texture, low contrast, restrained blush pink palette. No people, buildings, text, logos, watermarks, artificial bokeh, glitter, hard light shafts, oversaturation, or crisp branches through the text area. | [PNG](../assets/scene-cherry-blossom-v1.png) | `exec-f8c6b6cc-6686-4ef8-a239-4c06d89c4b90.png` |
+
+生成元フォルダー:
+
+`C:\Users\2250126\.codex\generated_images\01a07e29-7055-75c3-b277-2b81c9f41e60`

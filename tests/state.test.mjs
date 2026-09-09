@@ -55,7 +55,7 @@ test("stateToSearchParams emits a canonical axis order", () => {
 });
 
 test("new landscape scenes survive shared URLs without changing other axes", () => {
-  for (const scene of ["underwater", "countryside", "clear-sky", "deep-sea", "first-sunrise", "forest-light", "bamboo-grove", "sakura-mist", "hydrangea-rain", "lavender-haze", "autumn-haze", "snowfield", "sand-dunes", "moonlit-shore", "aurora-veil"]) {
+  for (const scene of ["underwater", "countryside", "clear-sky", "deep-sea", "first-sunrise", "forest-light", "bamboo-grove", "sakura-mist", "cherry-blossom", "hydrangea-rain", "lavender-haze", "autumn-haze", "snowfield", "sand-dunes", "moonlit-shore", "aurora-veil"]) {
     const state = { season: "winter", period: "morning", weather: "snow", scene, role: "quote" };
     assert.deepEqual(stateFromSearch(stateToSearchParams(state)), state);
     assert.deepEqual(stateFromSearch("?scene=" + scene, { ...state, scene: "space" }), state);
