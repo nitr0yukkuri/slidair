@@ -33,6 +33,23 @@ async function waitForServer(url) {
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
     assert.match(await page.title(), /Slidair$/);
+    assert.equal(await page.locator('link[rel="manifest"]').getAttribute("href"), "./manifest.webmanifest");
+    const registration = await page.evaluate(async () => {
+      if (!("serviceWorker" in navigator)) return null;
+      const ready = await navigator.serviceWorker.ready;
+      return { scope: ready.scope, state: ready.active?.state };
+    });
+    assert.ok(registration);
+    assert.equal(new URL(registration.scope).pathname, "/");
+    assert.equal(registration.state, "activated");
+    const offlineContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const offlinePage = await offlineContext.newPage();
+    await offlinePage.goto(`${baseUrl}/?season=winter&period=night&weather=snow&scene=none&role=section`, { waitUntil: "networkidle" });
+    await offlinePage.evaluate(() => navigator.serviceWorker.ready);
+    await offlineContext.setOffline(true);
+    await offlinePage.reload({ waitUntil: "domcontentloaded" });
+    assert.match(await offlinePage.title(), /Slidair$/);
+    await offlineContext.close();
     assert.equal(await page.locator(".scene-choices .choice-button").count(), 32);
     for (const [label, key, asset] of [
       ["山霞", "misty-mountains", "scene-misty-mountains-v1.png"],

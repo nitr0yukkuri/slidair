@@ -1,0 +1,28 @@
+{
+  "name": "Slidair — スライドに、空気を。",
+  "short_name": "Slidair",
+  "description": "季節・時間帯・景色から、言葉を邪魔しないプレゼンテーション背景をつくる。",
+  "lang": "ja",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#101114",
+  "background_color": "#101114",
+  "categories": ["design", "productivity"],
+  "icons": [
+    {
+      "src": "./assets/slidair-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/slidair-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

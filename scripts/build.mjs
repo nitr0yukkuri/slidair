@@ -7,6 +7,8 @@ const buildRoot = join(projectRoot, "build");
 const checkOnly = process.argv.includes("--check");
 const entries = [
   "index.html",
+  "manifest.webmanifest",
+  "sw.js",
   "styles.css",
   "app.js",
   "atmosphere-story.mjs",
