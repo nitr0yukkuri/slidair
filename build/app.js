@@ -21,6 +21,9 @@ import {
 import { readScenePreferences, rememberScene, toggleFavorite, writeScenePreferences } from "./scene-preferences.mjs";
 import { DECK_SHARE_PARAM, MAX_DECK_SHARE_LENGTH, deserializeDeck, serializeDeck } from "./deck-share.mjs";
 import { canRedo, canUndo, createHistory, redo as redoHistory, record as recordHistory, sync as syncHistory, undo as undoHistory } from "./history.mjs";
+import { ATMOSPHERE_STORIES, applyStoryToDeck, storyPreset } from "./atmosphere-story.mjs";
+import { suggestAtmospheres } from "./atmosphere-suggestions.mjs";
+import { measureSlideSafety } from "./safe-area.mjs";
 
 const appShell = document.querySelector(".app-shell");
 const slide = document.querySelector("#slide");
@@ -62,6 +65,17 @@ const presentationExit = document.querySelector("#presentation-exit");
 const slidePosition = document.querySelector("#slide-position");
 const activeRoleName = document.querySelector("#active-role-name");
 const atmosphereSummary = document.querySelector("#atmosphere-summary");
+const storyOptions = document.querySelector("#story-options");
+const storyBeats = document.querySelector("#story-beats");
+const applyStoryButton = document.querySelector("#apply-story");
+const storyNote = document.querySelector("#story-note");
+const safeAreaScore = document.querySelector("#safe-area-score");
+const safeAreaMeter = document.querySelector("#safe-area-meter");
+const safeAreaMeterFill = document.querySelector("#safe-area-meter-fill");
+const safeAreaSummary = document.querySelector("#safe-area-summary");
+const safeAreaDetail = document.querySelector("#safe-area-detail");
+const suggestAtmosphereButton = document.querySelector("#suggest-atmosphere");
+const atmosphereSuggestions = document.querySelector("#atmosphere-suggestions");
 let copyFeedbackTimer;
 
 let editMode = false;
@@ -74,6 +88,9 @@ let editHistoryStart = null;
 let draggedSlideId = null;
 let scenePreferences = readScenePreferences();
 let activeSceneFilter = 'all';
+let selectedStoryKey = ATMOSPHERE_STORIES[0].key;
+let safeAreaFrame;
+let safeAreaRequest = 0;
 
 const roleNames = Object.freeze({
   cover: "表紙",
@@ -133,7 +150,144 @@ function fitSlideContent() {
   slide.scrollTop = 0;
 }
 
-new ResizeObserver(scheduleContentFit).observe(slide);
+function safeAreaMessage(score) {
+  if (score >= 86) return "文字を置きやすい背景です。"
+  if (score >= 70) return "ほぼ安定。本文だけ少し弱めると安心です。"
+  return "背景の情報量が強めです。暗幕かぼかしを足すと読みやすくなります。"
+}
+
+function updateSafeAreaView(result) {
+  const score = Math.max(0, Math.min(100, Number(result?.score) || 0))
+  safeAreaScore.textContent = `${score}/100`
+  safeAreaMeterFill.style.width = `${score}%`
+  safeAreaMeter.setAttribute("aria-valuenow", String(score))
+  safeAreaSummary.textContent = safeAreaMessage(score)
+  safeAreaDetail.textContent = (result?.fields ?? [])
+    .map((field) => `${field.label} ${field.score} · コントラスト ${field.minContrast}`)
+    .join("　")
+}
+
+async function measureCurrentSlideSafety() {
+  const request = ++safeAreaRequest
+  safeAreaScore.textContent = "計測中"
+  const result = await measureSlideSafety(slide, [
+    { label: "小見出し", element: roleLabel, targetContrast: 3.5 },
+    { label: "見出し", element: slideTitle, targetContrast: 3 },
+    { label: "本文", element: slideCopy, targetContrast: 4.5 },
+  ])
+  if (request !== safeAreaRequest) return
+  updateSafeAreaView(result)
+}
+
+function scheduleSafeAreaUpdate() {
+  cancelAnimationFrame(safeAreaFrame)
+  safeAreaFrame = requestAnimationFrame(() => { void measureCurrentSlideSafety() })
+}
+
+function atmosphereAxisLabel(value) {
+  return {
+    spring: "春", summer: "夏", autumn: "秋", winter: "冬",
+    morning: "朝", day: "昼", evening: "夕方", night: "夜",
+    clear: "晴れ", cloudy: "曇り", rain: "雨", snow: "雪",
+  }[value] ?? value
+}
+
+function atmosphereBeatLabel(beat) {
+  const preset = scenePreset(beat.scene)
+  return `${atmosphereAxisLabel(beat.period)} · ${preset.label}`
+}
+
+function renderStoryOptions() {
+  if (!storyOptions) return
+  storyOptions.replaceChildren()
+  ATMOSPHERE_STORIES.forEach((story) => {
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "story-option"
+    button.setAttribute("aria-pressed", String(story.key === selectedStoryKey))
+    const title = document.createElement("span")
+    title.className = "story-option-title"
+    title.textContent = story.label
+    const description = document.createElement("span")
+    description.className = "story-option-description"
+    description.textContent = story.description
+    button.append(title, description)
+    button.addEventListener("click", () => {
+      selectedStoryKey = story.key
+      renderStoryOptions()
+      renderStoryBeats()
+    })
+    storyOptions.append(button)
+  })
+}
+
+function renderStoryBeats() {
+  if (!storyBeats) return
+  const story = storyPreset(selectedStoryKey)
+  storyBeats.replaceChildren()
+  story.beats.forEach((beat, index) => {
+    const item = document.createElement("li")
+    item.className = "story-beat"
+    const number = document.createElement("span")
+    number.className = "story-beat-index"
+    number.textContent = String(index + 1).padStart(2, "0")
+    const role = document.createElement("span")
+    role.className = "story-beat-role"
+    role.textContent = ["表紙", "区切り", "本文", "引用", "締め"][index]
+    const scene = document.createElement("span")
+    scene.className = "story-beat-scene"
+    scene.textContent = atmosphereBeatLabel(beat)
+    item.append(number, role, scene)
+    storyBeats.append(item)
+  })
+  storyNote.textContent = `${story.label} · 5つの場面をデッキ全体へ適用します。`
+}
+
+function applySelectedStory() {
+  finishActiveEdit()
+  finishEditSession()
+  const story = storyPreset(selectedStoryKey)
+  commitDeckMutation(applyStoryToDeck(deck, story), `${story.label}の空気の流れを適用しました`)
+  storyNote.textContent = `${story.label}を適用しました。戻すで直前のデッキへ戻せます。`
+}
+
+function renderAtmosphereSuggestions() {
+  const selected = currentSlide()
+  if (!selected || !atmosphereSuggestions) return
+  const suggestions = suggestAtmospheres(selected.content, selected.state)
+  suggestions.forEach((suggestion) => {
+    const card = document.createElement("article")
+    card.className = "suggestion-card"
+    const heading = document.createElement("h4")
+    heading.textContent = suggestion.label
+    const description = document.createElement("p")
+    description.textContent = suggestion.description
+    const meta = document.createElement("span")
+    meta.className = "suggestion-meta"
+    const scene = scenePreset(suggestion.state.scene)
+    meta.textContent = `${atmosphereAxisLabel(suggestion.state.period)} · ${scene.label}${suggestion.matchedTerms.length ? ` · ${suggestion.matchedTerms.join("・")}` : ""}`
+    const applyButton = document.createElement("button")
+    applyButton.type = "button"
+    applyButton.className = "button-secondary suggestion-apply"
+    applyButton.textContent = "適用"
+    applyButton.setAttribute("aria-label", `${suggestion.label}を適用`)
+    applyButton.addEventListener("click", () => {
+      applyState(suggestion.state, `${suggestion.label}を適用しました`)
+      atmosphereSuggestions.hidden = true
+    })
+    const content = document.createElement("div")
+    content.className = "suggestion-card-copy"
+    content.append(heading, description, meta)
+    card.append(content, applyButton)
+    atmosphereSuggestions.append(card)
+  })
+  atmosphereSuggestions.hidden = false
+}
+
+new ResizeObserver(() => {
+  scheduleContentFit()
+  scheduleSafeAreaUpdate()
+}).observe(slide)
 
 function renderContent(content) {
   roleLabel.textContent = content.kicker;
@@ -431,6 +585,7 @@ function renderActiveSlide(source = "slide selected") {
   applyScenePresentation(slide, state.scene);
   applyContent(selected.content, source);
   syncInspector(state);
+  scheduleSafeAreaUpdate();
   const position = deck.slides.findIndex((item) => item.id === selected.id) + 1;
   const number = String(position).padStart(2, "0");
   slidePosition.textContent = `${number} / ${String(deck.slides.length).padStart(2, "0")}`;
@@ -483,6 +638,7 @@ function editableContent() {
 function persistContent(content = editableContent()) {
   scheduleContentFit();
   currentContent = normalizeContent(content, contentForRole(roleSelect.value));
+  scheduleSafeAreaUpdate();
   const selected = currentSlide();
   if (!selected) return;
   if (!editHistoryStart) editHistoryStart = deck;
@@ -491,6 +647,7 @@ function persistContent(content = editableContent()) {
   renderDeckStrip();
   const saved = persistDeck();
   editorStatus.textContent = saved ? "自動保存済み" : "表示中（保存できませんでした）";
+  if (atmosphereSuggestions) atmosphereSuggestions.hidden = true;
   status.textContent = "編集中";
 }
 
@@ -867,6 +1024,8 @@ undoButton.addEventListener("click", undoDeck);
 redoButton.addEventListener("click", redoDeck);
 randomizeButton.addEventListener("click", randomizeAtmosphere);
 sampleDeckButton.addEventListener("click", loadSampleDeck);
+applyStoryButton.addEventListener("click", applySelectedStory);
+suggestAtmosphereButton.addEventListener("click", renderAtmosphereSuggestions);
 moveSlideUpButton.addEventListener("click", () => moveCurrentSlide(-1));
 moveSlideDownButton.addEventListener("click", () => moveCurrentSlide(1));
 duplicateSlideButton.addEventListener("click", duplicateCurrentSlide);
@@ -1053,6 +1212,8 @@ function syncInspector(state) {
 
 sceneSelect.replaceChildren(...SCENE_PRESETS.map(preset => new Option(preset.label, preset.key)));
 setupChoiceControls();
+renderStoryOptions();
+renderStoryBeats();
 applySceneFilter();
 const initialState = stateFromSearch(window.location.search);
 const sharedDeck = deserializeDeck(new URLSearchParams(window.location.search).get(DECK_SHARE_PARAM));

@@ -94,6 +94,15 @@ async function waitForServer(url) {
     await bulkPage.getByRole("button", { name: "現在時刻", exact: true }).click();
     const currentPeriods = await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.period));
     assert.ok(currentPeriods.every((period) => period === currentPeriods[0]));
+    await bulkPage.locator(".story-disclosure > summary").click();
+    await bulkPage.getByRole("button", { name: /^Night Journey/ }).click();
+    assert.equal(await bulkPage.locator(".story-beat").count(), 5);
+    await bulkPage.getByRole("button", { name: "この流れを適用", exact: true }).click();
+    assert.match(await bulkPage.locator("#status").innerText(), /Night Journey/);
+    const storyScenes = await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.scene));
+    assert.equal(storyScenes.length, 5);
+    assert.ok(new Set(storyScenes).size >= 3);
+    await bulkPage.waitForFunction(() => /^\d+\/100$/.test(document.querySelector("#safe-area-score")?.textContent ?? ""));
     await bulkContext.close();
 
     const editContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });
@@ -108,6 +117,12 @@ async function waitForServer(url) {
     assert.equal(await editPage.locator("#slide-title").innerText(), originalTitle);
     await editPage.getByRole("button", { name: "やり直す", exact: true }).click();
     assert.equal(await editPage.locator("#slide-title").innerText(), editedTitle);
+    await editPage.getByRole("button", { name: "テキストを編集", exact: true }).click();
+    await editPage.getByRole("button", { name: "内容から空気を提案", exact: true }).click();
+    assert.equal(await editPage.locator(".suggestion-card").count(), 3);
+    await editPage.locator(".suggestion-apply").first().click();
+    assert.match(await editPage.locator("#status").innerText(), /を適用しました/);
+    await editPage.getByRole("button", { name: "編集を完了", exact: true }).click();
     await editContext.close();
 
     await page.getByRole("button", { name: "宇宙", exact: true }).click();

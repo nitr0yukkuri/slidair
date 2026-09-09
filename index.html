@@ -125,9 +125,30 @@
               </div>
             </details>
           </section>
+          <section class="inspector-section story-section" aria-labelledby="story-heading">
+            <details class="story-disclosure">
+              <summary class="section-heading scene-summary">
+                <h3 id="story-heading">空気の流れ</h3>
+                <span class="scene-summary-trailing"><span class="section-value">デッキ全体</span><span class="disclosure-chevron" aria-hidden="true"></span></span>
+              </summary>
+              <div class="story-disclosure-body">
+                <p class="field-note">表紙から締めまで、景色の流れをまとめて設計します。</p>
+                <div id="story-options" class="story-options" role="group" aria-label="空気の流れプリセット"></div>
+                <ol id="story-beats" class="story-beats" aria-live="polite"></ol>
+                <button type="button" id="apply-story" class="button-secondary">この流れを適用</button>
+                <p id="story-note" class="field-note" role="status"></p>
+              </div>
+            </details>
+          </section>
           <section class="inspector-section" aria-labelledby="layout-heading">
             <div class="section-heading"><h3 id="layout-heading">レイアウト</h3></div>
             <div class="control-group"><label for="role">スライドの役割</label><select id="role"><option value="cover" selected>表紙</option><option value="section">区切り</option><option value="content">本文</option><option value="quote">引用・メッセージ</option><option value="closing">締め</option></select></div>
+          </section>
+          <section class="inspector-section quality-section" aria-labelledby="quality-heading">
+            <div class="section-heading"><h3 id="quality-heading">文字安全度</h3><span id="safe-area-score">計測中</span></div>
+            <div class="safe-area-meter" id="safe-area-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="文字安全度"><span class="safe-area-meter-fill" id="safe-area-meter-fill"></span></div>
+            <p class="field-note" id="safe-area-summary">背景と文字の相性を計測しています。</p>
+            <p class="safe-area-detail" id="safe-area-detail" aria-live="polite"></p>
           </section>
           <section class="editor-panel" id="editor-panel" aria-labelledby="editor-title" hidden>
             <div class="editor-heading">
@@ -150,8 +171,10 @@
               </div>
             </div>
             <div class="editor-actions">
+              <button type="button" class="button-secondary" id="suggest-atmosphere">内容から空気を提案</button>
               <button type="button" class="button-secondary" id="reset-content">初期文に戻す</button>
             </div>
+            <div id="atmosphere-suggestions" class="suggestion-list" hidden aria-live="polite"></div>
             <p class="editor-status" id="editor-status" role="status">役割の初期文を表示中</p>
             <p class="editor-note">文章はこのブラウザに保存されます。共有URLではデッキ全体を渡せます。</p>
           </section>
