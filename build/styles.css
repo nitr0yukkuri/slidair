@@ -48,7 +48,7 @@ button:disabled { cursor: default; }
 .brand-lockup { min-width: 0; }
 .brand-mark { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; border-radius: 9px; }
 .brand-mark:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 5px; }
-.brand-logo { display: block; width: 44px; height: 34px; object-fit: contain; opacity: .88; filter: saturate(.78) brightness(1.05); transition: opacity 160ms ease, transform 160ms ease; }
+.brand-logo { display: block; width: 40px; height: 40px; object-fit: contain; border-radius: 10px; opacity: .92; filter: saturate(.86) brightness(.98); transition: opacity 160ms ease, transform 160ms ease; }
 .brand-mark:hover .brand-logo { opacity: 1; transform: translateY(-1px); }
 .eyebrow { margin: 0; color: #9caab3; font-size: .64rem; letter-spacing: .17em; line-height: 1; }
 .brand-name { margin: 0; color: #edf0f2; font-size: 1.08rem; font-weight: 600; letter-spacing: .08em; line-height: 1; white-space: nowrap; }
@@ -629,7 +629,7 @@ textarea { resize: vertical; }
   .app-shell { width: calc(100% - 24px); padding-bottom: 16px; }
   .app-header { flex-wrap: wrap; padding: 17px 3px 14px; row-gap: 17px; }
   .app-header { min-height: 0; }
-  .brand-logo { width: 42px; height: 32px; }
+  .brand-logo { width: 36px; height: 36px; }
   .brand-name { font-size: .98rem; letter-spacing: .065em; }
   .header-actions { width: 100%; justify-content: flex-end; gap: 8px; }
   .status { display: block; margin-right: auto; font-size: .75rem; }
