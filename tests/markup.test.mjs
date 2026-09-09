@@ -14,6 +14,10 @@ for (const file of ["index.html", "build/index.html"]) {
     assert.match(html, /id="story-options"/);
     assert.match(html, /id="apply-story"/);
     assert.match(html, /id="suggest-atmosphere"/);
+    assert.match(html, /id="mobile-bottom-nav"/);
+    for (const [target, label] of [["preview", "プレビュー"], ["deck", "デッキ"], ["settings", "背景"], ["present", "発表"]]) {
+      assert.match(html, new RegExp(`data-mobile-target="${target}"[^>]*>[\\s\\S]*${label}`));
+    }
   });
 }
 

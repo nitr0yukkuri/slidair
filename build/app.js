@@ -63,6 +63,12 @@ const presentationChrome = document.querySelector("#presentation-chrome");
 const presentationExit = document.querySelector("#presentation-exit");
 const slidePosition = document.querySelector("#slide-position");
 const activeRoleName = document.querySelector("#active-role-name");
+const mobileNavButtons = [...document.querySelectorAll(".mobile-nav-button")];
+const mobileNavTargets = Object.freeze({
+  preview: document.querySelector(".canvas-toolbar"),
+  deck: document.querySelector(".deck-panel"),
+  settings: document.querySelector(".controls"),
+});
 const storyOptions = document.querySelector("#story-options");
 const storyBeats = document.querySelector("#story-beats");
 const applyStoryButton = document.querySelector("#apply-story");
@@ -973,6 +979,7 @@ roleSelect.addEventListener("change", selectChanged);
 editModeToggle.addEventListener("click", () => setEditMode(!editMode));
 slideOnlyToggle.addEventListener("click", () => setPresentationMode(!presentationMode));
 presentationExit.addEventListener("click", () => setPresentationMode(false));
+mobileNavButtons.forEach((button) => button.addEventListener("click", () => focusMobileSection(button.dataset.mobileTarget)));
 addSlideButton.addEventListener("click", addNewSlide);
 undoButton.addEventListener("click", undoDeck);
 redoButton.addEventListener("click", redoDeck);
@@ -1144,6 +1151,18 @@ function setupChoiceControls() {
   });
 }
 
+function focusMobileSection(target) {
+  if (target === "present") {
+    slideOnlyToggle.click();
+    return;
+  }
+  const destination = mobileNavTargets[target];
+  if (!destination) return;
+  mobileNavButtons.forEach((button) => {
+    button.toggleAttribute("aria-current", button.dataset.mobileTarget === target);
+  });
+  destination.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 function syncInspector(state) {
   document.querySelectorAll("[data-choice-control]").forEach((control) => {
     const key = control.dataset.choiceControl;

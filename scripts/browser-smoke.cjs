@@ -150,6 +150,18 @@ async function waitForServer(url) {
 
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+    assert.equal(await page.locator("#mobile-bottom-nav").isVisible(), true);
+    assert.equal(await page.locator(".mobile-nav-button").count(), 4);
+    assert.ok(await page.locator(".mobile-nav-button").evaluateAll((buttons) => buttons.every((button) => button.getBoundingClientRect().height >= 44)));
+    await page.getByRole("button", { name: "背景", exact: true }).click();
+    await page.waitForTimeout(450);
+    assert.ok(await page.locator("#controls").evaluate((element) => element.getBoundingClientRect().top <= 8));
+    await page.getByRole("button", { name: "デッキ", exact: true }).click();
+    await page.waitForTimeout(450);
+    assert.ok(await page.locator("#deck-panel").evaluate((element) => element.getBoundingClientRect().top <= 8));
+    await page.getByRole("button", { name: "プレビュー", exact: true }).click();
+    await page.waitForTimeout(450);
+    assert.ok(await page.locator(".canvas-toolbar").evaluate((element) => element.getBoundingClientRect().top <= 8));
     const unnamed = await page.locator("button:visible").evaluateAll((buttons) => buttons.filter((button) => !(button.getAttribute("aria-label") || button.textContent || "").trim()).length);
     assert.equal(unnamed, 0);
     assert.deepEqual(errors, []);
