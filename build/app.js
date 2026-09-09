@@ -956,7 +956,7 @@ function updateShareMetadata(state, href = window.location.href) {
   const preset = scenePreset(state.scene);
   const period = periodSelect.selectedOptions[0]?.textContent ?? "";
   const sceneTitle = preset.key === "none" ? "静かな背景" : preset.label + "の空気";
-  const shareTitle = sceneTitle + " · " + period + " | slide-atmosphere";
+  const shareTitle = sceneTitle + " · " + period + " | Slidair";
   const shareDescription = preset.key === "none"
     ? "季節・時間帯・天気から、言葉を邪魔しないプレゼン背景をつくる。"
     : preset.label + "の空気をまとったプレゼンテーション背景。";

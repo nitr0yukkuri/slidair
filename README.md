@@ -1,4 +1,4 @@
-# slide-atmosphere
+# Slidair
 
 プレゼンテーションのための、静かな環境背景ジェネレーター。
 

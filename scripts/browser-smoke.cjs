@@ -32,6 +32,7 @@ async function waitForServer(url) {
     page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
+    assert.match(await page.title(), /Slidair$/);
     assert.equal(await page.locator(".scene-choices .choice-button").count(), 32);
     for (const [label, key, asset] of [
       ["山霞", "misty-mountains", "scene-misty-mountains-v1.png"],

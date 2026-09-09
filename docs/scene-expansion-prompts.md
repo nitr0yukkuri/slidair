@@ -103,7 +103,7 @@ Composition: The left 60% and central text region must stay smooth and almost em
 
 ```text
 Use case: productivity-visual
-Asset type: 16:9 presentation background for slide-atmosphere
+Asset type: 16:9 presentation background for Slidair
 Primary request: an original abstract atmospheric background for a Rust programming language themed presentation, expressing robustness and low-level engineering as visual mood rather than literal software imagery
 Scene/backdrop: immense dark forged iron surface and quiet industrial planes receding into haze, with a restrained oxidized rust-red glow along the far right edge and one or two hairline cool-white highlights like precise machining light; no recognizable machine or object
 Style/medium: refined editorial atmospheric photography, soft-focus, subtle film grain, premium minimal design, tactile but calm

@@ -84,6 +84,6 @@ export function createStaticServer() {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   createStaticServer().listen(4173, "127.0.0.1", () => {
-    console.log("slide-atmosphere: http://127.0.0.1:4173");
+    console.log("Slidair: http://127.0.0.1:4173");
   });
 }
