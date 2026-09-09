@@ -4,6 +4,7 @@ const { spawn } = require("node:child_process");
 const { once } = require("node:events");
 
 const baseUrl = process.env.BASE_URL || "http://127.0.0.1:4173";
+const smokeRoot = process.argv[2] ? require("node:path").resolve(process.argv[2]) : null;
 let server;
 async function waitForServer() {
   for (let attempt = 0; attempt < 60; attempt += 1) {
@@ -13,7 +14,7 @@ async function waitForServer() {
   throw new Error("サーバーが起動しません");
 }
 (async () => {
-  if (!process.env.BASE_URL) { server = spawn(process.execPath, ["server.mjs"], { stdio: "ignore" }); await waitForServer(); }
+  if (!process.env.BASE_URL) { server = spawn(process.execPath, ["server.mjs"], { stdio: "ignore", env: { ...process.env, ...(smokeRoot ? { STATIC_ROOT: smokeRoot } : {}) } }); await waitForServer(); }
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });

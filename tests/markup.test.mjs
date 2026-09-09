@@ -12,7 +12,7 @@ for (const file of ["index.html", "build/index.html"]) {
 
 test("deck and scene preference controls keep explicit accessible names", () => {
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
-  for (const id of ["move-slide-up", "move-slide-down", "duplicate-slide", "delete-slide", "favorite-scene"]) {
+  for (const id of ["undo-deck", "redo-deck", "move-slide-up", "move-slide-down", "duplicate-slide", "delete-slide", "favorite-scene"]) {
     assert.match(html, new RegExp(`id="${id}"[^>]*aria-label="[^"]+"`));
   }
   for (const filter of ["all", "favorites", "recent", "natural", "city", "dark"]) {

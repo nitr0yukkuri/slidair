@@ -26,11 +26,42 @@ Composition: The left 60% and central text region must stay smooth and almost em
 | 月夜の海 | moonlit-shore | 暗い海の藍色。右端の水面だけに幅広い銀青の反射、月や星は画面に置かない。 | [WebP](../assets/scene-moonlit-shore-v1.webp) |
 | オーロラ | aurora-veil | 墨色の極地に、右上だけ淡い灰緑のオーロラの幕。下端に雪の地形を薄く置き、星空にはしない。 | [WebP](../assets/scene-aurora-veil-v1.webp) |
 
+## 今回追加した6景色
+
+既存シリーズの共通プロンプトに、次のブリーフを組み合わせて内蔵の `image_gen` で個別生成した。左60%と中央の文字領域を空け、右端または下端にだけ大きな輪郭を置く方針を維持している。
+
+| 景色 | ID | 最終ブリーフ | 素材 | 原本PNG |
+| --- | --- | --- | --- | --- |
+| 山霞 | misty-mountains | 霧の山と湖。青灰の山並みと淡い水面を右端・下部へ寄せ、左と中央はスレート青とセージの霞。 | [PNG](../assets/scene-misty-mountains-v1.png) | `exec-db1b2933-d255-4a6c-8bcf-840fc7112408.png` |
+| 潮だまり | tidepool-coast | 雨上がりの岩礁と潮だまり。深い青緑の水面と炭色の岩を右端・下部へ置き、中央は静かな水の余白。 | [PNG](../assets/scene-tidepool-coast-v1.png) | `exec-47f9e93a-cb2d-48fb-a081-01403007150e.png` |
+| 雲海 | cloud-sea | 高い稜線から見る雲海。真珠白と青灰の雲の層を右端・下部へ集め、中央は淡い空気だけにする。 | [PNG](../assets/scene-cloud-sea-v1.png) | `exec-77e7a162-75f0-411b-b195-f66b3c092816.png` |
+| 藤棚 | wisteria-bower | 晩春の藤棚。煙った紫の花房とセージの葉を右端・下部へ寄せ、花の細部や中央の格子は描かない。 | [PNG](../assets/scene-wisteria-bower-v1.png) | `exec-f27aa95d-2a3d-4f50-9314-17b08a4049e0.png` |
+| 石庭 | stone-garden | 雨上がりの日本庭園。灰色の砂面と苔石を右端・下部へ置き、左と中央は均質な濡れた空気にする。 | [PNG](../assets/scene-stone-garden-v1.png) | `exec-1cf1fabb-5ec5-48de-b1e0-8d764d115184.png` |
+| 夕渓谷 | red-canyon | 夕霞の遠い赤い谷。錆色と夕暮れの青灰の大きな面を右端・下部へ置き、岩肌の細部は残さない。 | [PNG](../assets/scene-red-canyon-v1.png) | `exec-d3f4b8b0-4845-4e6b-8ced-195831f586b9.png` |
+
+各素材の最終プロンプトは、上の共通プロンプトに表のブリーフを続けたもの。生成時の禁止事項は共通プロンプトを継承し、文字・UI・ロゴ・透かし・過度な彩度・中央を横切る輪郭を除外した。
+
+## 今回追加した4景色
+
+既存シリーズの共通プロンプトに、次のブリーフを組み合わせて内蔵の `image_gen` で個別生成した。左60%と中央の文字領域を空け、右端または下端にだけ大きな輪郭を置く方針を維持している。
+
+| 景色 | ID | 最終ブリーフ | 素材 | 原本PNG |
+| --- | --- | --- | --- | --- |
+| 霧の港 | misty-harbor | 霧の港。青灰の水面と遠い港の輪郭を右端・下部へ置き、左と中央は霧の余白。 | [PNG](../assets/scene-misty-harbor-v1.png) | `exec-789a40d0-a9f6-49d7-9689-ad45383f4567.png` |
+| 雨の窓 | rain-window | 大きな窓越しの雨。青灰のガラスと右端の淡い琥珀反射、中央を横切る窓枠は置かない。 | [PNG](../assets/scene-rain-window-v1.png) | `exec-c9650803-2cb4-46ea-86a5-a49a170c2b7c.png` |
+| 白樺林 | birch-grove | 白樺の幹とセージの葉を右端・下部へ寄せ、左と中央は乳白の朝霞。 | [PNG](../assets/scene-birch-grove-v1.png) | `exec-1fa8120a-8069-418b-97f2-16628cb684c8.png` |
+| 夜の灯台 | lighthouse-night | 暗い海岸と遠い灯台。柔らかな暖色の光を右端にだけ置き、左と中央は夜の青灰。 | [PNG](../assets/scene-lighthouse-night-v1.png) | `exec-ef4cd02e-a97d-4835-a977-afe69794af10.png` |
+
+各素材の最終プロンプトは、上の共通プロンプトに表のブリーフを続けたもの。生成時の禁止事項は共通プロンプトを継承し、文字・UI・ロゴ・透かし・過度な彩度・中央を横切る輪郭を除外した。
+
 ## 生成元
 
 原本PNGは次のフォルダーに残しています。
 
 `C:\Users\2250126\.codex\generated_images\01a07e29-7055-75c3-b277-2b81c9f41e60`
+
+今回追加した10景色の原本フォルダー:
+`C:\Users\2250126\.codex\generated_images\01a0814a-85aa-7971-81a2-44f682fef9e0`
 
 原本ファイル名は、素材のIDと同じ順に以下です。
 
@@ -44,3 +75,7 @@ Composition: The left 60% and central text region must stay smooth and almost em
 - sand-dunes: `exec-03f7c9a6-d164-4d63-957b-23599532b7f5.png`
 - moonlit-shore: `exec-fc4ab39e-a540-4a48-953b-6f68a14dd885.png`
 - aurora-veil: `exec-b3530e49-8383-494e-a17d-23d8826e85eb.png`
+- misty-harbor: `exec-789a40d0-a9f6-49d7-9689-ad45383f4567.png`
+- rain-window: `exec-c9650803-2cb4-46ea-86a5-a49a170c2b7c.png`
+- birch-grove: `exec-1fa8120a-8069-418b-97f2-16628cb684c8.png`
+- lighthouse-night: `exec-ef4cd02e-a97d-4835-a977-afe69794af10.png`

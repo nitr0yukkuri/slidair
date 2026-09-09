@@ -33,7 +33,7 @@
         </div>
         <div class="header-actions">
           <p class="status" id="status" role="status">プレビュー</p>
-          <button type="button" class="button-quiet utility-button" id="randomize" aria-label="ランダム" title="季節・時間帯・天気・景色をランダムに組み合わせます。"><svg class="icon" aria-hidden="true"><use href="#icon-spark"/></svg><span>ランダム</span></button>
+          <button type="button" class="button-quiet utility-button" id="randomize" aria-label="ランダム" title="デッキ全体の季節・時間帯・天気・景色をランダムに組み合わせます。"><svg class="icon" aria-hidden="true"><use href="#icon-spark"/></svg><span>ランダム</span></button>
           <button type="button" class="button-quiet" id="copy-url" aria-label="デッキを共有" title="デッキ全体をURLで共有します。"><svg class="icon" aria-hidden="true"><use href="#icon-link"/></svg><span class="button-label">デッキを共有</span></button>
           <button type="button" class="button-primary" id="slide-only-toggle" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#icon-play"/></svg><span>発表する</span></button>
         </div>
@@ -77,6 +77,8 @@
             <div class="deck-heading">
               <div class="deck-heading-label"><h2 id="deck-title">スライド</h2><span id="slide-count">1枚</span></div>
               <div class="deck-heading-actions">
+                <button type="button" class="button-quiet deck-action deck-history" id="undo-deck" aria-label="元に戻す" aria-keyshortcuts="Control+Z Meta+Z" title="これ以上戻せません。" disabled><span class="history-glyph" aria-hidden="true">↶</span><span>戻す</span></button>
+                <button type="button" class="button-quiet deck-action deck-history" id="redo-deck" aria-label="やり直す" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" title="これ以上進めません。" disabled><span class="history-glyph" aria-hidden="true">↷</span><span>進む</span></button>
                 <button type="button" class="button-quiet deck-action" id="move-slide-up" aria-label="前へ移動" title="選択中のスライドを前へ移動します。"><svg class="icon" aria-hidden="true"><use href="#icon-chevron-up"/></svg><span>前へ</span></button>
                 <button type="button" class="button-quiet deck-action" id="move-slide-down" aria-label="次へ移動" title="選択中のスライドを次へ移動します。"><svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"/></svg><span>次へ</span></button>
                 <button type="button" class="button-quiet deck-action" id="duplicate-slide" aria-label="複製" title="選択中のスライドを複製します。"><svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg><span>複製</span></button>
@@ -92,7 +94,7 @@
         <aside class="controls" aria-label="背景設定">
           <div class="inspector-heading"><h2>背景設定</h2><span class="inspector-index" id="inspector-index">01</span></div>
           <section class="inspector-section" aria-labelledby="environment-heading">
-            <div class="section-heading"><h3 id="environment-heading">環境</h3><button type="button" class="text-action" id="now"><svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>現在時刻</button></div>
+            <div class="section-heading"><h3 id="environment-heading">環境</h3><button type="button" class="text-action" id="now" title="デッキ全体の時間帯を現在時刻に合わせます。"><svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>現在時刻</button></div>
             <div class="control-group" data-choice-control="season"><label for="season">季節</label><select id="season"><option value="spring">春</option><option value="summer">夏</option><option value="autumn" selected>秋</option><option value="winter">冬</option></select></div>
             <div class="control-group" data-choice-control="period"><label for="period">時間帯</label><select id="period"><option value="morning">朝</option><option value="day">昼</option><option value="evening">夕方</option><option value="night" selected>夜</option></select></div>
             <div class="control-group" data-choice-control="weather"><label for="weather">天気</label><select id="weather"><option value="clear" selected>晴れ</option><option value="cloudy">曇り</option><option value="rain">雨</option><option value="snow">雪</option></select></div>
