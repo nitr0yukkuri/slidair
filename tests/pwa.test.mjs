@@ -27,8 +27,12 @@ test("service worker provides an offline shell and runtime image cache", () => {
   assert.match(serviceWorker, /request\.mode === "navigate"/);
   assert.match(serviceWorker, /\.\/slidair-schema\.mjs/);
   assert.match(serviceWorker, /\.\/deck-file\.mjs/);
+  assert.match(serviceWorker, /\.\/export\.html/);
+  assert.match(serviceWorker, /\.\/export\.css/);
+  assert.match(serviceWorker, /\.\/export\.js/);
   assert.match(serviceWorker, /\.\/saved-decks\.mjs/);
-  assert.match(serviceWorker, /return caches\.match\("\.\/index\.html"\)/);
+  assert.match(serviceWorker, /const fallback = pathname\.endsWith\("\/export\.html"\) \? "\.\/export\.html" : "\.\/index\.html"/);
+  assert.match(serviceWorker, /return caches\.match\(fallback\)/);
   assert.match(serviceWorker, /"image", "script", "style", "manifest"/);
 });
 
@@ -44,5 +48,8 @@ test("source and build expose the PWA entry points", () => {
   }
   assert.equal(existsSync(new URL("build/manifest.webmanifest", root)), true);
   assert.equal(existsSync(new URL("build/sw.js", root)), true);
+  for (const file of ["export.html", "export.css", "export.js", "slide-png.mjs"]) {
+    assert.equal(existsSync(new URL(`build/${file}`, root)), true);
+  }
   assert.equal(existsSync(new URL("build/assets/slidair-icon-512.png", root)), true);
 });

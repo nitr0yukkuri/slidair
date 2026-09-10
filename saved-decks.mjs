@@ -84,6 +84,22 @@ export function upsertSavedDeck(entries, deck, { id, name } = {}) {
   };
 }
 
+export function renameSavedDeck(entries, id, name, { savedAt = new Date().toISOString() } = {}) {
+  const current = normalizeSavedDecks(entries);
+  const target = current.find((entry) => entry.id === id);
+  if (!target) return current;
+  const renamed = normalizeSavedDeck({ ...target, name: cleanName(name, target.name), savedAt });
+  return normalizeSavedDecks([renamed, ...current.filter((entry) => entry.id !== id)]);
+}
+
+export function duplicateSavedDeck(entries, id, { name, savedAt = new Date().toISOString() } = {}) {
+  const current = normalizeSavedDecks(entries);
+  const target = current.find((entry) => entry.id === id);
+  if (!target) return current;
+  const result = upsertSavedDeck(current, target.deck, { name: cleanName(name, target.name + " のコピー") });
+  const duplicate = { ...result.entry, savedAt };
+  return normalizeSavedDecks([duplicate, ...current]);
+}
 export function removeSavedDeck(entries, id) {
   return normalizeSavedDecks(entries).filter((entry) => entry.id !== id);
 }

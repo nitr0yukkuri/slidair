@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101114" />
+    <meta name="description" content="SlidairのデッキをPNG・PDF・JSONとして持ち出す。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Slidair" />
+    <meta property="og:title" content="Slidair · 書き出し" />
+    <meta property="og:description" content="発表の空気を、使える形で持ち出す。" />
+    <meta property="og:url" content="https://slide-atmosphere.itlogin0606.chatgpt.site/export.html" />
+    <meta property="og:image" content="https://slide-atmosphere.itlogin0606.chatgpt.site/assets/og-cover.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <title>Slidair · 書き出し</title>
+    <link rel="icon" type="image/png" href="./assets/slide-atmosphere-logo.png" />
+    <link rel="apple-touch-icon" href="./assets/slidair-icon-192.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./export.css" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+  </head>
+  <body>
+    <main class="export-shell">
+      <header class="export-header">
+        <a class="export-brand" href="./" aria-label="Slidair 編集画面へ戻る">
+          <img class="brand-logo" src="./assets/slide-atmosphere-logo.png" alt="" width="1254" height="1254" />
+          <span class="export-brand-name">Slidair</span>
+          <span class="export-brand-divider" aria-hidden="true"></span>
+          <span class="export-brand-section">書き出し</span>
+        </a>
+        <div class="export-header-actions">
+          <p class="export-status" id="export-status" role="status">デッキを読み込んでいます…</p>
+          <a class="button-quiet export-back" id="back-to-editor" href="./">編集に戻る</a>
+        </div>
+      </header>
+
+      <section class="export-hero" aria-labelledby="export-title">
+        <p class="eyebrow">TAKE IT OUT</p>
+        <h1 id="export-title">発表の空気を、持ち出す。</h1>
+        <p>デッキ全体を確認して、使う場所に合う形式で保存できます。</p>
+      </section>
+
+      <section class="export-layout" aria-label="書き出しワークスペース">
+        <div class="export-preview">
+          <div class="export-preview-heading">
+            <div>
+              <p class="export-eyebrow">DECK PREVIEW</p>
+              <h2 id="export-deck-title">無題のデッキ</h2>
+            </div>
+            <span class="export-count" id="export-count">0枚</span>
+          </div>
+          <div class="export-slides" id="export-slides" aria-label="書き出し対象のスライド一覧"></div>
+        </div>
+
+        <aside class="export-controls" aria-label="書き出し形式">
+          <div class="export-controls-heading">
+            <p class="export-eyebrow">OUTPUT</p>
+            <h2>形式を選ぶ</h2>
+          </div>
+
+          <section class="export-card" aria-labelledby="png-title">
+            <div class="export-card-topline"><span class="export-format">PNG</span><span class="export-format-meta">選択中の1枚</span></div>
+            <h3 id="png-title">画像として使う</h3>
+            <p>文字込みのスライドを1920×1080で保存します。サムネイルやSNSにも。</p>
+            <button type="button" class="button-primary export-action" id="export-png">PNGを書き出す</button>
+          </section>
+
+          <section class="export-card" aria-labelledby="pdf-title">
+            <div class="export-card-topline"><span class="export-format">PDF</span><span class="export-format-meta">デッキ全体</span></div>
+            <h3 id="pdf-title">発表用にまとめる</h3>
+            <p>印刷ダイアログからPDF保存できます。Canvaへ渡すときもこの形式が扱いやすいです。</p>
+            <button type="button" class="button-secondary export-action" id="export-pdf">PDF / Canva用を作る</button>
+          </section>
+
+          <section class="export-card" aria-labelledby="json-title">
+            <div class="export-card-topline"><span class="export-format">JSON</span><span class="export-format-meta">編集可能</span></div>
+            <h3 id="json-title">Slidairの空気を渡す</h3>
+            <p>デッキ構造と空気の状態を保存し、別の端末やAIツールへ渡せます。</p>
+            <button type="button" class="button-secondary export-action" id="export-json">Slidair JSONを保存</button>
+          </section>
+
+          <section class="export-card export-card-share" aria-labelledby="share-title">
+            <div class="export-card-topline"><span class="export-format">LINK</span><span class="export-format-meta">共有</span></div>
+            <h3 id="share-title">デッキを共有する</h3>
+            <p>このデッキを復元できるURLを作ります。相手の画面でも同じ空気が開きます。</p>
+            <button type="button" class="button-quiet export-action" id="export-share">共有URLをコピー</button>
+          </section>
+
+          <p class="export-note">選択中のスライドはプレビューをクリックして変更できます。</p>
+        </aside>
+      </section>
+    </main>
+
+    <template id="slide-template">
+      <article class="slide export-slide" aria-hidden="true">
+        <div class="atmosphere-stage">
+          <div class="atmosphere atmosphere-base"></div>
+          <div class="atmosphere atmosphere-light"></div>
+          <div class="atmosphere atmosphere-weather"></div>
+          <div class="atmosphere atmosphere-vignette"></div>
+          <svg class="atmosphere atmosphere-noise" preserveAspectRatio="none">
+            <filter id="grain-template">
+              <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="3" stitchTiles="stitch" />
+              <feColorMatrix type="saturate" values="0" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#grain-template)" />
+          </svg>
+        </div>
+        <span class="scene-mark" aria-hidden="true"></span>
+        <span class="season-mark" aria-hidden="true"></span>
+        <div class="slide-content">
+          <p class="slide-kicker" data-edit-field="kicker"></p>
+          <h2 data-edit-field="title"></h2>
+          <p class="slide-copy" data-edit-field="body"></p>
+        </div>
+      </article>
+    </template>
+    <script type="module" src="./export.js"></script>
+  </body>
+</html>

@@ -1,7 +1,10 @@
-const CACHE_NAME = "slidair-shell-v1";
+const CACHE_NAME = "slidair-shell-v2";
 const CORE_ASSETS = [
   "./",
   "./index.html",
+  "./export.html",
+  "./export.css",
+  "./export.js",
   "./styles.css",
   "./app.js",
   "./atmosphere-story.mjs",
@@ -13,6 +16,7 @@ const CORE_ASSETS = [
   "./scene-preferences.mjs",
   "./slidair-schema.mjs",
   "./deck-file.mjs",
+  "./slide-png.mjs",
   "./saved-decks.mjs",
   "./scenes.mjs",
   "./state.mjs",
@@ -43,15 +47,19 @@ self.addEventListener("activate", (event) => {
 });
 
 async function networkFirstNavigation(request) {
+  const pathname = new URL(request.url).pathname;
+  const fallback = pathname.endsWith("/export.html") ? "./export.html" : "./index.html";
   try {
     const response = await fetch(request);
     if (response.ok) {
       const cache = await caches.open(CACHE_NAME);
-      await cache.put("./index.html", response.clone());
+      const cacheKey = new URL(request.url);
+      cacheKey.search = "";
+      await cache.put(cacheKey, response.clone());
     }
     return response;
   } catch {
-    return caches.match("./index.html");
+    return caches.match(fallback);
   }
 }
 

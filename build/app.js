@@ -25,7 +25,8 @@ import { ATMOSPHERE_STORIES, applyStoryToDeck, storyPreset } from "./atmosphere-
 import { suggestAtmospheres } from "./atmosphere-suggestions.mjs";
 import { parseSlidairDocument } from "./slidair-schema.mjs";
 import { downloadDeckFile } from "./deck-file.mjs";
-import { findSavedDeckId, readSavedDecks, removeSavedDeck, suggestedDeckName, upsertSavedDeck, writeSavedDecks } from "./saved-decks.mjs";
+import { downloadSlidePng, slidePngFileName } from "./slide-png.mjs";
+import { duplicateSavedDeck, findSavedDeckId, readSavedDecks, removeSavedDeck, renameSavedDeck, suggestedDeckName, upsertSavedDeck, writeSavedDecks } from "./saved-decks.mjs";
 
 const appShell = document.querySelector(".app-shell");
 const slide = document.querySelector("#slide");
@@ -37,6 +38,7 @@ const roleSelect = document.querySelector("#role");
 const status = document.querySelector("#status");
 const randomizeButton = document.querySelector("#randomize");
 const saveDeckButton = document.querySelector("#save-deck");
+const exportPageLink = document.querySelector("#export-page-link");
 const savedDecksDisclosure = document.querySelector("#saved-decks-disclosure");
 const savedDeckCount = document.querySelector("#saved-deck-count");
 const savedDeckList = document.querySelector("#saved-deck-list");
@@ -63,6 +65,8 @@ const scenePreferenceNote = document.querySelector("#scene-preference-note");
 const sceneFilterButtons = [...document.querySelectorAll(".scene-filter")];
 const deckNote = document.querySelector("#deck-note");
 const editModeToggle = document.querySelector("#edit-mode-toggle");
+const exportSlideFullButton = document.querySelector("#export-slide-full");
+const exportSlideBackgroundButton = document.querySelector("#export-slide-background");
 const slideOnlyToggle = document.querySelector("#slide-only-toggle");
 const editorPanel = document.querySelector("#editor-panel");
 const editorKicker = document.querySelector("#edit-kicker");
@@ -406,6 +410,27 @@ function renderSavedDecks() {
     open.setAttribute("aria-label", `${entry.name}を開く`);
     open.title = `${entry.name}を開きます。`;
     open.addEventListener("click", () => openSavedDeck(entry.id));
+    const rename = document.createElement("button");
+    rename.type = "button";
+    rename.className = "button-quiet saved-deck-action";
+    rename.textContent = "名前変更";
+    rename.setAttribute("aria-label", entry.name + "の名前を変更");
+    rename.title = entry.name + "の名前を変更します。";
+    rename.addEventListener("click", () => renameSavedDeckFromList(entry.id));
+    const duplicate = document.createElement("button");
+    duplicate.type = "button";
+    duplicate.className = "button-quiet saved-deck-action";
+    duplicate.textContent = "複製";
+    duplicate.setAttribute("aria-label", entry.name + "を複製");
+    duplicate.title = entry.name + "を複製します。";
+    duplicate.addEventListener("click", () => duplicateSavedDeckFromList(entry.id));
+    const exportSaved = document.createElement("button");
+    exportSaved.type = "button";
+    exportSaved.className = "button-quiet saved-deck-action";
+    exportSaved.textContent = "JSON";
+    exportSaved.setAttribute("aria-label", entry.name + "をJSONで書き出す");
+    exportSaved.title = entry.name + "をJSONで書き出します。";
+    exportSaved.addEventListener("click", () => exportSavedDeckFile(entry.id));
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "button-quiet saved-deck-action saved-deck-delete";
@@ -413,7 +438,7 @@ function renderSavedDecks() {
     remove.setAttribute("aria-label", `${entry.name}を削除`);
     remove.title = `${entry.name}を保存デッキから削除します。`;
     remove.addEventListener("click", () => deleteSavedDeck(entry.id));
-    actions.append(open, remove);
+    actions.append(open, rename, duplicate, exportSaved, remove);
     item.append(info, actions);
     savedDeckList.append(item);
   });
@@ -445,6 +470,23 @@ function exportDeckFile() {
   status.textContent = downloaded ? "JSONを書き出しました" : "JSONを書き出せませんでした";
 }
 
+async function exportSlidePng(mode) {
+  finishActiveEdit();
+  finishEditSession();
+  if (!deck) return;
+  const position = deck.slides.findIndex((slideItem) => slideItem.id === deck.activeSlideId) + 1;
+  status.textContent = mode === "background" ? "背景PNGを書き出しています…" : "PNGを書き出しています…";
+  try {
+    const downloaded = await downloadSlidePng(slide, { mode, position, fileName: slidePngFileName(position, mode) });
+    status.textContent = downloaded
+      ? (mode === "background" ? "背景PNGを書き出しました" : "PNGを書き出しました")
+      : "PNGを書き出せませんでした";
+  } catch {
+    status.textContent = "PNGを書き出せませんでした";
+  } finally {
+    document.querySelector(".export-disclosure")?.removeAttribute("open");
+  }
+}
 function openSavedDeck(id) {
   const entry = savedDecks.find((item) => item.id === id);
   if (!entry) return;
@@ -458,6 +500,46 @@ function openSavedDeck(id) {
   currentSavedDeckId = entry.id;
 }
 
+function renameSavedDeckFromList(id) {
+  const entry = savedDecks.find((item) => item.id === id);
+  if (!entry) return;
+  const name = window.prompt("保存デッキの名前", entry.name);
+  if (name == null || !name.trim()) return;
+  const next = renameSavedDeck(savedDecks, id, name);
+  if (!writeSavedDecks(next)) {
+    status.textContent = "保存デッキの名前を変更できませんでした";
+    return;
+  }
+  savedDecks = next;
+  renderSavedDecks();
+  status.textContent = "「" + name.trim() + "」に名前を変更しました";
+}
+
+function duplicateSavedDeckFromList(id) {
+  const entry = savedDecks.find((item) => item.id === id);
+  if (!entry) return;
+  const next = duplicateSavedDeck(savedDecks, id);
+  if (next.length === savedDecks.length) {
+    status.textContent = "保存デッキを複製できませんでした";
+    return;
+  }
+  if (!writeSavedDecks(next)) {
+    status.textContent = "保存デッキの複製を保存できませんでした";
+    return;
+  }
+  savedDecks = next;
+  renderSavedDecks();
+  if (savedDecksDisclosure) savedDecksDisclosure.open = true;
+  status.textContent = "「" + entry.name + "」を複製しました";
+}
+
+function exportSavedDeckFile(id) {
+  const entry = savedDecks.find((item) => item.id === id);
+  if (!entry) return;
+  const safeName = entry.name.replace(/[\\/:*?"<>|]/g, " ").replace(/\\s+/g, " ").trim().slice(0, 60) || "slidair-deck";
+  const downloaded = downloadDeckFile(entry.deck, { title: entry.name }, { fileName: safeName + ".slidair.json" });
+  status.textContent = downloaded ? "「" + entry.name + "」のJSONを書き出しました" : "JSONを書き出せませんでした";
+}
 function deleteSavedDeck(id) {
   const entry = savedDecks.find((item) => item.id === id);
   if (!entry) return;
@@ -1096,6 +1178,16 @@ function updateUrl(state = currentState(), mode = "replace") {
   return url.href;
 }
 
+function buildExportPageUrl() {
+  const url = new URL("./export.html", window.location.href);
+  url.search = window.location.search;
+  if (deck) {
+    const payload = serializeDeck(deck);
+    if (payload.length <= MAX_DECK_SHARE_LENGTH) url.searchParams.set(DECK_SHARE_PARAM, payload);
+  }
+  return url.href;
+}
+
 function buildDeckShareUrl() {
   const normalized = currentState();
   const url = new URL(window.location.href);
@@ -1135,7 +1227,15 @@ undoButton.addEventListener("click", undoDeck);
 redoButton.addEventListener("click", redoDeck);
 randomizeButton.addEventListener("click", randomizeAtmosphere);
 saveDeckButton.addEventListener("click", saveCurrentDeck);
+exportPageLink.addEventListener("click", (event) => {
+  finishActiveEdit();
+  finishEditSession();
+  persistDeck();
+  event.currentTarget.href = buildExportPageUrl();
+});
 exportDeckButton.addEventListener("click", exportDeckFile);
+exportSlideFullButton.addEventListener("click", () => exportSlidePng("full"));
+exportSlideBackgroundButton.addEventListener("click", () => exportSlidePng("background"));
 sampleDeckButton.addEventListener("click", loadSampleDeck);
 importDeckButton.addEventListener("click", () => deckFileInput.click());
 deckFileInput.addEventListener("change", importDeckFile);
