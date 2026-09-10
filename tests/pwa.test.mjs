@@ -26,6 +26,7 @@ test("service worker provides an offline shell and runtime image cache", () => {
   assert.match(serviceWorker, /caches\.open\(CACHE_NAME\)/);
   assert.match(serviceWorker, /request\.mode === "navigate"/);
   assert.match(serviceWorker, /\.\/slidair-schema\.mjs/);
+  assert.match(serviceWorker, /\.\/deck-file\.mjs/);
   assert.match(serviceWorker, /return caches\.match\("\.\/index\.html"\)/);
   assert.match(serviceWorker, /"image", "script", "style", "manifest"/);
 });

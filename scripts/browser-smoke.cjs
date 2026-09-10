@@ -1,5 +1,6 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const { spawn } = require("node:child_process");
 const { once } = require("node:events");
 
@@ -26,7 +27,7 @@ async function waitForServer(url) {
   }
   const browser = await chromium.launch({ headless: true });
   try {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 960 } });
+    const context = await browser.newContext({ viewport: { width: 1440, height: 960 }, acceptDownloads: true });
     const page = await context.newPage();
     const errors = [];
     page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
@@ -42,6 +43,13 @@ async function waitForServer(url) {
     assert.ok(registration);
     assert.equal(new URL(registration.scope).pathname, "/");
     assert.equal(registration.state, "activated");
+    const saveDownloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "デッキを保存", exact: true }).click();
+    const saveDownload = await saveDownloadPromise;
+    assert.equal(saveDownload.suggestedFilename(), "slidair-deck.slidair.json");
+    const savedDeck = JSON.parse(fs.readFileSync(await saveDownload.path(), "utf8"));
+    assert.equal(savedDeck.version, 1);
+    assert.equal(savedDeck.slides.length, 1);
     const offlineContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const offlinePage = await offlineContext.newPage();
     await offlinePage.goto(`${baseUrl}/?season=winter&period=night&weather=snow&scene=none&role=section`, { waitUntil: "networkidle" });

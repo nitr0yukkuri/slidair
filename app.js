@@ -24,6 +24,7 @@ import { canRedo, canUndo, createHistory, redo as redoHistory, record as recordH
 import { ATMOSPHERE_STORIES, applyStoryToDeck, storyPreset } from "./atmosphere-story.mjs";
 import { suggestAtmospheres } from "./atmosphere-suggestions.mjs";
 import { parseSlidairDocument } from "./slidair-schema.mjs";
+import { downloadDeckFile } from "./deck-file.mjs";
 
 const appShell = document.querySelector(".app-shell");
 const slide = document.querySelector("#slide");
@@ -34,6 +35,7 @@ const sceneSelect = document.querySelector("#scene");
 const roleSelect = document.querySelector("#role");
 const status = document.querySelector("#status");
 const randomizeButton = document.querySelector("#randomize");
+const saveDeckButton = document.querySelector("#save-deck");
 const sampleDeckButton = document.querySelector("#sample-deck");
 const importDeckButton = document.querySelector("#import-deck");
 const deckFileInput = document.querySelector("#deck-file-input");
@@ -357,6 +359,15 @@ function persistDeck() {
   deckNote.textContent = saved ? savedDeckLabel() : "表示中（保存できませんでした）";
   deckNote.dataset.saved = String(saved);
   return saved;
+}
+
+function saveDeckFile() {
+  finishActiveEdit();
+  finishEditSession();
+  if (!deck) return;
+  persistDeck();
+  const downloaded = downloadDeckFile(deck);
+  status.textContent = downloaded ? "デッキを保存しました" : "デッキを保存できませんでした";
 }
 
 function applyScenePresentation(element, key) {
@@ -1021,6 +1032,7 @@ addSlideButton.addEventListener("click", addNewSlide);
 undoButton.addEventListener("click", undoDeck);
 redoButton.addEventListener("click", redoDeck);
 randomizeButton.addEventListener("click", randomizeAtmosphere);
+saveDeckButton.addEventListener("click", saveDeckFile);
 sampleDeckButton.addEventListener("click", loadSampleDeck);
 importDeckButton.addEventListener("click", () => deckFileInput.click());
 deckFileInput.addEventListener("change", importDeckFile);

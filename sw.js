@@ -12,6 +12,7 @@ const CORE_ASSETS = [
   "./history.mjs",
   "./scene-preferences.mjs",
   "./slidair-schema.mjs",
+  "./deck-file.mjs",
   "./scenes.mjs",
   "./state.mjs",
   "./manifest.webmanifest",

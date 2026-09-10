@@ -122,7 +122,7 @@ base gradient
 
 キーボードは発表モードの矢印操作と衝突しないように分けた。編集画面ではCtrl/Cmd+Dが複製、Deleteが削除、Alt+ArrowUp/Downが前後移動になる。Ctrl/Cmd+ZとCtrl/Cmd+Shift+Zはプレビュー中にデッキ履歴を戻し、編集中はcontenteditable本来の文字編集を優先する。入力欄とcontenteditableではブラウザ本来の編集を優先する。
 
-共有ボタンは現在のWorldStateに、正規化済みデッキをbase64urlで追加する。Slidairの公開schemaはslidair-schema.mjsに切り出し、JSONの検証・正規化・内部deckへの変換を一つの境界にまとめた。ブラウザにはJSON読み込みを追加し、MCPはその同じ境界をstdioのvalidate_deck / create_deck / apply_atmosphere_story / make_share_urlとして公開する。deck-share.mjsでエンコードと復元を行い、壊れたpayloadや48,000文字を超えるURLは受け付けない。受け取ったデッキはそのタブのsessionStorageに一時保存するので、手元の下書きを上書きせず、その後の編集を続けられる。景色のOG画像はカタログに対応する静的アセットへ切り替え、タイトル・説明・URLと同じタイミングで更新する。
+共有ボタンは現在のWorldStateに、正規化済みデッキをbase64urlで追加する。Slidairの公開schemaはslidair-schema.mjsに切り出し、JSONの検証・正規化・内部deckへの変換を一つの境界にまとめた。ブラウザにはJSONの読み込みと保存を追加し、MCPはその同じ境界をstdioのvalidate_deck / create_deck / apply_atmosphere_story / make_share_urlとして公開する。deck-share.mjsでエンコードと復元を行い、壊れたpayloadや48,000文字を超えるURLは受け付けない。受け取ったデッキはそのタブのsessionStorageに一時保存するので、手元の下書きを上書きせず、その後の編集を続けられる。景色のOG画像はカタログに対応する静的アセットへ切り替え、タイトル・説明・URLと同じタイミングで更新する。
 ## 8. 何を検証したか
 
 今回の景色追加では、次の3種類を分けて確認した。

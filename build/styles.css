@@ -58,6 +58,8 @@ button:disabled { cursor: default; }
 .header-actions { display: flex; align-items: center; gap: 10px; }
 .utility-button { min-height: 32px; padding: 5px 9px; font-size: .75rem; }
 .utility-button .icon { width: 14px; height: 14px; flex-basis: 14px; }
+.save-deck { min-height: 32px; padding: 5px 9px; font-size: .75rem; }
+.save-deck .icon { width: 14px; height: 14px; flex-basis: 14px; }
 .status { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--ui-muted); font-size: .75rem; margin-right: 12px; white-space: nowrap; }
 .status::before, .quiet-dot { content: ""; display: inline-block; width: 5px; height: 5px; margin-right: 8px; border-radius: 50%; background: #929cae; vertical-align: middle; }
 .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 304px; gap: 16px; background: transparent; }
@@ -669,6 +671,8 @@ textarea { resize: vertical; }
   .status { display: block; margin-right: auto; font-size: .75rem; }
   .header-actions button { padding: 7px 10px; font-size: .8125rem; }
   .utility-button { width: 32px; padding-inline: 6px; }
+  .save-deck { width: 32px; padding-inline: 6px; }
+  .save-deck .button-label { display: none; }
   .utility-button span, .deck-sample span, .deck-action span { display: none; }
   .deck-history .history-glyph { display: inline-flex; }
   .deck-heading-actions { gap: 4px; }
