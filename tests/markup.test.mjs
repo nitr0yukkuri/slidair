@@ -11,6 +11,8 @@ for (const file of ["index.html", "build/index.html"]) {
     assert.doesNotMatch(html, /id="atmosphere-summary"/);
     assert.match(html, /<button[^>]*id="randomize"[^>]*aria-label="ランダム"/s);
     assert.match(html, /<button[^>]*id="save-deck"[^>]*aria-label="デッキを保存"/s);
+    assert.match(html, /id="saved-decks-disclosure"/);
+    assert.match(html, /<button[^>]*id="export-deck"[^>]*aria-label="JSONを書き出す"/s);
     assert.match(html, /<button[^>]*id="sample-deck"[^>]*aria-label="サンプルデッキ"/s);
     assert.match(html, /<button[^>]*id="import-deck"[^>]*aria-label="JSONデッキを読み込む"/s);
     assert.match(html, /id="deck-file-input"[^>]*accept="application\/json,.json"/s);
@@ -26,7 +28,7 @@ for (const file of ["index.html", "build/index.html"]) {
 
 test("deck and scene preference controls keep explicit accessible names", () => {
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
-  for (const id of ["undo-deck", "redo-deck", "move-slide-up", "move-slide-down", "duplicate-slide", "delete-slide", "favorite-scene", "import-deck", "save-deck"]) {
+  for (const id of ["undo-deck", "redo-deck", "move-slide-up", "move-slide-down", "duplicate-slide", "delete-slide", "favorite-scene", "import-deck", "save-deck", "export-deck"]) {
     assert.match(html, new RegExp(`id="${id}"[^>]*aria-label="[^"]+"`));
   }
   for (const filter of ["all", "favorites", "recent", "natural", "city", "dark"]) {

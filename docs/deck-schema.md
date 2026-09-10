@@ -68,4 +68,4 @@ MCPクライアントの設定例（stdio）:
 }
 ```
 
-MCPはSlidair本体を置き換えません。AIが生成したJSONを、UIの「JSONを読み込む」から取り込むか、`make_share_url` の結果を開いて確認します。 保存ボタンから同じschemaの `.slidair.json` を書き出せるので、編集したデッキを再利用できます。
+MCPはSlidair本体を置き換えません。AIが生成したJSONを、UIの「JSONを読み込む」から取り込むか、`make_share_url` の結果を開いて確認します。 「保存デッキ」にはこの端末へ名前付きスナップショットを残せます。JSONの書き出しは別ボタンから行い、同じschemaの `.slidair.json` として編集したデッキを再利用できます。

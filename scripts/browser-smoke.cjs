@@ -43,8 +43,13 @@ async function waitForServer(url) {
     assert.ok(registration);
     assert.equal(new URL(registration.scope).pathname, "/");
     assert.equal(registration.state, "activated");
-    const saveDownloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: "デッキを保存", exact: true }).click();
+    assert.equal(await page.locator("#saved-deck-count").innerText(), "1件");
+    assert.match(await page.locator("#status").innerText(), /保存しました/);
+    assert.equal(await page.locator("#saved-decks-disclosure").getAttribute("open"), "");
+    assert.equal(await page.locator("#saved-deck-list .saved-deck-item").count(), 1);
+    const saveDownloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "JSONを書き出す", exact: true }).click();
     const saveDownload = await saveDownloadPromise;
     assert.equal(saveDownload.suggestedFilename(), "slidair-deck.slidair.json");
     const savedDeck = JSON.parse(fs.readFileSync(await saveDownload.path(), "utf8"));

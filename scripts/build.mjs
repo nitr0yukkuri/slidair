@@ -20,6 +20,7 @@ const entries = [
   "scene-preferences.mjs",
   "slidair-schema.mjs",
   "deck-file.mjs",
+  "saved-decks.mjs",
   "scenes.mjs",
   "state.mjs",
   "assets",

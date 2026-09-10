@@ -187,6 +187,23 @@ select { cursor: pointer; padding-right: 9px; }
 .deck-note { margin-top: 12px; color: var(--ui-faint); font-size: .75rem; line-height: 1.5; }
 .deck-note::before { content: ""; display: inline-block; width: 9px; height: 5px; margin-right: 8px; border: solid #8c9c94; border-width: 0 0 1px 1px; transform: translateY(-2px) rotate(-45deg); }
 .deck-note[data-saved="false"]::before { width: 5px; height: 5px; border: 0; border-radius: 50%; background: #e1aa93; transform: none; }
+.saved-decks-disclosure { margin-top: 16px; padding-top: 14px; border-top: 1px solid #ffffff0b; }
+.saved-decks-summary { margin-bottom: 0; }
+.saved-decks-summary h3 { color: #cfd4df; font-size: .8125rem; }
+.saved-decks-body { margin-top: 12px; }
+.saved-decks-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.saved-decks-toolbar .field-note { margin: 0; font-size: .6875rem; }
+.saved-deck-export { min-height: 28px; padding: 4px 7px; font-size: .6875rem; }
+.saved-deck-export .icon { width: 13px; height: 13px; flex-basis: 13px; }
+.saved-deck-list { display: grid; gap: 6px; padding: 0; margin: 12px 0 0; list-style: none; }
+.saved-deck-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; border: 1px solid #ffffff10; border-radius: 8px; background: #ffffff04; }
+.saved-deck-info { min-width: 0; }
+.saved-deck-name { display: block; overflow: hidden; color: #dfe3ec; font-size: .75rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.saved-deck-meta { display: block; margin-top: 3px; color: var(--ui-faint); font-size: .625rem; font-variant-numeric: tabular-nums; }
+.saved-deck-actions { display: flex; flex: 0 0 auto; gap: 2px; }
+.saved-deck-action { min-height: 30px; padding: 4px 6px; color: #b4bfd1; font-size: .6875rem; }
+.saved-deck-delete { color: #c5a6a6; }
+.saved-deck-empty { margin-top: 12px; }
 .slide {
   --base-a: oklch(91% 0.018 250);
   --base-b: oklch(80% 0.025 220);
