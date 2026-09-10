@@ -171,6 +171,8 @@ async function waitForServer(url) {
     await editPage.getByRole("button", { name: "テキストを編集", exact: true }).click();
     await editPage.getByRole("button", { name: "内容から空気を提案", exact: true }).click();
     assert.equal(await editPage.locator(".suggestion-card").count(), 3);
+    await editPage.getByRole("button", { name: "内容から空気を提案", exact: true }).click();
+    assert.equal(await editPage.locator(".suggestion-card").count(), 3);
     await editPage.locator(".suggestion-apply").first().click();
     assert.match(await editPage.locator("#status").innerText(), /を適用しました/);
     await editPage.getByRole("button", { name: "編集を完了", exact: true }).click();

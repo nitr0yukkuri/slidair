@@ -231,6 +231,7 @@ function renderAtmosphereSuggestions() {
   const selected = currentSlide()
   if (!selected || !atmosphereSuggestions) return
   const suggestions = suggestAtmospheres(selected.content, selected.state)
+  atmosphereSuggestions.replaceChildren()
   suggestions.forEach((suggestion) => {
     const card = document.createElement("article")
     card.className = "suggestion-card"
