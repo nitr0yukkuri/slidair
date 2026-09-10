@@ -55,17 +55,17 @@ npm run mcp
 
 公開するツールは `validate_deck`、`create_deck`、`apply_atmosphere_story`、`make_share_url`、`list_scenes` です。schemaとデザインルールは `slidair://schema/deck-v1` と `slidair://design-rules` から読めます。
 
-MCPクライアントの設定例（stdio）:
+MCPクライアントの設定例（stdio）は[mcp-setup.md](./mcp-setup.md)と[mcp.config.example.json](../mcp.config.example.json)にまとめています。最小構成は次のとおりです。
 
 ```json
 {
   "mcpServers": {
     "slidair": {
-      "command": "npm",
-      "args": ["--prefix", "C:/src/slide-atmosphere", "run", "mcp"]
+      "command": "node",
+      "args": ["C:/src/slidair/mcp-server.mjs"]
     }
   }
 }
 ```
 
-MCPはSlidair本体を置き換えません。AIが生成したJSONを、UIの「JSONを読み込む」から取り込むか、`make_share_url` の結果を開いて確認します。 「保存デッキ」にはこの端末へ名前付きスナップショットを残せます。JSONの書き出しは別ボタンから行い、同じschemaの `.slidair.json` として編集したデッキを再利用できます。
+MCPはSlidair本体を置き換えません。AIが生成したJSONを、UIの「JSONを読み込む」から取り込むか、`make_share_url` の結果を開いて確認します。 「保存デッキ」にはこの端末へ名前付きスナップショットを残せます。名前変更・複製・更新日時順表示・個別JSON再書き出しにも対応しています。JSONの書き出しは別ボタンから行い、同じschemaの `.slidair.json` として編集したデッキを再利用できます。
