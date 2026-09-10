@@ -121,6 +121,6 @@ WorldState = season + period + weather + scene + role
 - AI Agent から利用できる MCP インターフェース
 - 既存プリセットで表現できない景色だけを生成する背景API
 
-AI Agent / MCP / 背景生成APIの設計は [Issue #5](https://github.com/nitr0yukkuri/slide-atmosphere/issues/5) で検討しています。
+AI Agent / MCP / 背景生成APIの設計は [Issue #5](https://github.com/nitr0yukkuri/slidair/issues/5) で検討しています。
 
 詳細な企画・リスク・実装判断は [`docs/design-analysis.md`](docs/design-analysis.md) を参照してください。実装の背景と検証を技術記事としてまとめた [`docs/technical-article.md`](docs/technical-article.md) も参照してください。
