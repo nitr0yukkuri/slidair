@@ -18,6 +18,7 @@ Composition: The left 60% and central text region must stay smooth and almost em
 | 木漏れ日 | forest-light | オリーブと苔の森。右上から面で差す淡い光、右端と下部だけに溶ける葉の層。左と中央は緑の霞。 | [WebP](../assets/scene-forest-light-v1.webp) |
 | 竹林 | bamboo-grove | 冷たい翡翠とセージの竹林。右端だけにぼけた縦の竹、左は淡い霞。硬い茎や道は置かない。 | [WebP](../assets/scene-bamboo-grove-v1.webp) |
 | 桜霞 | sakura-mist | 青灰の春霞に淡い桃色の桜の塊。桜は右端と右下へ寄せ、中央は静かな空気にする。 | [WebP](../assets/scene-sakura-mist-v1.webp) |
+| 桜並木 | cherry-blossom | 淡い青灰とアイボリーの春朝。右上から桜色の花のアーチを一つだけ入れ、遠い小径は右下へ沈める。左60%と中央は滑らかな空気に保ち、枝の細部や人物は置かない。 | [PNG](../assets/scene-cherry-blossom-v1.png) |
 | 紫陽花 | hydrangea-rain | 雨上がりの青紫と煙った緑。右下にだけ大きくぼけた花の塊、左と中央は冷たい霧。 | [WebP](../assets/scene-hydrangea-rain-v1.webp) |
 | 花畑 | lavender-haze | 低い紫の花畑が霞む丘へ続く。下部の水平な紫の面と、上の淡い薄紫の空気。 | [WebP](../assets/scene-lavender-haze-v1.webp) |
 | 紅葉 | autumn-haze | 銅・錆・黄土の秋の森。右端と下部の葉の塊に暖かな光、左と中央は暖灰色の霧。 | [WebP](../assets/scene-autumn-haze-v1.webp) |
@@ -79,3 +80,40 @@ Composition: The left 60% and central text region must stay smooth and almost em
 - rain-window: `exec-c9650803-2cb4-46ea-86a5-a49a170c2b7c.png`
 - birch-grove: `exec-1fa8120a-8069-418b-97f2-16628cb684c8.png`
 - lighthouse-night: `exec-ef4cd02e-a97d-4835-a977-afe69794af10.png`
+## 今回追加した桜並木
+
+既存の桜霞と役割が重ならないよう、桜色の主題を右上のアーチへ寄せ、左60%と中央に朝霞の余白を残した。内蔵 `image_gen` で2026-09-09に生成し、生成されたPNGを実行時素材として採用した。
+
+| 景色 | ID | 最終プロンプト | 素材 | 原本PNG |
+| --- | --- | --- | --- | --- |
+| 桜並木 | cherry-blossom | Standalone photographic atmosphere background for a presentation editor, 16:9. A spring cherry blossom avenue in early morning haze; one broad soft pink canopy enters from the upper-right and curves toward the far right edge, with a barely visible pale path in the lower-right. Keep the left 60% and central text region smooth, quiet, and almost empty in pale blue-gray and warm ivory. Soft-focus environmental photography, broad coherent shapes, natural optical texture, low contrast, restrained blush pink palette. No people, buildings, text, logos, watermarks, artificial bokeh, glitter, hard light shafts, oversaturation, or crisp branches through the text area. | [PNG](../assets/scene-cherry-blossom-v1.png) | `exec-f8c6b6cc-6686-4ef8-a239-4c06d89c4b90.png` |
+
+生成元フォルダー:
+
+`C:\Users\2250126\.codex\generated_images\01a07e29-7055-75c3-b277-2b81c9f41e60`
+## 技術系の試作: Rust Forge
+
+既存のsoft familyと同じ文字安全領域を守りながら、自然景観ではなく言語テーマの空気を試す素材。Rustの堅牢性・低レイヤー感を、黒い鉄の面、錆びた赤、右端の細い光へ抽象化した。ロゴやコード画面を描かず、プレゼン背景としての余白を優先している。
+
+| 景色 | ID | 最終ブリーフ | 素材 | 原本PNG |
+| --- | --- | --- | --- | --- |
+| Rust Forge | rust-forge | 黒い鉄の大きな面と、右端・下部にだけ現れる錆びた赤の反射。遠い細い光を一本だけ置き、左60%と中央は低ディテールの黒青い余白にする。堅牢で静かな低レイヤーの気配を、コード・回路・端末・ロゴなしで表現する。 | [PNG](../assets/scene-rust-forge-v1.png) | `exec-3610f378-50ab-4959-a9dd-66957f3a5923.png` |
+
+### Rust Forgeに使った最終プロンプト
+
+```text
+Use case: productivity-visual
+Asset type: 16:9 presentation background for Slidair
+Primary request: an original abstract atmospheric background for a Rust programming language themed presentation, expressing robustness and low-level engineering as visual mood rather than literal software imagery
+Scene/backdrop: immense dark forged iron surface and quiet industrial planes receding into haze, with a restrained oxidized rust-red glow along the far right edge and one or two hairline cool-white highlights like precise machining light; no recognizable machine or object
+Style/medium: refined editorial atmospheric photography, soft-focus, subtle film grain, premium minimal design, tactile but calm
+Composition/framing: wide 16:9 landscape; keep the left 62% and center smooth, low-detail, and dark for presentation text; place the visual interest only on the far right and lower-right; broad breathing room, no centered focal object
+Lighting/mood: robust, grounded, quiet, precise, resilient; charcoal black and deep blue-black ambient light with controlled ember-red oxidation and a very thin pale steel glint
+Color palette: black iron, graphite, deep slate navy, restrained rust red, muted ember, tiny cool silver highlights; low saturation, no harsh contrast
+Materials/textures: matte forged metal, oxidized iron patina, soft haze, broad planes, subtle brushed texture dissolved by shallow depth of field; no sharp micro-detail
+Text (verbatim): none
+Constraints: original artwork for a presentation editor; no people, no readable screens, no code, no logos, no trademarks, no letters, no numbers, no watermark; maintain clean text-safe negative space on the left and center; keep any bright line extremely thin and confined to the right side
+Avoid: neon cyberpunk, circuit boards, server racks, terminal windows, syntax, literal Rust logo, animal or snake imagery, gears, tools, dense grids, busy center, glossy chrome, dramatic sparks, flames, high saturation, stock-photo factory staging
+```
+
+原本は `C:\Users\2250126\.codex\generated_images\01a07e29-7055-75c3-b277-2b81c9f41e60\exec-3610f378-50ab-4959-a9dd-66957f3a5923.png` に保存している。

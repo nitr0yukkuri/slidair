@@ -11,6 +11,7 @@ const types = {
   ".js": "text/javascript; charset=utf-8",
   ".mjs": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json",
   ".svg": "image/svg+xml",
   ".png": "image/png",
   ".jpg": "image/jpeg",
@@ -19,7 +20,7 @@ const types = {
   ".ico": "image/x-icon",
 };
 
-const noCacheExtensions = new Set([".html", ".css", ".js", ".mjs"]);
+const noCacheExtensions = new Set([".html", ".css", ".js", ".mjs", ".webmanifest"]);
 
 export function resolveFilePath(pathname) {
   const requestPath = pathname === "/" ? "index.html" : pathname.replace(/^[/\\]+/, "");
@@ -84,6 +85,6 @@ export function createStaticServer() {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   createStaticServer().listen(4173, "127.0.0.1", () => {
-    console.log("slide-atmosphere: http://127.0.0.1:4173");
+    console.log("Slidair: http://127.0.0.1:4173");
   });
 }

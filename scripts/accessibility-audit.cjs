@@ -20,7 +20,7 @@ async function waitForServer() {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
     await page.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
     const audit = await page.evaluate(() => {
-      const visible = (element) => element.getClientRects().length > 0 && getComputedStyle(element).visibility !== "hidden";
+      const visible = (element) => { const rect = element.getBoundingClientRect(); return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight && getComputedStyle(element).visibility !== "hidden"; };
       const controls = [...document.querySelectorAll("button, input, select, textarea")].filter(visible);
       const unnamed = controls.filter((element) => !(element.getAttribute("aria-label") || element.textContent || element.labels?.[0]?.textContent || "").trim());
       const focusableButtons = controls.filter((element) => element.matches("button") && !element.disabled);

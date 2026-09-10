@@ -21,6 +21,11 @@ import {
 import { readScenePreferences, rememberScene, toggleFavorite, writeScenePreferences } from "./scene-preferences.mjs";
 import { DECK_SHARE_PARAM, MAX_DECK_SHARE_LENGTH, deserializeDeck, serializeDeck } from "./deck-share.mjs";
 import { canRedo, canUndo, createHistory, redo as redoHistory, record as recordHistory, sync as syncHistory, undo as undoHistory } from "./history.mjs";
+import { ATMOSPHERE_STORIES, applyStoryToDeck, storyPreset } from "./atmosphere-story.mjs";
+import { suggestAtmospheres } from "./atmosphere-suggestions.mjs";
+import { parseSlidairDocument } from "./slidair-schema.mjs";
+import { downloadDeckFile } from "./deck-file.mjs";
+import { findSavedDeckId, readSavedDecks, removeSavedDeck, suggestedDeckName, upsertSavedDeck, writeSavedDecks } from "./saved-decks.mjs";
 
 const appShell = document.querySelector(".app-shell");
 const slide = document.querySelector("#slide");
@@ -31,7 +36,15 @@ const sceneSelect = document.querySelector("#scene");
 const roleSelect = document.querySelector("#role");
 const status = document.querySelector("#status");
 const randomizeButton = document.querySelector("#randomize");
+const saveDeckButton = document.querySelector("#save-deck");
+const savedDecksDisclosure = document.querySelector("#saved-decks-disclosure");
+const savedDeckCount = document.querySelector("#saved-deck-count");
+const savedDeckList = document.querySelector("#saved-deck-list");
+const savedDeckEmpty = document.querySelector("#saved-deck-empty");
+const exportDeckButton = document.querySelector("#export-deck");
 const sampleDeckButton = document.querySelector("#sample-deck");
+const importDeckButton = document.querySelector("#import-deck");
+const deckFileInput = document.querySelector("#deck-file-input");
 const roleLabel = document.querySelector("#role-label");
 const slideTitle = document.querySelector("#slide-title");
 const slideCopy = document.querySelector("#slide-copy");
@@ -61,7 +74,18 @@ const presentationChrome = document.querySelector("#presentation-chrome");
 const presentationExit = document.querySelector("#presentation-exit");
 const slidePosition = document.querySelector("#slide-position");
 const activeRoleName = document.querySelector("#active-role-name");
-const atmosphereSummary = document.querySelector("#atmosphere-summary");
+const mobileNavButtons = [...document.querySelectorAll(".mobile-nav-button")];
+const mobileNavTargets = Object.freeze({
+  preview: document.querySelector(".canvas-toolbar"),
+  deck: document.querySelector(".deck-panel"),
+  settings: document.querySelector(".controls"),
+});
+const storyOptions = document.querySelector("#story-options");
+const storyBeats = document.querySelector("#story-beats");
+const applyStoryButton = document.querySelector("#apply-story");
+const storyNote = document.querySelector("#story-note");
+const suggestAtmosphereButton = document.querySelector("#suggest-atmosphere");
+const atmosphereSuggestions = document.querySelector("#atmosphere-suggestions");
 let copyFeedbackTimer;
 
 let editMode = false;
@@ -69,11 +93,14 @@ let presentationMode = false;
 let currentContent = contentForRole("cover");
 let deck = null;
 let sharedDeckMode = false;
+let savedDecks = readSavedDecks();
+let currentSavedDeckId = null;
 let deckHistory = null;
 let editHistoryStart = null;
 let draggedSlideId = null;
 let scenePreferences = readScenePreferences();
 let activeSceneFilter = 'all';
+let selectedStoryKey = ATMOSPHERE_STORIES[0].key;
 
 const roleNames = Object.freeze({
   cover: "表紙",
@@ -133,7 +160,110 @@ function fitSlideContent() {
   slide.scrollTop = 0;
 }
 
-new ResizeObserver(scheduleContentFit).observe(slide);
+function atmosphereAxisLabel(value) {
+  return {
+    spring: "春", summer: "夏", autumn: "秋", winter: "冬",
+    morning: "朝", day: "昼", evening: "夕方", night: "夜",
+    clear: "晴れ", cloudy: "曇り", rain: "雨", snow: "雪",
+  }[value] ?? value
+}
+
+function atmosphereBeatLabel(beat) {
+  const preset = scenePreset(beat.scene)
+  return `${atmosphereAxisLabel(beat.period)} · ${preset.label}`
+}
+
+function renderStoryOptions() {
+  if (!storyOptions) return
+  storyOptions.replaceChildren()
+  ATMOSPHERE_STORIES.forEach((story) => {
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "story-option"
+    button.setAttribute("aria-pressed", String(story.key === selectedStoryKey))
+    const title = document.createElement("span")
+    title.className = "story-option-title"
+    title.textContent = story.label
+    const description = document.createElement("span")
+    description.className = "story-option-description"
+    description.textContent = story.description
+    button.append(title, description)
+    button.addEventListener("click", () => {
+      selectedStoryKey = story.key
+      renderStoryOptions()
+      renderStoryBeats()
+    })
+    storyOptions.append(button)
+  })
+}
+
+function renderStoryBeats() {
+  if (!storyBeats) return
+  const story = storyPreset(selectedStoryKey)
+  storyBeats.replaceChildren()
+  story.beats.forEach((beat, index) => {
+    const item = document.createElement("li")
+    item.className = "story-beat"
+    const number = document.createElement("span")
+    number.className = "story-beat-index"
+    number.textContent = String(index + 1).padStart(2, "0")
+    const role = document.createElement("span")
+    role.className = "story-beat-role"
+    role.textContent = ["表紙", "区切り", "本文", "引用", "締め"][index]
+    const scene = document.createElement("span")
+    scene.className = "story-beat-scene"
+    scene.textContent = atmosphereBeatLabel(beat)
+    item.append(number, role, scene)
+    storyBeats.append(item)
+  })
+  storyNote.textContent = `${story.label} · 5つの場面をデッキ全体へ適用します。`
+}
+
+function applySelectedStory() {
+  finishActiveEdit()
+  finishEditSession()
+  const story = storyPreset(selectedStoryKey)
+  commitDeckMutation(applyStoryToDeck(deck, story), `${story.label}の空気の流れを適用しました`)
+  storyNote.textContent = `${story.label}を適用しました。戻すで直前のデッキへ戻せます。`
+}
+
+function renderAtmosphereSuggestions() {
+  const selected = currentSlide()
+  if (!selected || !atmosphereSuggestions) return
+  const suggestions = suggestAtmospheres(selected.content, selected.state)
+  atmosphereSuggestions.replaceChildren()
+  suggestions.forEach((suggestion) => {
+    const card = document.createElement("article")
+    card.className = "suggestion-card"
+    const heading = document.createElement("h4")
+    heading.textContent = suggestion.label
+    const description = document.createElement("p")
+    description.textContent = suggestion.description
+    const meta = document.createElement("span")
+    meta.className = "suggestion-meta"
+    const scene = scenePreset(suggestion.state.scene)
+    meta.textContent = `${atmosphereAxisLabel(suggestion.state.period)} · ${scene.label}${suggestion.matchedTerms.length ? ` · ${suggestion.matchedTerms.join("・")}` : ""}`
+    const applyButton = document.createElement("button")
+    applyButton.type = "button"
+    applyButton.className = "button-secondary suggestion-apply"
+    applyButton.textContent = "適用"
+    applyButton.setAttribute("aria-label", `${suggestion.label}を適用`)
+    applyButton.addEventListener("click", () => {
+      applyState(suggestion.state, `${suggestion.label}を適用しました`)
+      atmosphereSuggestions.hidden = true
+    })
+    const content = document.createElement("div")
+    content.className = "suggestion-card-copy"
+    content.append(heading, description, meta)
+    card.append(content, applyButton)
+    atmosphereSuggestions.append(card)
+  })
+  atmosphereSuggestions.hidden = false
+}
+
+new ResizeObserver(() => {
+  scheduleContentFit()
+}).observe(slide)
 
 function renderContent(content) {
   roleLabel.textContent = content.kicker;
@@ -240,6 +370,108 @@ function persistDeck() {
   return saved;
 }
 
+function formatSavedDeckDate(savedAt) {
+  try {
+    return new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(savedAt));
+  } catch {
+    return "保存済み";
+  }
+}
+
+function renderSavedDecks() {
+  if (!savedDeckList || !savedDeckCount || !savedDeckEmpty) return;
+  savedDeckList.replaceChildren();
+  savedDeckCount.textContent = `${savedDecks.length}件`;
+  savedDeckEmpty.hidden = savedDecks.length > 0;
+  savedDecks.forEach((entry) => {
+    const item = document.createElement("li");
+    item.className = "saved-deck-item";
+
+    const info = document.createElement("div");
+    info.className = "saved-deck-info";
+    const name = document.createElement("strong");
+    name.className = "saved-deck-name";
+    name.textContent = entry.name;
+    const date = document.createElement("span");
+    date.className = "saved-deck-meta";
+    date.textContent = formatSavedDeckDate(entry.savedAt);
+    info.append(name, date);
+
+    const actions = document.createElement("div");
+    actions.className = "saved-deck-actions";
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "button-quiet saved-deck-action";
+    open.textContent = "開く";
+    open.setAttribute("aria-label", `${entry.name}を開く`);
+    open.title = `${entry.name}を開きます。`;
+    open.addEventListener("click", () => openSavedDeck(entry.id));
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "button-quiet saved-deck-action saved-deck-delete";
+    remove.textContent = "削除";
+    remove.setAttribute("aria-label", `${entry.name}を削除`);
+    remove.title = `${entry.name}を保存デッキから削除します。`;
+    remove.addEventListener("click", () => deleteSavedDeck(entry.id));
+    actions.append(open, remove);
+    item.append(info, actions);
+    savedDeckList.append(item);
+  });
+}
+
+function saveCurrentDeck() {
+  finishActiveEdit();
+  finishEditSession();
+  if (!deck) return;
+  persistDeck();
+  const result = upsertSavedDeck(savedDecks, deck, { id: currentSavedDeckId });
+  if (!writeSavedDecks(result.entries)) {
+    status.textContent = "保存デッキを保存できませんでした";
+    return;
+  }
+  savedDecks = result.entries;
+  currentSavedDeckId = result.entry.id;
+  renderSavedDecks();
+  if (savedDecksDisclosure) savedDecksDisclosure.open = true;
+  status.textContent = `「${result.entry.name}」を保存しました`;
+}
+
+function exportDeckFile() {
+  finishActiveEdit();
+  finishEditSession();
+  if (!deck) return;
+  persistDeck();
+  const downloaded = downloadDeckFile(deck);
+  status.textContent = downloaded ? "JSONを書き出しました" : "JSONを書き出せませんでした";
+}
+
+function openSavedDeck(id) {
+  const entry = savedDecks.find((item) => item.id === id);
+  if (!entry) return;
+  finishActiveEdit();
+  finishEditSession();
+  sharedDeckMode = false;
+  const url = new URL(window.location.href);
+  url.searchParams.delete(DECK_SHARE_PARAM);
+  window.history.replaceState({}, "", url);
+  if (!commitDeckMutation(entry.deck, "保存デッキを開きました")) return;
+  currentSavedDeckId = entry.id;
+}
+
+function deleteSavedDeck(id) {
+  const entry = savedDecks.find((item) => item.id === id);
+  if (!entry) return;
+  if (!window.confirm(`「${entry.name}」を削除しますか？`)) return;
+  const next = removeSavedDeck(savedDecks, id);
+  if (!writeSavedDecks(next)) {
+    status.textContent = "保存デッキを削除できませんでした";
+    return;
+  }
+  savedDecks = next;
+  if (currentSavedDeckId === id) currentSavedDeckId = null;
+  renderSavedDecks();
+  status.textContent = `「${entry.name}」を削除しました`;
+}
 function applyScenePresentation(element, key) {
   const preset = scenePreset(key);
   element.dataset.sceneFamily = preset.family ?? "";
@@ -491,6 +723,7 @@ function persistContent(content = editableContent()) {
   renderDeckStrip();
   const saved = persistDeck();
   editorStatus.textContent = saved ? "自動保存済み" : "表示中（保存できませんでした）";
+  if (atmosphereSuggestions) atmosphereSuggestions.hidden = true;
   status.textContent = "編集中";
 }
 
@@ -780,6 +1013,40 @@ function loadSampleDeck() {
   status.textContent = "サンプルデッキを作成しました";
 }
 
+async function importDeckFile(event) {
+  const [file] = event.target.files ?? [];
+  event.target.value = "";
+  if (!file) return;
+  finishActiveEdit();
+  finishEditSession();
+
+  let source;
+  try {
+    source = await file.text();
+  } catch {
+    status.textContent = "JSONデッキを読み込めませんでした";
+    return;
+  }
+
+  const parsed = parseSlidairDocument(source, deck);
+  if (!parsed.ok) {
+    const firstError = parsed.errors[0];
+    status.textContent = firstError
+      ? "読み込み失敗: " + firstError.path + " " + firstError.message
+      : "JSONデッキを読み込めませんでした";
+    return;
+  }
+
+  sharedDeckMode = false;
+  const warningSuffix = parsed.warnings.length > 0 ? "（" + parsed.warnings.length + "件を補完）" : "";
+  const sourceLabel = (parsed.document.title ? "「" + parsed.document.title + "」" : "JSONデッキ") + "を読み込みました" + warningSuffix;
+  if (!replaceDeck(parsed.deck)) return;
+  persistDeck();
+  renderDeckStrip();
+  const state = renderActiveSlide(sourceLabel);
+  updateUrl(state, "push");
+  status.textContent = sourceLabel;
+}
 function currentState() {
   return normalizeState({
     season: seasonSelect.value,
@@ -799,7 +1066,7 @@ function updateShareMetadata(state, href = window.location.href) {
   const preset = scenePreset(state.scene);
   const period = periodSelect.selectedOptions[0]?.textContent ?? "";
   const sceneTitle = preset.key === "none" ? "静かな背景" : preset.label + "の空気";
-  const shareTitle = sceneTitle + " · " + period + " | slide-atmosphere";
+  const shareTitle = sceneTitle + " · " + period + " | Slidair";
   const shareDescription = preset.key === "none"
     ? "季節・時間帯・天気から、言葉を邪魔しないプレゼン背景をつくる。"
     : preset.label + "の空気をまとったプレゼンテーション背景。";
@@ -862,11 +1129,18 @@ roleSelect.addEventListener("change", selectChanged);
 editModeToggle.addEventListener("click", () => setEditMode(!editMode));
 slideOnlyToggle.addEventListener("click", () => setPresentationMode(!presentationMode));
 presentationExit.addEventListener("click", () => setPresentationMode(false));
+mobileNavButtons.forEach((button) => button.addEventListener("click", () => focusMobileSection(button.dataset.mobileTarget)));
 addSlideButton.addEventListener("click", addNewSlide);
 undoButton.addEventListener("click", undoDeck);
 redoButton.addEventListener("click", redoDeck);
 randomizeButton.addEventListener("click", randomizeAtmosphere);
+saveDeckButton.addEventListener("click", saveCurrentDeck);
+exportDeckButton.addEventListener("click", exportDeckFile);
 sampleDeckButton.addEventListener("click", loadSampleDeck);
+importDeckButton.addEventListener("click", () => deckFileInput.click());
+deckFileInput.addEventListener("change", importDeckFile);
+applyStoryButton.addEventListener("click", applySelectedStory);
+suggestAtmosphereButton.addEventListener("click", renderAtmosphereSuggestions);
 moveSlideUpButton.addEventListener("click", () => moveCurrentSlide(-1));
 moveSlideDownButton.addEventListener("click", () => moveCurrentSlide(1));
 duplicateSlideButton.addEventListener("click", duplicateCurrentSlide);
@@ -1031,6 +1305,18 @@ function setupChoiceControls() {
   });
 }
 
+function focusMobileSection(target) {
+  if (target === "present") {
+    slideOnlyToggle.click();
+    return;
+  }
+  const destination = mobileNavTargets[target];
+  if (!destination) return;
+  mobileNavButtons.forEach((button) => {
+    button.toggleAttribute("aria-current", button.dataset.mobileTarget === target);
+  });
+  destination.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 function syncInspector(state) {
   document.querySelectorAll("[data-choice-control]").forEach((control) => {
     const key = control.dataset.choiceControl;
@@ -1047,12 +1333,13 @@ function syncInspector(state) {
   document.querySelector("#weather-note").textContent = state.scene === "none"
     ? "季節の色は、スライドの下部に。"
     : "景色の選択中は、天気は反映されません。";
-  atmosphereSummary.textContent = [labelFor(seasonSelect), labelFor(periodSelect), labelFor(state.scene === "none" ? weatherSelect : sceneSelect)].join(" · ");
   updateFavoriteSceneControl();
 }
 
 sceneSelect.replaceChildren(...SCENE_PRESETS.map(preset => new Option(preset.label, preset.key)));
 setupChoiceControls();
+renderStoryOptions();
+renderStoryBeats();
 applySceneFilter();
 const initialState = stateFromSearch(window.location.search);
 const sharedDeck = deserializeDeck(new URLSearchParams(window.location.search).get(DECK_SHARE_PARAM));
@@ -1064,7 +1351,7 @@ deck = savedDeck ?? createDeck(
   "slide-1",
 );
 deckHistory = createHistory(deck);
-let initialSource = sharedDeck ? "共有デッキを復元" : savedDeck ? "deck restored" : "url preset";
+let initialSource = sharedDeck ? "共有デッキを復元" : savedDeck ? "保存済みデッキを復元" : "URLプリセット";
 if (savedDeck) {
   const selected = currentSlide();
   const requestedState = stateFromSearch(window.location.search, selected.state);
@@ -1076,6 +1363,8 @@ if (savedDeck) {
   persistDeck();
 }
 if (sharedDeck) persistDeck();
+currentSavedDeckId = findSavedDeckId(savedDecks, deck);
+renderSavedDecks();
 renderDeckStrip();
 const activeState = renderActiveSlide(initialSource);
 updateUrl(activeState);
@@ -1088,3 +1377,9 @@ document.addEventListener("keydown", (event) => {
   handlePresentationKeydown(event);
   handleDeckKeydown(event);
 });
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
+  });
+}

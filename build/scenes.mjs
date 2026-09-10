@@ -13,6 +13,7 @@ export const SCENE_PRESETS = Object.freeze([
   Object.freeze({ key: "forest-light", label: "木漏れ日", family: "soft", art: "./assets/scene-forest-light-v1.webp", og: "scene-forest-light-v1.webp", dayOpacity: 0.44, eveningExposure: 0.52, nightExposure: 0.45, categories: ["自然", "明るめ"] }),
   Object.freeze({ key: "bamboo-grove", label: "竹林", family: "soft", art: "./assets/scene-bamboo-grove-v1.webp", og: "scene-bamboo-grove-v1.webp", dayOpacity: 0.52, eveningExposure: 0.44, nightExposure: 0.37, categories: ["自然", "暗め"] }),
   Object.freeze({ key: "sakura-mist", label: "桜霞", family: "soft", art: "./assets/scene-sakura-mist-v1.webp", og: "scene-sakura-mist-v1.webp", dayOpacity: 0.66, eveningExposure: 0.4, nightExposure: 0.34, categories: ["自然", "明るめ"] }),
+  Object.freeze({ key: "cherry-blossom", label: "桜並木", family: "soft", art: "./assets/scene-cherry-blossom-v1.png", og: "scene-cherry-blossom-v1.png", dayOpacity: 0.58, eveningExposure: 0.42, nightExposure: 0.35, categories: ["自然", "明るめ"] }),
   Object.freeze({ key: "hydrangea-rain", label: "紫陽花", family: "soft", art: "./assets/scene-hydrangea-rain-v1.webp", og: "scene-hydrangea-rain-v1.webp", dayOpacity: 0.46, eveningExposure: 0.46, nightExposure: 0.39, categories: ["自然", "明るめ"] }),
   Object.freeze({ key: "lavender-haze", label: "花畑", family: "soft", art: "./assets/scene-lavender-haze-v1.webp", og: "scene-lavender-haze-v1.webp", dayOpacity: 0.62, eveningExposure: 0.42, nightExposure: 0.35, categories: ["自然", "明るめ"] }),
   Object.freeze({ key: "autumn-haze", label: "紅葉", family: "soft", art: "./assets/scene-autumn-haze-v1.webp", og: "scene-autumn-haze-v1.webp", dayOpacity: 0.54, eveningExposure: 0.46, nightExposure: 0.39, categories: ["自然", "暗め"] }),
@@ -30,6 +31,7 @@ export const SCENE_PRESETS = Object.freeze([
   Object.freeze({ key: "rain-window", label: "雨の窓", family: "soft", tone: "dark", art: "./assets/scene-rain-window-v1.png", og: "scene-rain-window-v1.png", categories: ["幻想", "都会", "暗め"] }),
   Object.freeze({ key: "birch-grove", label: "白樺林", family: "soft", art: "./assets/scene-birch-grove-v1.png", og: "scene-birch-grove-v1.png", dayOpacity: 0.55, eveningExposure: 0.43, nightExposure: 0.35, categories: ["自然", "明るめ"] }),
   Object.freeze({ key: "lighthouse-night", label: "夜の灯台", family: "soft", tone: "dark", art: "./assets/scene-lighthouse-night-v1.png", og: "scene-lighthouse-night-v1.png", categories: ["自然", "幻想", "暗め"] }),
+  Object.freeze({ key: "rust-forge", label: "Rust Forge", family: "soft", tone: "dark", art: "./assets/scene-rust-forge-v1.png", og: "scene-rust-forge-v1.png", dayOpacity: 0.42, eveningExposure: 0.42, nightExposure: 0.34, categories: ["都会", "暗め"] }),
 ]);
 
 export function scenePreset(key) {

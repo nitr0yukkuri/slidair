@@ -1,5 +1,5 @@
 {
-  "name": "slide-atmosphere",
+  "name": "slidair",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,9 +9,14 @@
     "test:browser": "node scripts/browser-smoke.cjs",
     "audit:a11y": "node scripts/accessibility-audit.cjs",
     "test:browser:build": "node scripts/browser-smoke.cjs build",
-    "audit:a11y:build": "node scripts/accessibility-audit.cjs build"
+    "audit:a11y:build": "node scripts/accessibility-audit.cjs build",
+    "mcp": "node mcp-server.mjs"
   },
   "devDependencies": {
     "playwright": "^1.48.2"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.5.4"
   }
 }

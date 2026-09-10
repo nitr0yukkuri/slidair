@@ -1,5 +1,6 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const { spawn } = require("node:child_process");
 const { once } = require("node:events");
 
@@ -26,13 +27,43 @@ async function waitForServer(url) {
   }
   const browser = await chromium.launch({ headless: true });
   try {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 960 } });
+    const context = await browser.newContext({ viewport: { width: 1440, height: 960 }, acceptDownloads: true });
     const page = await context.newPage();
     const errors = [];
     page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
-    assert.equal(await page.locator(".scene-choices .choice-button").count(), 30);
+    assert.match(await page.title(), /Slidair$/);
+    assert.equal(await page.locator('link[rel="manifest"]').getAttribute("href"), "./manifest.webmanifest");
+    const registration = await page.evaluate(async () => {
+      if (!("serviceWorker" in navigator)) return null;
+      const ready = await navigator.serviceWorker.ready;
+      return { scope: ready.scope, state: ready.active?.state };
+    });
+    assert.ok(registration);
+    assert.equal(new URL(registration.scope).pathname, "/");
+    assert.equal(registration.state, "activated");
+    await page.getByRole("button", { name: "デッキを保存", exact: true }).click();
+    assert.equal(await page.locator("#saved-deck-count").innerText(), "1件");
+    assert.match(await page.locator("#status").innerText(), /保存しました/);
+    assert.equal(await page.locator("#saved-decks-disclosure").getAttribute("open"), "");
+    assert.equal(await page.locator("#saved-deck-list .saved-deck-item").count(), 1);
+    const saveDownloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "JSONを書き出す", exact: true }).click();
+    const saveDownload = await saveDownloadPromise;
+    assert.equal(saveDownload.suggestedFilename(), "slidair-deck.slidair.json");
+    const savedDeck = JSON.parse(fs.readFileSync(await saveDownload.path(), "utf8"));
+    assert.equal(savedDeck.version, 1);
+    assert.equal(savedDeck.slides.length, 1);
+    const offlineContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const offlinePage = await offlineContext.newPage();
+    await offlinePage.goto(`${baseUrl}/?season=winter&period=night&weather=snow&scene=none&role=section`, { waitUntil: "networkidle" });
+    await offlinePage.evaluate(() => navigator.serviceWorker.ready);
+    await offlineContext.setOffline(true);
+    await offlinePage.reload({ waitUntil: "domcontentloaded" });
+    assert.match(await offlinePage.title(), /Slidair$/);
+    await offlineContext.close();
+    assert.equal(await page.locator(".scene-choices .choice-button").count(), 32);
     for (const [label, key, asset] of [
       ["山霞", "misty-mountains", "scene-misty-mountains-v1.png"],
       ["潮だまり", "tidepool-coast", "scene-tidepool-coast-v1.png"],
@@ -44,6 +75,8 @@ async function waitForServer(url) {
       ["雨の窓", "rain-window", "scene-rain-window-v1.png"],
       ["白樺林", "birch-grove", "scene-birch-grove-v1.png"],
       ["夜の灯台", "lighthouse-night", "scene-lighthouse-night-v1.png"],
+      ["Rust Forge", "rust-forge", "scene-rust-forge-v1.png"],
+      ["桜並木", "cherry-blossom", "scene-cherry-blossom-v1.png"],
     ]) {
       await page.getByRole("button", { name: label, exact: true }).click();
       assert.equal(await page.locator("#slide").getAttribute("data-scene"), key);
@@ -65,6 +98,26 @@ async function waitForServer(url) {
     await page.keyboard.press("Delete");
     assert.equal(await page.locator("#slide-count").innerText(), "1枚");
 
+    await page.locator("#deck-file-input").setInputFiles({
+      name: "slidair-demo.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify({
+        version: 1,
+        title: "インポート確認",
+        atmosphere: { season: "winter", period: "night", weather: "clear", scene: "rust-forge" },
+        slides: [
+          { role: "cover", content: { title: "MCPから来た表紙", body: "UIへ取り込める" } },
+          { role: "content", atmosphere: { scene: "deep-sea" }, content: { title: "本文", body: "空気はスライドごとに変えられる" } }
+        ]
+      }))
+    });
+    await page.waitForTimeout(100);
+    assert.equal(await page.locator("#slide-count").innerText(), "2枚");
+    assert.equal(await page.locator("#slide-title").innerText(), "MCPから来た表紙");
+    assert.equal(await page.locator("#slide").getAttribute("data-scene"), "rust-forge");
+    assert.match(await page.locator("#status").innerText(), /インポート確認.*読み込みました/);
+    await page.getByRole("button", { name: "元に戻す", exact: true }).click();
+    assert.equal(await page.locator("#slide-count").innerText(), "1枚");
     const dragContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });
     const dragPage = await dragContext.newPage();
     await dragPage.goto(`${baseUrl}/?season=spring&period=day&weather=clear&scene=none&role=cover`, { waitUntil: "networkidle" });
@@ -93,6 +146,14 @@ async function waitForServer(url) {
     await bulkPage.getByRole("button", { name: "現在時刻", exact: true }).click();
     const currentPeriods = await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.period));
     assert.ok(currentPeriods.every((period) => period === currentPeriods[0]));
+    await bulkPage.locator(".story-disclosure > summary").click();
+    await bulkPage.getByRole("button", { name: /^Night Journey/ }).click();
+    assert.equal(await bulkPage.locator(".story-beat").count(), 5);
+    await bulkPage.getByRole("button", { name: "この流れを適用", exact: true }).click();
+    assert.match(await bulkPage.locator("#status").innerText(), /Night Journey/);
+    const storyScenes = await bulkPage.locator(".deck-thumb-preview").evaluateAll((previews) => previews.map((preview) => preview.dataset.scene));
+    assert.equal(storyScenes.length, 5);
+    assert.ok(new Set(storyScenes).size >= 3);
     await bulkContext.close();
 
     const editContext = await browser.newContext({ viewport: { width: 1440, height: 960 } });
@@ -107,6 +168,14 @@ async function waitForServer(url) {
     assert.equal(await editPage.locator("#slide-title").innerText(), originalTitle);
     await editPage.getByRole("button", { name: "やり直す", exact: true }).click();
     assert.equal(await editPage.locator("#slide-title").innerText(), editedTitle);
+    await editPage.getByRole("button", { name: "テキストを編集", exact: true }).click();
+    await editPage.getByRole("button", { name: "内容から空気を提案", exact: true }).click();
+    assert.equal(await editPage.locator(".suggestion-card").count(), 3);
+    await editPage.getByRole("button", { name: "内容から空気を提案", exact: true }).click();
+    assert.equal(await editPage.locator(".suggestion-card").count(), 3);
+    await editPage.locator(".suggestion-apply").first().click();
+    assert.match(await editPage.locator("#status").innerText(), /を適用しました/);
+    await editPage.getByRole("button", { name: "編集を完了", exact: true }).click();
     await editContext.close();
 
     await page.getByRole("button", { name: "宇宙", exact: true }).click();
@@ -133,6 +202,15 @@ async function waitForServer(url) {
 
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+    assert.equal(await page.locator("#mobile-bottom-nav").isVisible(), true);
+    assert.equal(await page.locator(".mobile-nav-button").count(), 4);
+    assert.ok(await page.locator(".mobile-nav-button").evaluateAll((buttons) => buttons.every((button) => button.getBoundingClientRect().height >= 44)));
+    await page.getByRole("button", { name: "背景", exact: true }).click();
+    await page.waitForFunction(() => document.querySelector("#controls")?.getBoundingClientRect().top <= 8);
+    await page.getByRole("button", { name: "デッキ", exact: true }).click();
+    await page.waitForFunction(() => document.querySelector("#deck-panel")?.getBoundingClientRect().top <= 8);
+    await page.getByRole("button", { name: "プレビュー", exact: true }).click();
+    await page.waitForFunction(() => document.querySelector(".canvas-toolbar")?.getBoundingClientRect().top <= 8);
     const unnamed = await page.locator("button:visible").evaluateAll((buttons) => buttons.filter((button) => !(button.getAttribute("aria-label") || button.textContent || "").trim()).length);
     assert.equal(unnamed, 0);
     assert.deepEqual(errors, []);

@@ -14,21 +14,28 @@ Slidair は、背景を単なる「装飾」ではなく、発表全体の空気
 - `spring / summer / autumn / winter` の季節
 - `morning / day / evening / night` の時間帯
 - `clear / cloudy / rain / snow` の天気
-- なし・花火・湖・都会・宇宙・海中・田舎・快晴・深海・初日の出・木漏れ日・竹林・桜霞・紫陽花・花畑・紅葉・雪原・砂丘・月夜の海・オーロラ・山霞・潮だまり・雲海・藤棚・石庭・夕渓谷・霧の港・雨の窓・白樺林・夜の灯台の30種類の景色
+- なし・花火・湖・都会・宇宙・海中・田舎・快晴・深海・初日の出・木漏れ日・竹林・桜霞・桜並木・紫陽花・花畑・紅葉・雪原・砂丘・月夜の海・オーロラ・山霞・潮だまり・雲海・藤棚・石庭・夕渓谷・霧の港・雨の窓・白樺林・夜の灯台・Rust Forgeの32種類の景色
 - `cover / section / content / quote / closing` のスライド役割
 - 最大48枚のデッキ
 - スライド一覧からの追加・切り替え・複製・削除・前後移動・ドラッグ並べ替え（Alt+矢印、Ctrl/Cmd+D、Delete）
 - 直近50操作のUndo / Redo（Ctrl/Cmd+Z、Ctrl/Cmd+Shift+Z）
 - ランダムな空気感・現在時刻のデッキ全体適用（役割・文章・順番を維持）
 - サンプルデッキの即時生成
+- Atmosphere Story（表紙から締めまでの5ビート）をデッキ全体へ適用
+- 本文からローカル判定で3つの空気候補を提案
 - URLパラメータによる再現可能なプリセットと、デッキ全体を含む共有URL
 - 編集モードでタイトル・本文・小見出しをライブ編集
 - 文章量に応じたコンテンツの自動フィット
 - スライドごとの背景・役割・文章をブラウザへデッキとして下書き保存
+- 保存ボタンで名前付きデッキをこの端末へ保存し、一覧から開く・削除する
+- 保存ボタンから編集可能なSlidair JSON（.slidair.json）を書き出し、別の端末やAIツールへ渡せる
 - スライドだけを大きく表示する発表モード（Esc・矢印キー・PageUp/PageDown・Space対応）
+- スマホ向け固定フッターナビ（プレビュー・デッキ・背景・発表）
+- PWA対応（ホーム画面追加・オフラインのシェルキャッシュ）
+- AI連携: deck.json の読み込みと、ローカルstdio MCP（npm run mcp）に対応。仕様は docs/deck-schema.md。
 - 発表の空気を示す静かなワードマークと、状態操作のヘッダー
 - 宇宙専用の星雲素材と、役割・時間帯に応じた光量調整（[詳細分析](docs/space-art-direction.md)）
-- 海中・田舎・快晴・深海・初日の出と10種類の柔らかな自然背景（[素材と制作メモ](docs/landscape-presets.md)、[追加素材のプロンプト](docs/scene-expansion-prompts.md)）
+- 海中・田舎・快晴・深海・初日の出など10種類の柔らかな自然背景と、Rust Forgeの技術系背景（[素材と制作メモ](docs/landscape-presets.md)、[追加素材のプロンプト](docs/scene-expansion-prompts.md)）
 - CSSグラデーション、SVGノイズ、低速トランジション
 - `prefers-reduced-motion` 対応
 - 景色のカテゴリ絞り込み、お気に入り、最近使った景色の保存
@@ -81,7 +88,7 @@ WorldState = season + period + weather + scene + role
 - `season`: スライド下部の低彩度アクセントカラー
 - `period`: 明るさと色温度
 - `weather`: 彩度、コントラスト、質感
-- `scene`: 独立した背景。花火・湖・都会と自然・幻想系の景色を低コントラストのぼかしや静かな光で表現。深海・月夜の海・オーロラなどは全時間帯で暗い基盤を保つ
+- `scene`: 独立した背景。花火・湖・都会と26種類の自然・幻想系の景色を低コントラストのぼかしや静かな光で表現。宇宙は星雲の光で表現し、深海・月夜の海・オーロラは全時間帯で暗い基盤を保つ
 - `role`: 発表中の情報階層
 
 季節は世界観の入口として使い、下部の色に限定します。景色は背景の個性を足すための独立軸です。景色を選んだときは、雨・雪・曇りの大気処理を景色へ重ねません。中央の安全領域を強い図像で埋めないまま、スライド役割も独立した軸として扱います。
@@ -114,6 +121,6 @@ WorldState = season + period + weather + scene + role
 - AI Agent から利用できる MCP インターフェース
 - 既存プリセットで表現できない景色だけを生成する背景API
 
-AI Agent / MCP / 背景生成APIの設計は [Issue #5](https://github.com/nitr0yukkuri/slide-atmosphere/issues/5) で検討しています。
+AI Agent / MCP / 背景生成APIの設計は [Issue #5](https://github.com/nitr0yukkuri/slidair/issues/5) で検討しています。
 
 詳細な企画・リスク・実装判断は [`docs/design-analysis.md`](docs/design-analysis.md) を参照してください。実装の背景と検証を技術記事としてまとめた [`docs/technical-article.md`](docs/technical-article.md) も参照してください。
