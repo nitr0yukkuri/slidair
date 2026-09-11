@@ -7,6 +7,8 @@ import {
   normalizeSavedDecks,
   readSavedDecks,
   removeSavedDeck,
+  duplicateSavedDeck,
+  renameSavedDeck,
   SAVED_DECKS_KEY,
   suggestedDeckName,
   upsertSavedDeck,
@@ -57,6 +59,18 @@ test("saved deck list removes duplicates, caps at twenty, and supports deletion"
   assert.equal(removeSavedDeck(normalized, "saved-2").some((entry) => entry.id === "saved-2"), false);
 });
 
-test("suggested name falls back when the first slide has no title", () => {
+
+test("saved deck names can be renamed and snapshots can be duplicated", () => {
+  const deck = createDeck({}, { title: "元デッキ" }, "one");
+  const first = upsertSavedDeck([], deck, { name: "元デッキ" });
+  const renamed = renameSavedDeck(first.entries, first.entry.id, "  発表用  ", { savedAt: "2026-01-02T00:00:00.000Z" });
+  assert.equal(renamed[0].name, "発表用");
+  assert.equal(renamed[0].id, first.entry.id);
+  const duplicated = duplicateSavedDeck(renamed, first.entry.id, { savedAt: "2026-01-03T00:00:00.000Z" });
+  assert.equal(duplicated.length, 2);
+  assert.equal(duplicated[0].name, "発表用 のコピー");
+  assert.notEqual(duplicated[0].id, duplicated[1].id);
+  assert.equal(duplicated[0].savedAt > duplicated[1].savedAt, true);
+});test("suggested name falls back when the first slide has no title", () => {
   assert.equal(suggestedDeckName(createDeck({}, { title: "   " })), "無題のデッキ");
 });

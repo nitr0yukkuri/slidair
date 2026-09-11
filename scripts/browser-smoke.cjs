@@ -4,6 +4,12 @@ const fs = require("node:fs");
 const { spawn } = require("node:child_process");
 const { once } = require("node:events");
 
+function pngDimensions(path) {
+  const data = fs.readFileSync(path);
+  assert.equal(data.toString("ascii", 1, 4), "PNG");
+  return { width: data.readUInt32BE(16), height: data.readUInt32BE(20) };
+}
+
 const baseUrl = process.env.BASE_URL || "http://127.0.0.1:4173";
 const shouldStartServer = !process.env.BASE_URL;
 const smokeRoot = process.argv[2] ? require("node:path").resolve(process.argv[2]) : null;
@@ -48,6 +54,16 @@ async function waitForServer(url) {
     assert.match(await page.locator("#status").innerText(), /保存しました/);
     assert.equal(await page.locator("#saved-decks-disclosure").getAttribute("open"), "");
     assert.equal(await page.locator("#saved-deck-list .saved-deck-item").count(), 1);
+    const savedNameButton = page.locator("#saved-deck-list .saved-deck-item").first().getByRole("button", { name: /名前を変更$/ });
+    page.once("dialog", (dialog) => dialog.accept("MCPデモ"));
+    await savedNameButton.click();
+    assert.equal(await page.locator("#saved-deck-list .saved-deck-name").first().innerText(), "MCPデモ");
+    await page.locator("#saved-deck-list .saved-deck-item").first().getByRole("button", { name: /を複製$/ }).click();
+    assert.equal(await page.locator("#saved-deck-list .saved-deck-item").count(), 2);
+    const savedJsonDownloadPromise = page.waitForEvent("download");
+    await page.locator("#saved-deck-list .saved-deck-item").first().getByRole("button", { name: /JSONで書き出す$/ }).click();
+    const savedJsonDownload = await savedJsonDownloadPromise;
+    assert.match(savedJsonDownload.suggestedFilename(), /\.slidair\.json$/);
     const saveDownloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: "JSONを書き出す", exact: true }).click();
     const saveDownload = await saveDownloadPromise;
@@ -55,6 +71,48 @@ async function waitForServer(url) {
     const savedDeck = JSON.parse(fs.readFileSync(await saveDownload.path(), "utf8"));
     assert.equal(savedDeck.version, 1);
     assert.equal(savedDeck.slides.length, 1);
+    await page.locator(".export-trigger").click();
+    const fullPngDownloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "文字込み", exact: true }).click();
+    const fullPngDownload = await fullPngDownloadPromise;
+    assert.equal(fullPngDownload.suggestedFilename(), "slidair-slide-01-full.png");
+    assert.deepEqual(pngDimensions(await fullPngDownload.path()), { width: 1920, height: 1080 });
+    await page.locator(".export-trigger").click();
+    const backgroundPngDownloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "背景のみ", exact: true }).click();
+    const backgroundPngDownload = await backgroundPngDownloadPromise;
+    assert.equal(backgroundPngDownload.suggestedFilename(), "slidair-slide-01-background.png");
+    assert.deepEqual(pngDimensions(await backgroundPngDownload.path()), { width: 1920, height: 1080 });
+    const exportEditor = await context.newPage();
+    await exportEditor.goto(`${baseUrl}/?season=autumn&period=night&weather=clear&scene=rust-forge&role=cover`, { waitUntil: "networkidle" });
+    await exportEditor.getByRole("button", { name: "サンプルデッキ", exact: true }).click();
+    await exportEditor.locator("#export-page-link").click();
+    await exportEditor.waitForLoadState("networkidle");
+    assert.match(exportEditor.url(), /\/export\.html\?/);
+    assert.match(await exportEditor.title(), /書き出し$/);
+    assert.equal(await exportEditor.locator("#export-count").innerText(), "5枚");
+    assert.equal(await exportEditor.locator(".export-slide-item").count(), 5);
+    await exportEditor.locator(".export-slide-item").nth(1).focus();
+    await exportEditor.keyboard.press("Enter");
+    assert.match(await exportEditor.locator("#export-status").innerText(), /2枚目/);
+    const exportPngDownloadPromise = exportEditor.waitForEvent("download");
+    await exportEditor.locator("#export-png").click();
+    const exportPngDownload = await exportPngDownloadPromise;
+    assert.equal(exportPngDownload.suggestedFilename(), "slidair-slide-02-full.png");
+    assert.deepEqual(pngDimensions(await exportPngDownload.path()), { width: 1920, height: 1080 });
+    await exportEditor.evaluate(() => { window.print = () => { window.__slidairPrinted = true; }; });
+    await exportEditor.locator("#export-pdf").click();
+    assert.equal(await exportEditor.evaluate(() => window.__slidairPrinted), true);
+    const exportJsonDownloadPromise = exportEditor.waitForEvent("download");
+    await exportEditor.locator("#export-json").click();
+    const exportJsonDownload = await exportJsonDownloadPromise;
+    assert.equal(exportJsonDownload.suggestedFilename(), "slidair-deck.slidair.json");
+    const exportedDeck = JSON.parse(fs.readFileSync(await exportJsonDownload.path(), "utf8"));
+    assert.equal(exportedDeck.version, 1);
+    assert.equal(exportedDeck.slides.length, 5);
+    assert.match(await exportEditor.locator("#back-to-editor").getAttribute("href"), /\?season=summer/);
+    await exportEditor.close();
+
     const offlineContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const offlinePage = await offlineContext.newPage();
     await offlinePage.goto(`${baseUrl}/?season=winter&period=night&weather=snow&scene=none&role=section`, { waitUntil: "networkidle" });

@@ -35,3 +35,16 @@ test("deck and scene preference controls keep explicit accessible names", () => 
     assert.match(html, new RegExp(`class="scene-filter"[^>]*data-filter="${filter}"`));
   }
 });
+test("export page exposes named output actions", () => {
+  for (const file of ["export.html", "build/export.html"]) {
+    const html = readFileSync(new URL(`../${file}`, import.meta.url), "utf8");
+    assert.match(html, /<title>Slidair · 書き出し<\/title>/);
+    assert.match(html, /id="export-slides"/);
+    assert.match(html, /id="export-png"[^>]*>PNGを書き出す<\/button>/s);
+    assert.match(html, /id="export-pdf"[^>]*>PDF \/ Canva用を作る<\/button>/s);
+    assert.match(html, /id="export-json"[^>]*>Slidair JSONを保存<\/button>/s);
+    assert.match(html, /id="export-share"[^>]*>共有URLをコピー<\/button>/s);
+    assert.match(html, /id="back-to-editor"/);
+    assert.match(html, /id="slide-template"/);
+  }
+});

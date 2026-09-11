@@ -43,6 +43,7 @@ button:disabled { cursor: default; }
 .button-primary { background: var(--ui-accent); border-color: var(--ui-accent); color: #202632; padding-inline: 17px; }
 .button-primary:hover { background: #e0e9f8; border-color: #e0e9f8; color: #111722; }
 .button-primary .icon { width: 15px; fill: currentColor; stroke-width: 0; }
+.export-page-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; white-space: nowrap; }
 .button-secondary { color: #bcc0cb; background: transparent; }
 .app-shell { width: min(1600px, calc(100% - 64px)); margin: 0 auto; padding-bottom: 32px; }
 .app-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; min-height: 122px; padding: 24px 0 20px; }
@@ -68,6 +69,14 @@ button:disabled { cursor: default; }
 .canvas-location { display: flex; align-items: center; gap: 14px; font-size: .875rem; color: #afb2bd; }
 .slide-position { color: #d4d8e2; font-size: .75rem; font-variant-numeric: tabular-nums; letter-spacing: .08em; }
 .toolbar-divider { height: 12px; width: 1px; background: #ffffff20; }
+.canvas-toolbar-actions { display: flex; align-items: center; gap: 6px; }
+.export-disclosure { position: relative; }
+.export-disclosure:not([open]) .export-menu { display: none; }
+.export-trigger { display: inline-flex; align-items: center; min-height: 34px; padding: 7px 10px; cursor: pointer; list-style: none; font-size: .8125rem; }
+.export-trigger::-webkit-details-marker { display: none; }
+.export-menu { position: absolute; z-index: 5; top: calc(100% + 8px); right: 0; display: grid; min-width: 128px; padding: 5px; border: 1px solid var(--ui-border); border-radius: 9px; background: #17181ddd; box-shadow: 0 12px 28px #0006; backdrop-filter: blur(12px); }
+.export-option { justify-content: flex-start; min-height: 32px; padding: 6px 8px; border-color: transparent; font-size: .75rem; white-space: nowrap; }
+.export-option:hover { background: #ffffff0b; }
 .edit-toggle { min-height: 34px; font-size: .8125rem; }
 .edit-toggle[aria-pressed="true"] { color: #dbe6f7; border-color: #b7cef435; background: #b7cef413; }
 .canvas-stage { display: grid; place-items: center; padding: 26px 36px 14px; min-width: 0; }
@@ -197,11 +206,11 @@ select { cursor: pointer; padding-right: 9px; }
 .saved-deck-export { min-height: 28px; padding: 4px 7px; font-size: .6875rem; }
 .saved-deck-export .icon { width: 13px; height: 13px; flex-basis: 13px; }
 .saved-deck-list { display: grid; gap: 6px; padding: 0; margin: 12px 0 0; list-style: none; }
-.saved-deck-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; border: 1px solid #ffffff10; border-radius: 8px; background: #ffffff04; }
+.saved-deck-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 8px; border: 1px solid #ffffff10; border-radius: 8px; background: #ffffff04; }
 .saved-deck-info { min-width: 0; }
 .saved-deck-name { display: block; overflow: hidden; color: #dfe3ec; font-size: .75rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
 .saved-deck-meta { display: block; margin-top: 3px; color: var(--ui-faint); font-size: .625rem; font-variant-numeric: tabular-nums; }
-.saved-deck-actions { display: flex; flex: 0 0 auto; gap: 2px; }
+.saved-deck-actions { display: flex; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end; gap: 2px; max-width: 58%; }
 .saved-deck-action { min-height: 30px; padding: 4px 6px; color: #b4bfd1; font-size: .6875rem; }
 .saved-deck-delete { color: #c5a6a6; }
 .saved-deck-empty { margin-top: 12px; }
@@ -691,6 +700,7 @@ textarea { resize: vertical; }
   .utility-button { width: 32px; padding-inline: 6px; }
   .save-deck { width: 32px; padding-inline: 6px; }
   .save-deck .button-label { display: none; }
+  .export-page-link { width: 32px; min-height: 32px; padding-inline: 6px; font-size: 0; }
   .utility-button span, .deck-sample span, .deck-action span { display: none; }
   .deck-history .history-glyph { display: inline-flex; }
   .deck-heading-actions { gap: 4px; }

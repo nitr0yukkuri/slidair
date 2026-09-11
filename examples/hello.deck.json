@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "title": "Slidair MCP demo",
+  "slides": [
+    {
+      "role": "cover",
+      "atmosphere": { "season": "autumn", "period": "evening", "weather": "clear", "scene": "rust-forge" },
+      "content": { "kicker": "MCP / DEMO", "title": "内容だけ渡して、空気を守る。", "body": "SlidairはAIが迷わないプレゼンテーションシステムです。" }
+    },
+    {
+      "role": "content",
+      "atmosphere": { "season": "winter", "period": "night", "weather": "clear", "scene": "deep-sea" },
+      "content": { "kicker": "CONTENT / 02", "title": "CSSを書かずに統一する", "body": "roleと空気の値だけを指定し、レイアウトはSlidairに任せます。" }
+    },
+    {
+      "role": "closing",
+      "atmosphere": { "season": "spring", "period": "morning", "weather": "clear", "scene": "first-sunrise" },
+      "content": { "kicker": "CLOSING / 03", "title": "スライドに、空気を。", "body": "" }
+    }
+  ]
+}

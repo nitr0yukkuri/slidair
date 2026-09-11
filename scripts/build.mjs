@@ -7,10 +7,13 @@ const buildRoot = join(projectRoot, "build");
 const checkOnly = process.argv.includes("--check");
 const entries = [
   "index.html",
+  "export.html",
   "manifest.webmanifest",
   "sw.js",
   "styles.css",
+  "export.css",
   "app.js",
+  "export.js",
   "atmosphere-story.mjs",
   "atmosphere-suggestions.mjs",
   "content.mjs",
@@ -21,6 +24,7 @@ const entries = [
   "slidair-schema.mjs",
   "deck-file.mjs",
   "saved-decks.mjs",
+  "slide-png.mjs",
   "scenes.mjs",
   "state.mjs",
   "assets",
