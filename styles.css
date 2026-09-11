@@ -783,3 +783,20 @@ textarea { resize: vertical; }
   .story-beat-scene { font-size: .59375rem; }
   .suggestion-card { padding-inline: 10px; }
 }
+
+
+/* Export is a utility action; keep it visually distinct from presentation mode. */
+.export-page-link {
+  border-color: #ffffff14;
+  background: #ffffff08;
+  color: #c9ced8;
+}
+.export-page-link:hover {
+  border-color: #ffffff2b;
+  background: #ffffff12;
+  color: #f1f2f5;
+}
+.export-page-link:focus-visible {
+  outline: 2px solid #b9d7ff;
+  outline-offset: 2px;
+}
