@@ -1,5 +1,7 @@
 # Slidair
 
+[日本語](README.md) | [English](README.en.md)
+
 **空気をデザインするプレゼンテーションシステム。**
 
 季節・時間帯・天気・景色・スライドの役割を組み合わせ、発表内容を邪魔しない一貫したデッキをつくります。
@@ -48,10 +50,11 @@ Slidair は、背景を単なる「装飾」ではなく、発表全体の空気
 
 ## 起動
 
-ビルドツール不要です。`index.html` をブラウザで開くか、静的サーバーを起動してください。
+ビルドツールは不要です。リポジトリをクローンした後、`index.html` をブラウザで開くか、静的サーバーを起動してください。
 
 ```powershell
-cd C:\src\slide-atmosphere
+git clone https://github.com/nitr0yukkuri/slidair.git
+cd slidair
 node server.mjs
 ```
 
