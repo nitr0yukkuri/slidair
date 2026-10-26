@@ -36,7 +36,7 @@ Slidair now works as a browser-based presentation system where you can edit, reo
 - Presentation mode that displays only the slide at a larger size (Esc, arrow keys, PageUp/PageDown, and Space)
 - Fixed footer navigation for mobile (Preview, Deck, Background, Present)
 - PWA support (add to home screen and cache the offline shell)
-- AI integration: load `deck.json` and use the local stdio MCP (`npm run mcp)); see `docs/deck-schema.md` for the specification
+- AI integration: load `deck.json` and use the local stdio MCP (`npm run mcp`). See [`docs/deck-schema.md`](docs/deck-schema.md) for the specification.
 - Example MCP setup for free connections from Cursor, Claude Desktop, and VS Code ([setup guide](docs/mcp-setup.md))
 - A quiet wordmark that conveys presentation atmosphere, with a header for state controls
 - Space-specific nebula assets and lighting adjusted by role and time of day ([detailed analysis](docs/space-art-direction.md))
@@ -50,10 +50,11 @@ Slidair now works as a browser-based presentation system where you can edit, reo
 
 ## Run
 
-No build tool is required. Open `index.html` in a browser or start a static server.
+No build tool is required. Clone the repository, then open `index.html` in a browser or start a static server.
 
 ```powershell
-cd C:\src\slide-atmosphere
+git clone https://github.com/nitr0yukkuri/slidair.git
+cd slidair
 node server.mjs
 ```
 
