@@ -62,6 +62,8 @@ node server.mjs
 
 PNG書き出しはこのserver.mjsのエンドポイントを使うため、ファイル直開きではなく静的サーバー経由で起動してください。
 
+Deploy Nowのビルド設定はAstro、ルートディレクトリ`deploy-now`、インストール`npm ci --ignore-scripts`、ビルド`npm run build`、出力`dist`にします。ビルド時に同じ静的アプリをコピーし、PNG書き出し用の同一オリジンAPIを追加します。Playwright Chromiumでスライドを描画するため、画像の見た目はローカル版と揃います。
+
 状態変換と静的サーバーの純粋な検証は、Node.js標準のテストランナーで実行できます。ブラウザの回帰とアクセシビリティ監査も同じコマンドから実行できます。
 
 ```powershell

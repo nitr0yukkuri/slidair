@@ -1,6 +1,6 @@
 const PNG_WIDTH = 1920;
 const PNG_HEIGHT = 1080;
-const EXPORT_ENDPOINT = "/__slidair/export.png";
+const EXPORT_ENDPOINT = "/api/slidair/export.png";
 
 function stylesheetText(documentRef) {
   const rules = [];
@@ -20,7 +20,7 @@ export function slidePngFileName(position = 1, mode = "full") {
 }
 
 /**
- * PNGはブラウザのforeignObject制約を避けるため、ローカルの静的サーバーで
+ * PNGはブラウザのforeignObject制約を避けるため、同一オリジンのサーバーで
  * 実際のスライドDOMを描画してから返す。CSS・背景画像・フォントを同じ
  * オリジンで解決するので、画面と書き出しの見た目がずれにくい。
  */
